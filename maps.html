@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Maps · Necessity Robotics</title>
+  <meta name="description" content="3-D Gaussian-splat maps reconstructed from xclean's own live camera poses: our OAK-D-Lite recordings and the Rosario Dataset. Licences, credits and known limits.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="preload" href="data/maps.json" as="fetch" crossorigin>
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/maps.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="head">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="xclean.html">xclean</a>
+      <a href="results.html">Results</a>
+      <a href="maps.html" aria-current="page">Maps</a>
+      <a href="paper.html">Paper</a>
+      <a href="credits.html">Data credits</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <p class="eyebrow">Maps · 3-D Gaussian splats</p>
+      <h1>What xclean saw, in 3-D.</h1>
+      <p class="lead">Each map is reconstructed from a route's images and xclean's own live camera poses: the median of its three final-board runs, not ground truth. Where the poses are wrong, the map shows it. Each map says where.</p>
+      <div class="btns"><a class="btn btn--ion" href="viewer.html">Open the 3-D viewer <span class="arr" aria-hidden="true">→</span></a><a class="btn" href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Download the maps</a></div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="plates js-plates"><p>Loading the maps…</p></div>
+      <p class="note">Only maps from data we may share are published here: our own OAK-D-Lite recordings and the Rosario Dataset (CC BY 4.0). Routes from datasets with non-commercial or unstated licences appear on the <a href="results.html">results</a> page as numbers only. Map facts are read from each map's own files (attribution, manifest, trajectory, point cloud); path length is the sum of xclean's keyframe-to-keyframe distances.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+</body>
+</html>

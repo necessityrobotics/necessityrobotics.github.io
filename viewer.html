@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>3-D map viewer · Necessity Robotics</title>
+  <meta name="description" content="Fly through 3-D Gaussian-splat maps built from xclean's live camera poses, along xclean's own trajectory.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/viewer.css">
+  <link rel="preload" href="data/maps.json" as="fetch" crossorigin>
+  <link rel="modulepreload" href="vendor/three/three.module.js">
+  <script type="importmap">
+  {"imports":{
+    "three":"./vendor/three/three.module.js",
+    "three/addons/":"./vendor/three/addons/",
+    "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
+  }}
+  </script>
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/viewer/main.js"></script>
+</head>
+<body class="vbody">
+<a class="skip" href="#vw-canvas">Skip to the 3-D view</a>
+<main id="main" class="vw" data-state="boot">
+  <div class="vw-stage">
+    <img class="vw-poster js-poster" alt="" decoding="async">
+    <canvas id="vw-canvas" class="vw-canvas" tabindex="0" aria-label="3-D view of the map. Space plays the run in the camera's own view: drag to look around, scroll to pull back, double-click to recenter. O: free orbit, P: camera view, F: chase."></canvas>
+    <div class="vw-fallback js-fallback" hidden>
+      <video class="js-fb-video" muted loop playsinline controls preload="none"></video>
+      <p class="js-fb-msg"></p>
+    </div>
+  </div>
+
+  <!-- top bar -->
+  <header class="vw-top">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <div class="vw-pick">
+      <label class="label" for="vw-map">Map</label>
+      <select id="vw-map" class="sel js-map"></select>
+    </div>
+    <div class="vw-top-r">
+      <button type="button" class="vbtn js-info-btn" aria-expanded="true" aria-controls="vw-cat">Info</button>
+      <a class="vbtn" href="maps.html">All maps</a>
+    </div>
+  </header>
+
+  <!-- left: catalogue -->
+  <aside class="vw-panel vw-cat" id="vw-cat" aria-labelledby="vw-title">
+    <span class="label js-cat-id">—</span>
+    <h1 class="vw-title" id="vw-title">Loading…</h1>
+    <p class="vw-sub js-sub"></p>
+    <span class="lic js-lic"></span>
+    <dl class="kv vw-kv js-kv"></dl>
+    <div class="vw-lim"><h2 class="label">Known limits</h2><p class="js-lim"></p></div>
+    <p class="vw-credit js-credit"></p>
+  </aside>
+
+  <!-- right: telemetry -->
+  <aside class="vw-panel vw-tel" aria-label="Run telemetry and loading">
+    <h2 class="label">Telemetry</h2>
+    <dl class="kv vw-kv">
+      <dt>Run time</dt><dd class="num js-t">—</dd>
+      <dt>Distance</dt><dd class="num js-d">—</dd>
+      <dt>Keyframe</dt><dd class="num js-kf">—</dd>
+      <dt>Drawing</dt><dd class="num js-draw">—</dd>
+    </dl>
+    <figure class="vw-feed js-feed" hidden>
+      <img class="js-feed-img" alt="" width="320" height="200">
+      <figcaption><b>Camera</b> <span class="js-feed-t">the real keyframe image nearest this time</span></figcaption>
+    </figure>
+    <h2 class="label vw-ld-h">Loading</h2>
+    <ul class="vw-ld js-ld"></ul>
+  </aside>
+
+  <!-- bottom: controls -->
+  <div class="vw-bar" role="group" aria-label="Playback and view">
+    <div class="vw-time">
+      <button type="button" class="vbtn vbtn--play js-play" aria-label="Play the run">Play</button>
+      <label class="sr" for="vw-scrub">Time along the run</label>
+      <input id="vw-scrub" class="vw-scrub js-scrub" type="range" min="0" max="1" step="0.05" value="0">
+      <span class="num vw-tt js-tt">0.0 / 0.0 s</span>
+      <select class="sel sel--sm js-speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+    </div>
+    <div class="vw-opts">
+      <div class="seg js-cam" role="group" aria-label="Camera"><button type="button" data-v="pov" aria-pressed="false" title="The SLAM camera's own view (P). Pressed again: recenter">Camera POV</button><button type="button" data-v="orbit" aria-pressed="true" title="Orbit the map freely (O)">Free</button><button type="button" data-v="follow" aria-pressed="false" title="Chase behind the camera (F)">Chase</button></div>
+      <div class="seg js-layer" role="group" aria-label="Layer"><button type="button" data-v="splats" aria-pressed="false">Splats</button><button type="button" data-v="points" aria-pressed="true">Points</button><button type="button" data-v="both" aria-pressed="false">Both</button></div>
+      <div class="seg js-q" role="group" aria-label="Splat quality"><button type="button" data-v="lite" aria-pressed="false">Lite</button><button type="button" data-v="standard" aria-pressed="false">Standard</button><button type="button" data-v="full" aria-pressed="false">Full</button></div>
+      <label class="tog"><input type="checkbox" class="js-v-ours" checked> xclean path</label>
+      <label class="tog js-gt-wrap" hidden><input type="checkbox" class="js-v-gt" checked> ground truth</label>
+    </div>
+  </div>
+  <p class="vw-note js-note" role="status" aria-live="polite" hidden></p>
+</main>
+</body>
+</html>
