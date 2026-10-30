@@ -1,0 +1,90 @@
+/* Viewer: "mission control" (DESIGN.md section 5.2). Full-screen canvas, solid panels (text never sits on bare 3D). */
+:root { --ours: var(--ion); --orb: var(--loss); --gt: #f2f5fa; }
+.vbody { overflow: hidden; height: 100%; }
+.vw { position: fixed; inset: 0; background: var(--bg); }
+.vw-stage { position: absolute; inset: 0; }
+.vw-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; transition: opacity 1s var(--ease); }
+.vw[data-state="live"] .vw-poster { opacity: 0; }
+.vw-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s var(--ease); touch-action: none; outline: none; }
+.vw[data-state="live"] .vw-canvas { opacity: 1; }
+.vw-fallback { position: absolute; inset: 0; display: grid; place-items: center; padding: 80px 16px; background: rgba(0,0,0,.6); }
+.vw-fallback video { max-width: min(960px, 100%); border-radius: var(--r); border: 1px solid var(--line-2); }
+.vw-fallback p { max-width: 60ch; text-align: center; background: var(--bg-2); padding: 12px 16px; border-radius: 8px; }
+
+.vw-panel { position: absolute; z-index: 5; background: rgba(12,12,12,.94); border: 1px solid var(--line-2); border-radius: 12px; padding: 18px 20px;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--fg); }
+.vw-top { position: absolute; z-index: 6; top: 0; left: 0; right: 0; height: 60px; display: flex; align-items: center; gap: 16px; padding: 0 16px;
+  background: rgba(0,0,0,.92); border-bottom: 1px solid var(--line); }
+.vw-top .wordmark { font-size: 17px; }
+.vw-pick { display: flex; align-items: center; gap: 10px; margin-left: 12px; }
+.vw-pick .sel { height: 40px; min-width: 200px; }
+.vw-top-r { margin-left: auto; display: flex; gap: 8px; }
+.vbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--bg-2); color: var(--fg); font: 500 15px/1 var(--sans); text-decoration: none; cursor: pointer; }
+.vbtn:hover { border-color: var(--fg); color: var(--fg); }
+.vbtn--play { min-width: 72px; background: var(--fg); color: var(--ink); border-color: var(--fg); font-weight: 600; }
+.vbtn--play:hover { background: #fff; color: var(--ink); }
+.sel--sm { height: 40px; padding: 0 10px; }
+
+.vw-cat { top: 76px; left: 16px; width: 340px; max-height: calc(100% - 76px - 120px); overflow: auto; }
+.vw-title { font-size: 26px; line-height: 1.15; margin: 6px 0 6px; }
+.vw-sub { font-size: 16px; color: var(--fg-2); margin: 0 0 12px; }
+.vw-kv { margin: 16px 0; gap: 7px 16px; }
+.vw-kv dt { font-size: 12.5px; }
+.vw-kv dd { font-size: 15.5px; }
+.vw-lim { border-top: 1px solid var(--line); padding-top: 12px; }
+.vw-lim h2 { margin: 0 0 6px; color: var(--warn); }
+.vw-lim p, .vw-credit { font-size: 15px; line-height: 1.55; margin: 0; }
+.vw-credit { margin-top: 12px; color: var(--fg-2); }
+
+.vw-tel { top: 76px; right: 16px; width: 280px; max-height: calc(100% - 76px - 120px); overflow: auto; }
+.vw-tel h2.label { margin: 0 0 6px; }
+.vw-tel .vw-kv { margin-top: 8px; }
+.vw-feed { margin: 8px 0 14px; }
+.vw-feed img { width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--line-2); background: #000; }
+.vw-feed figcaption { margin-top: 6px; font-size: 13.5px; }
+.vw-feed figcaption b { font-size: 12px; }
+.vw-ld-h { margin-top: 12px !important; }
+.vw-ld { list-style: none; margin: 6px 0 0; padding: 0; }
+.vw-ld li { font: 400 13.5px/1.35 var(--mono); color: var(--fg-2); padding: 6px 0; border-bottom: 1px solid var(--line); }
+.vw-ld li b { color: var(--fg); font-weight: 500; }
+.vw-ld li .bar { display: block; height: 2px; background: var(--line); margin-top: 5px; }
+.vw-ld li .bar i { display: block; height: 100%; width: var(--p, 0%); background: var(--ion); }
+.vw-ld li.done .bar i { background: var(--fg-3); }
+.vw-ld li.fail { color: var(--loss); }
+
+.vw-bar { position: absolute; z-index: 5; left: 16px; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 10px;
+  background: rgba(12,12,12,.94); border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.vw-time { display: flex; align-items: center; gap: 12px; }
+.vw-scrub { flex: 1; accent-color: var(--ion); height: 28px; min-width: 60px; }
+.vw-tt { font-size: 14.5px; color: var(--fg); white-space: nowrap; }
+.vw-opts { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.vw-opts .seg button { padding: 8px 12px; min-height: 34px; font-size: 14.5px; }
+.vw-opts .seg button:disabled { opacity: .45; cursor: not-allowed; }
+.tog { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: var(--fg); cursor: pointer; }
+.tog input { width: 18px; height: 18px; accent-color: var(--ion); }
+.vw-note { position: absolute; z-index: 7; left: 50%; transform: translateX(-50%); bottom: 132px; margin: 0; max-width: min(640px, calc(100% - 32px));
+  background: var(--bg-2); border: 1px solid var(--line-3); border-radius: 10px; padding: 12px 16px; font-size: 15.5px; color: var(--fg); }
+.vw-note button { margin-left: 10px; }
+
+@media (max-width: 1100px) { .vw-tel { display: none; } }
+@media (max-width: 760px) {
+  .vw-top { height: 56px; gap: 8px; padding: 0 10px; }
+  .vw-top .wordmark i { display: none; }
+  .vw-pick { margin-left: 0; flex: 1; min-width: 0; }
+  .vw-pick .label { display: none; }
+  .vw-pick .sel { min-width: 0; width: 100%; }
+  .vw-top-r a.vbtn { display: none; }
+  .vw-cat { top: 64px; left: 8px; right: 8px; width: auto; max-height: 46%; }
+
+  .vw-bar { left: 8px; right: 8px; bottom: 8px; padding: 10px; }
+  .vw-opts { gap: 6px; }
+  .vw-opts .seg button { padding: 7px 10px; font-size: 14px; }
+  .vw-note { bottom: auto; top: 64px; }
+  .vw-time { gap: 8px; }
+  .vw-scrub { min-width: 40px; }
+  .vw-tt { font-size: 13px; }
+  .vw-time .sel--sm { width: 62px; padding: 0 6px; }
+  .vbtn--play { min-width: 64px; }
+}
+.vw-cat.closed { display: none; }

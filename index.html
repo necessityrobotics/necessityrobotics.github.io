@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Necessity Robotics</title>
+  <meta name="description" content="Necessity Robotics builds perception for robots in India. xclean, our real-time stereo visual-inertial SLAM, is open source under Apache-2.0.">
+  <meta name="robots" content="noindex, nofollow"><!-- pre-launch: remove on every page only when the owner says launch -->
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="preload" as="image" href="img/maps/oak_161834.webp" fetchpriority="high">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/home.css">
+  <script type="importmap">
+  {"imports":{
+    "three":"./vendor/three/three.module.js",
+    "three/addons/":"./vendor/three/addons/",
+    "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
+  }}
+  </script>
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/home.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="head is-top">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="xclean.html">xclean</a>
+      <a href="results.html">Results</a>
+      <a href="maps.html">Maps</a>
+      <a href="paper.html">Paper</a>
+      <a href="credits.html">Data credits</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ============ 1. FIRST SCREEN: the company name over our own map ============ -->
+  <section class="hero" data-head-over aria-labelledby="hero-name">
+    <div class="hero-media" aria-hidden="true">
+      <img class="hero-poster" src="img/maps/oak_161834.webp" alt="" width="1280" height="800" fetchpriority="high" decoding="async">
+      <div class="hero-live"></div>
+      <div class="hero-scrim"></div>
+    </div>
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow hero-in" style="--d:0">Perception for robots · Built in India</p>
+        <h1 class="hero-name hero-in" id="hero-name" style="--d:1"><span>Necessity</span> <span>Robotics</span></h1>
+        <p class="hero-lead hero-in" style="--d:2">We build the part of a robot that knows where it is. Our first system, <strong>xclean</strong>, is a real-time stereo visual-inertial SLAM, open source under Apache-2.0.</p>
+        <div class="btns hero-in" style="--d:3">
+          <a class="btn btn--ion" href="#work">See our work <span class="arr" aria-hidden="true">↓</span></a>
+          <a class="btn" href="viewer.html">Fly a 3-D map <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="wrap hero-foot">
+      <p class="hero-cap"><b>Behind this text</b> <span class="hero-state js-hero-state">Poster</span> Our 3-D map of <a href="viewer.html?map=oak_161834">oak_161834</a>, a drive we recorded in India with an OAK-D-Lite camera, flown along xclean's own live trajectory. <span class="js-hero-hint">Move the mouse to look around.</span> A reconstruction, not camera video.</p>
+      <a class="hero-scroll" href="#work" aria-label="Scroll to our work"><span></span></a>
+    </div>
+  </section>
+
+  <!-- ============ 2. WHO WE ARE ============ -->
+  <section class="section" id="work" aria-labelledby="who-h">
+    <div class="wrap split">
+      <div data-reveal>
+        <p class="eyebrow">01 · Who we are</p>
+        <h2 id="who-h">A perception company.</h2>
+      </div>
+      <div data-reveal>
+        <p class="lead">Necessity Robotics works on perception: how a robot works out where it is and what is around it, from its own cameras, live, on its own computer.</p>
+        <p class="muted">We build in the open. We measure on public benchmarks and on our own recordings, we fix our rules before the runs, and we publish every result, including the losses.</p>
+        <ul class="ticks">
+          <li><strong>xclean</strong>: real-time stereo visual-inertial SLAM, open source.</li>
+          <li><strong>Maps</strong>: 3-D Gaussian-splat maps built from xclean's own live camera poses.</li>
+          <li><strong>A technical paper</strong> on the system and on how we score it live.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap">
+      <figure class="field-fig" data-reveal>
+        <div class="field-box frame"><canvas class="field-canvas" aria-hidden="true"></canvas></div>
+        <figcaption><b>Fig. 1</b> Not stars: <span class="js-field-n">5,200</span> of the <span class="js-field-of">232,817</span> map points xclean placed on route oak_161834, seen from above, with xclean's live trajectory in blue. The only "space" on this site is our own data.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 3. XCLEAN (the second 3D moment) ============ -->
+  <section class="section band" aria-labelledby="xc-h">
+    <div class="wrap">
+      <div class="xc-head" data-reveal>
+        <p class="eyebrow">02 · xclean</p>
+        <h2 id="xc-h">Live stereo visual-inertial SLAM.</h2>
+        <p class="lead">xclean turns a stereo camera and its IMU into a camera pose for every frame, while the robot moves, with loop closure, relocalisation and map reuse. Its GPU code is written in CuPy: no C++ build step, no ROS, no learned networks in the SLAM pipeline, native on Windows 11.</p>
+      </div>
+      <figure class="fly" data-reveal>
+        <div class="plate frame">
+          <img class="fly-poster js-fig2-poster" src="img/maps/rosario_01.webp" alt="A soybean field rendered from our 3-D Gaussian-splat map: crop rows running to the horizon." width="1280" height="716" loading="lazy" decoding="async">
+          <div class="fly-hud" aria-hidden="true">
+            <span class="fly-badge"><i></i><span class="js-fly-state">Poster</span></span>
+            <span class="fly-t">our map, not camera video</span>
+          </div>
+        </div>
+        <figcaption><b>Fig. 2</b> <span class="js-fig2-cap">Route rosario_01 (a farm robot in a soybean field, Rosario Dataset, CC BY 4.0), rendered from our 3-D Gaussian-splat map along xclean's own trajectory.</span> A pre-rendered film that plays while it is on screen; it is a reconstruction, not camera video. <a href="viewer.html?map=rosario_01">Fly it yourself</a>, or see <a href="maps.html#rosario_01">its known limits</a>.</figcaption>
+      </figure>
+      <div class="grid g3 xc-cards">
+        <div class="card" data-reveal><span class="label">Sensors</span><h3>Stereo + IMU</h3><p>Runs live on a Luxonis OAK-D-Lite, and on recorded sequences frame by frame.</p></div>
+        <div class="card" data-reveal><span class="label">Full SLAM</span><h3>Loops, relocalisation, map reuse</h3><p>A sliding-window factor graph on the GPU, with loop corrections applied live.</p></div>
+        <div class="card" data-reveal><span class="label">Licence</span><h3>Apache-2.0</h3><p>Free for research and commercial use. If you ship it in a product, keep the NOTICE credit.</p></div>
+      </div>
+      <a class="more" href="xclean.html">Install and run xclean</a>
+    </div>
+  </section>
+
+  <!-- ============ 4. RESULTS: numbers with units ============ -->
+  <section class="section" aria-labelledby="res-h">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="eyebrow">03 · Results</p>
+        <h2 id="res-h">Measured live, on 72 routes.</h2>
+        <p class="lead">Indoor drones, cars, a Mars-analogue rover, a farm robot and our own camera. Three live runs per route at the sensor's real rate, and every run counted.</p>
+      </div>
+      <div class="specs" data-reveal>
+        <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median frame-to-pose latency</div><div class="s label">p50 · one desktop GPU</div></div>
+        <div class="spec"><div class="v"><span class="js-h" data-k="p95">26.4</span><small>ms</small></div><div class="k">95th-percentile latency</div><div class="s label">p95 · p99 <span class="js-h" data-k="p99">30.7</span> ms</div></div>
+        <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">live paced runs on <span class="js-h" data-k="routes">72</span> routes</div><div class="s label">3 per route · all counted</div></div>
+        <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs on the <span class="js-h" data-k="unseen">38</span> routes we had not run before</div><div class="s label"><a href="results.html#robustness">see the robustness caveat</a></div></div>
+      </div>
+      <p class="note">Latency is host-side, from frame arrival to the loop-corrected pose, on an RTX 5090: the median over all 216 runs of each run's own p50, p95 and p99. Source: <b>final board</b> (<span class="js-src">runs/xclean/board/data/board.json</span>, 2026-10-30). Robustness is not perfect: on 2 of the 38 unseen routes a replay attempt crashed or hung, and 4 failed the unsupported-frames check.</p>
+
+      <div class="acc" data-reveal>
+        <h3>Accuracy: wins and losses, side by side.</h3>
+        <p class="muted">Trajectory error on the 38 unseen routes, ours (live, paced, on a loaded desktop) against two other systems in the configurations we could run. We do not claim to be more accurate.</p>
+        <div class="grid g2">
+          <div class="panel"><span class="label">vs ORB-SLAM3 · offline, untuned</span><div class="tally js-tally" data-k="unseen_vs_orb3"></div></div>
+          <div class="panel"><span class="label">vs OKVIS2-X · causal, unpaced</span><div class="tally js-tally" data-k="unseen_vs_okvis2x"></div></div>
+        </div>
+        <a class="more" href="results.html">Every route, every loss, in one table</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. MAPS ============ -->
+  <section class="section band" aria-labelledby="maps-h">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="eyebrow">04 · Maps</p>
+        <h2 id="maps-h">Fly through what xclean saw.</h2>
+        <p class="lead">3-D Gaussian-splat maps reconstructed from xclean's own live camera poses, not from ground truth. Each map states its limits.</p>
+      </div>
+      <div class="grid g2 js-maps" data-reveal></div>
+      <a class="more" href="maps.html">All maps and their licences</a>
+    </div>
+  </section>
+
+  <!-- ============ 6. PAPER + OPEN SOURCE ============ -->
+  <section class="section" aria-labelledby="po-h">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="eyebrow">05 · Paper and open source</p>
+        <h2 id="po-h">Read it. Run it.</h2>
+      </div>
+      <div class="grid g2">
+        <a class="card frame" href="paper.html" data-reveal><span class="label">Technical paper · in preparation</span><h3>How xclean works, and how we score what it publishes live</h3><p>The method, the live evaluation protocol and the final board, summarised with the final numbers.</p><span class="more">Read the summary</span></a>
+        <a class="card frame" href="xclean.html" data-reveal><span class="label">Open source · Apache-2.0</span><h3>github.com/necessityrobotics/xclean</h3><p>Python with GPU code written in CuPy and CPU hot paths in Numba. Install with conda on Windows 11 and an NVIDIA GPU.</p><span class="more">Install, quickstart, licence</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. CONTACT ============ -->
+  <section class="section section--tight band contact" aria-labelledby="ct-h">
+    <div class="wrap contact-in">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 id="ct-h">Building a robot that needs to know where it is?</h2>
+      </div>
+      <div>
+        <p class="lead">Write to us. We read every message.</p>
+        <a class="btn btn--ion" href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+</body>
+</html>

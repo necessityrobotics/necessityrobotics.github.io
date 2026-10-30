@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Results · Necessity Robotics</title>
+  <meta name="description" content="xclean's final board: 72 routes, 216 live paced runs, latency, robustness and accuracy against ORB-SLAM3 and OKVIS2-X, wins and losses, every route.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="preload" href="data/board.json" as="fetch" crossorigin>
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/results.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="head">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="xclean.html">xclean</a>
+      <a href="results.html" aria-current="page">Results</a>
+      <a href="maps.html">Maps</a>
+      <a href="paper.html">Paper</a>
+      <a href="credits.html">Data credits</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <p class="eyebrow">Results · final board, 2026-10-30</p>
+      <h1>Every run counted. Losses included.</h1>
+      <p class="lead"><span class="js-h" data-k="routes">72</span> routes, three live runs each at the sensor's real rate: <span class="js-h" data-k="runs">216</span> runs, scored on the pose xclean published at each frame. Rules were fixed before the runs.</p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="wrap doc">
+      <aside class="toc" aria-label="On this page">
+        <span class="label">On this page</span>
+        <a href="#disclosures">Disclosures</a><a href="#latency">Latency</a><a href="#robustness">Robustness</a><a href="#accuracy">Accuracy</a><a href="#claims">Pre-registered claims</a><a href="#routes">Every route</a><a href="#definitions">Definitions</a><a href="#source">Source</a>
+      </aside>
+      <div class="prose">
+        <h2 id="disclosures" class="sr">Disclosures</h2>
+        <div class="disclose">
+          <h3>Read this first</h3>
+          <ul>
+            <li><strong>Most of our pre-registered claims did not pass.</strong> On the 38 unseen routes, <span class="js-claims-pass">1</span> of <span class="js-claims-n">12</span> claims passed. <a href="#claims">The full list</a>.</li>
+            <li><strong>The engine was frozen with a failed kill test.</strong> <span class="js-k14"></span></li>
+            <li><strong>Robustness is not perfect.</strong> No run was lost on the 38 unseen routes, but on 2 of them a replay attempt crashed or hung, and 4 failed the unsupported-frames check.</li>
+            <li><strong>Our runs were live, on a loaded desktop.</strong> <span class="js-load"></span> The other systems ran in other configurations, named beside each comparison.</li>
+          </ul>
+        </div>
+
+        <h2 id="latency">Latency</h2>
+        <p>Host-side, from the arrival of a frame to xclean's loop-corrected pose for that frame, on one desktop (AMD Ryzen 9 9950X, RTX 5090, Windows 11).</p>
+        <div class="specs specs--3">
+          <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median (p50)</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="p95">26.4</span><small>ms</small></div><div class="k">95th percentile</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="p99">30.7</span><small>ms</small></div><div class="k">99th percentile</div></div>
+        </div>
+        <p class="note js-lat-rule"></p>
+        <p>The pre-registered real-time bars, which also judge drops and frame gaps per route, passed on <span class="js-c1">28 of 38</span> unseen routes. They failed mostly on the 30 Hz 4Seasons car routes, where the 95th percentile is about one frame period. Per-route latency is in <a href="#routes">the table</a>.</p>
+
+        <h2 id="robustness">Robustness</h2>
+        <div class="specs specs--3">
+          <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs on the <span class="js-h" data-k="unseen">38</span> unseen routes</div></div>
+          <div class="spec"><div class="v"><span class="js-ch-n">2</span><small>routes</small></div><div class="k">with a crashed or hung replay attempt</div></div>
+          <div class="spec"><div class="v"><span class="js-us-n">4</span><small>routes</small></div><div class="k">failed the unsupported-frames check</div></div>
+        </div>
+        <p class="note js-rob-note"></p>
+
+        <h2 id="accuracy">Accuracy: we publish our losses</h2>
+        <p>Trajectory error (ATE, metres) per route. Against offline ORB-SLAM3 on the 38 unseen routes: <strong><span class="js-t-w">10</span> wins, <span class="js-t-t">2</span> ties, <span class="js-t-l">26</span> losses</strong>, every route in the table below. We do not claim to be more accurate than either system.</p>
+        <dl class="kv cfg">
+          <dt>xclean</dt><dd>live, causal, paced at the sensor's rate, on the desktop with its normal background load; 3 runs per route.</dd>
+          <dt>ORB-SLAM3</dt><dd>offline, untuned: one generic configuration per sensor type; 5 runs per route; its end-of-run trajectory.</dd>
+          <dt>OKVIS2-X</dt><dd>causal, unpaced; 1 run per route.</dd>
+        </dl>
+        <div class="tallies">
+          <div class="panel"><span class="label">38 unseen routes</span><h4>vs ORB-SLAM3</h4><div class="tally js-tally" data-k="unseen_vs_orb3"></div><p class="js-bt"></p></div>
+          <div class="panel"><span class="label">38 unseen routes</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="unseen_vs_okvis2x"></div><p>A ratio band: within 5 % of theirs is a tie.</p></div>
+          <div class="panel"><span class="label">All 67 routes with ground truth · report only</span><h4>vs ORB-SLAM3</h4><div class="tally js-tally" data-k="all_gt_vs_orb3"></div><p>Includes the routes we designed on.</p></div>
+          <div class="panel"><span class="label">All 67 routes with ground truth · report only</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="all_gt_vs_okvis2x"></div><p>Includes the routes we designed on.</p></div>
+        </div>
+        <p class="muted">ORB-SLAM3 verdict rule (the board's own): keyframe-level ATE on the time window both systems cover, after alignment; our 3 runs against its 5. If the two ranges overlap, the route is a tie. The headline is the 38 unseen routes; the full-board tallies are reported, never claimed.</p>
+
+        <h2 id="claims">Pre-registered claims</h2>
+        <p>Before the final runs we wrote down what we would claim, and the rule for each. A claim passes only if every route of the table is counted and passes. On the 38 unseen routes:</p>
+        <div class="table-wrap"><table class="t claims"><thead><tr><th>Claim</th><th>Result</th><th>Measured</th></tr></thead><tbody class="js-claims"></tbody></table></div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight band routes-sec" aria-labelledby="routes">
+    <div class="wrap prose">
+        <h2 id="routes">Every route</h2>
+      <div class="filters" role="group" aria-label="Filter routes">
+        <div class="seg js-set" role="group" aria-label="Route set">
+          <button type="button" data-set="all" aria-pressed="false">All 72</button>
+          <button type="button" data-set="unseen" aria-pressed="true">Unseen 38</button>
+          <button type="button" data-set="seen" aria-pressed="false">Seen 29</button>
+          <button type="button" data-set="oak" aria-pressed="false">Own camera 5</button>
+        </div>
+        <label class="sr" for="fam">Family</label>
+        <select id="fam" class="sel js-fam"><option value="">Every dataset</option></select>
+        <label class="sr" for="ver">Verdict</label>
+        <select id="ver" class="sel js-ver"><option value="">Every verdict</option><option value="win">xclean better</option><option value="tie">tie</option><option value="loss">ORB-SLAM3 better</option></select>
+        <label class="sr" for="q">Search</label>
+        <input id="q" class="search js-q" type="search" placeholder="Search a route" autocomplete="off">
+      </div>
+      <p class="count js-count" aria-live="polite"></p>
+      <div class="table-wrap" tabindex="0" aria-label="Every route (scrolls sideways on small screens)">
+        <table class="t routes">
+          <thead><tr>
+            <th>Route · set</th><th>Dataset</th>
+            <th class="num">xclean ATE, m</th><th class="num">ORB-SLAM3 ATE, m</th><th>vs ORB-SLAM3</th><th>vs OKVIS2-X</th>
+            <th class="num">Latency, ms</th><th class="num">Lost</th><th>Flags</th>
+          </tr></thead>
+          <tbody class="js-rows"><tr><td colspan="9">Loading the board…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="note">ATE: median of the runs; below it the range (lowest – highest) when the runs differ, and the number of runs used. OKVIS2-X ratio: ours divided by OKVIS2-X's; above 1.05 means OKVIS2-X was more accurate. Latency: median of the runs' p50, with their p95 below. Flags: <span class="flag">crash/hang</span> a replay attempt crashed or hung; <span class="flag">unsupported</span> failed the unsupported-frames check; <span class="flag">pending</span> that check awaits a decision because the route's ground truth has known faults.</p>
+
+      <h2 id="definitions">Definitions</h2>
+      <dl class="kv defs">
+        <dt id="def-unseen">Unseen route</dt><dd>A route xclean had never been run on before the final board. 22 were never run; 16 more were sealed, their data never opened. Seen routes were used while building xclean or by earlier kill tests.</dd>
+        <dt id="def-lost">Lost run</dt><dd>A run in which more than 10 % of the frames have no published pose, or a state other than tracking, relocalised or initialising, or which ends in an unrecovered loss.</dd>
+        <dt id="def-continuity">Continuity</dt><dd>Every correction of the published map pose is flagged, and the odometry stream is never corrected (claim C2).</dd>
+        <dt id="def-unsupported">Unsupported frames</dt><dd>Frames with no published pose, a state other than tracking, or a two-second motion that disagrees with ground truth, as a share of the run. The bar is 2 % per route.</dd>
+        <dt id="def-ate">ATE</dt><dd>Absolute trajectory error in metres, at keyframe level, on the time window both systems cover, after rigid alignment to ground truth.</dd>
+        <dt id="def-latency">Latency</dt><dd>Recorder receipt of the loop-corrected pose minus the release of its frame, over every frame; a dropped frame counts as infinitely late.</dd>
+      </dl>
+
+      <h2 id="source">Source</h2>
+      <p class="js-source">Every number on this page is read from the final board file.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+</body>
+</html>

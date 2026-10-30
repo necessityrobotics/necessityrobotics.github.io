@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Paper · Necessity Robotics</title>
+  <meta name="description" content="Technical paper on xclean, in preparation: a summary of the method, the live evaluation protocol and the final board, with the final numbers.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/paper.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="head">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="xclean.html">xclean</a>
+      <a href="results.html">Results</a>
+      <a href="maps.html">Maps</a>
+      <a href="paper.html" aria-current="page">Paper</a>
+      <a href="credits.html">Data credits</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <p class="eyebrow">Technical paper · in preparation</p>
+      <h1>xclean, scored on what it publishes live.</h1>
+      <p class="lead">A stereo visual-inertial SLAM system, and an evaluation that scores the pose a robot would have received at each frame, not a trajectory refined after the run.</p>
+      <div class="status-line"><span class="chip chip--warn">Not yet released</span><span class="chip">Authors: to be announced</span><span class="chip">Final numbers: board of 2026-10-30</span></div>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="wrap doc">
+      <aside class="toc" aria-label="On this page">
+        <span class="label">On this page</span>
+        <a href="#summary">Summary</a><a href="#why">Why live</a><a href="#method">Method</a><a href="#protocol">Protocol</a><a href="#results">Results</a><a href="#limits">Limitations</a><a href="#cite">Citation</a>
+      </aside>
+      <div class="prose">
+        <h2 id="summary">Summary</h2>
+        <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline, and we score it on exactly what it publishes live: runs paced at the sensors' real rate, every frame's pose as published, rules fixed before the runs. On a final board of 72 routes and 216 live runs, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop GPU, and no run was lost on the 38 routes it had not run before. It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
+        <p class="muted">This page is a summary. The full paper is being revised to the final board; until it is released, the numbers here and on the <a href="results.html">results</a> page are the reference.</p>
+
+        <h2 id="why">Why score the live output</h2>
+        <p>A humanoid handing someone a cup, or a mobile robot opening a door, acts on its estimate of where it is at the moment it acts. That estimate sees each frame once, must answer before the next frame arrives, and can never revise an answer it already gave. Published SLAM accuracy is usually measured on the trajectory saved at the end of the run, after global optimisation has revised every pose with hindsight, and often with the data fed slower than real time. That number can be far from what the robot received.</p>
+
+        <h2 id="method">Method, in brief</h2>
+        <ul class="ticks">
+          <li><strong>Front end.</strong> Stereo feature tracking on the GPU, with sparse stereo matching for depth.</li>
+          <li><strong>Association by map matching.</strong> Features are matched against the local map, not only the previous frame.</li>
+          <li><strong>Estimator.</strong> A tightly coupled visual-inertial sliding-window solve on the GPU; each frame's pose comes from a solve that contains that frame.</li>
+          <li><strong>IMU.</strong> Initialisation, an online trust watchdog and an online camera-IMU clock-offset estimate.</li>
+          <li><strong>Full SLAM.</strong> Loop closure with a global correction applied live, relocalisation, and map reuse.</li>
+          <li><strong>One configuration.</strong> One frozen build ran every route on the board.</li>
+          <li><strong>Maps.</strong> 3-D Gaussian-splat maps are built afterwards from the images and xclean's live poses (<a href="maps.html">maps</a>).</li>
+        </ul>
+
+        <h2 id="protocol">Live evaluation protocol</h2>
+        <ul class="ticks">
+          <li><strong>Harness.</strong> Frames and IMU samples are released at their recorded timestamps; the system never sees data newer than what was released; every published pose is recorded by a separate process.</li>
+          <li><strong>Live scorer.</strong> It scores the pose stream as published, every frame, with no run excluded.</li>
+          <li><strong>Bars fixed in advance.</strong> Latency, drops, continuity, robustness, accuracy and resources, each with a written pass rule.</li>
+          <li><strong>Kill tests and unseen routes.</strong> Each design step was decided by a pre-registered test. The final board's headline uses 38 routes xclean had never been run on.</li>
+          <li><strong>Baselines.</strong> ORB-SLAM3 offline and untuned (5 runs per route) and OKVIS2-X causal and unpaced (1 run per route), run separately; none of their code is part of xclean.</li>
+        </ul>
+
+        <h2 id="results">Results (final board)</h2>
+        <div class="specs specs--3">
+          <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median latency (p95 <span class="js-h" data-k="p95">26.4</span>, p99 <span class="js-h" data-k="p99">30.7</span> ms)</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">on <span class="js-h" data-k="routes">72</span> routes; <span class="js-h" data-k="lost">0</span> lost on the <span class="js-h" data-k="unseen">38</span> unseen</div></div>
+          <div class="spec"><div class="v"><span class="js-tw">10</span><small>/ <span class="js-tt">2</span> / <span class="js-tl">26</span></small></div><div class="k">wins / ties / losses vs offline ORB-SLAM3, 38 unseen routes</div></div>
+        </div>
+        <p>Against OKVIS2-X (causal) on the same routes: <span class="js-ow">11</span> wins, <span class="js-ot">10</span> ties, <span class="js-ol">17</span> losses. <span class="js-cp">1</span> of <span class="js-cn">12</span> pre-registered claims passed on the unseen routes. Every route, with its disclosures, is on the <a href="results.html">results</a> page.</p>
+
+        <h2 id="limits">Limitations</h2>
+        <ul class="ticks">
+          <li>Not more accurate than ORB-SLAM3 or OKVIS2-X on our board.</li>
+          <li>The engine was frozen with kill test K14 failed on two routes (madmax_E0, kitti_02); the board ran on its twin build with identical engine code.</li>
+          <li>Robustness: on 2 of the 38 unseen routes a replay attempt crashed or hung, and 4 failed the unsupported-frames check.</li>
+          <li>One machine: all timings come from one desktop with an RTX 5090. The embedded port is not done.</li>
+          <li>Some datasets' ground truth has known faults (MADMAX heading, Rosario position-only, 4Seasons scale); these affect every system scored.</li>
+          <li>Our own OAK-D-Lite routes have no ground truth: latency, drops and visual inspection only.</li>
+        </ul>
+
+        <h2 id="cite">Citation</h2>
+        <p>The paper is not released yet. Until it is, please cite the software:</p>
+        <div class="code"><button class="copy" type="button">Copy</button><pre><code>@software{xclean2026,
+  title        = {xclean: real-time stereo visual-inertial SLAM},
+  author       = {{Necessity Robotics}},
+  year         = {2026},
+  url          = {https://github.com/necessityrobotics/xclean},
+  license      = {Apache-2.0}
+}</code></pre></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+</body>
+</html>

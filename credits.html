@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Data credits · Necessity Robotics</title>
+  <meta name="description" content="Datasets, licences and software credits for the Necessity Robotics site, the xclean maps and the xclean benchmark.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script type="module" src="js/site.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="head">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="xclean.html">xclean</a>
+      <a href="results.html">Results</a>
+      <a href="maps.html">Maps</a>
+      <a href="paper.html">Paper</a>
+      <a href="credits.html" aria-current="page">Data credits</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <p class="eyebrow">Data credits and licences</p>
+      <h1>Whose data, under which terms.</h1>
+      <p class="lead">Our results stand on public datasets made by other people. This page credits them, says what we publish from each, and lists the software this site uses.</p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="wrap doc cred">
+      <aside class="toc" aria-label="On this page">
+        <span class="label">On this page</span>
+        <a href="#maps">Maps on this site</a><a href="#benchmark">Benchmark datasets</a><a href="#package">Inside xclean</a><a href="#baselines">Baseline systems</a><a href="#software">Site software</a><a href="#privacy">Privacy</a>
+      </aside>
+      <div class="prose">
+        <h2 id="maps">Maps on this site</h2>
+        <p>The 3-D maps are published under <strong>CC BY 4.0</strong>. We publish maps only from data we may share.</p>
+        <div class="panel">
+          <h4>The Rosario Dataset</h4>
+          <p>CIFASIS-CONICET, Argentina. <a href="https://robot.cifasis-conicet.gov.ar/">robot.cifasis-conicet.gov.ar</a>. Licence: CC BY 4.0.</p>
+          <p>Pire, T., Mujica, M., Civera, J. and Kofman, E. "The Rosario dataset: Multisensor data for localization and mapping in agricultural environments." <em>The International Journal of Robotics Research</em>, 2019.</p>
+          <p><strong>Credit on every Rosario map:</strong> "Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses." The dataset's authors do not endorse our maps.</p>
+        </div>
+        <div class="panel">
+          <h4>Our OAK-D-Lite recordings</h4>
+          <p>Recorded by Necessity Robotics with its own OAK-D-Lite camera. Maps released under CC BY 4.0: "3-D map by Necessity Robotics (xclean)."</p>
+        </div>
+
+        <h2 id="benchmark">Benchmark datasets (numbers only)</h2>
+        <p>We report our accuracy numbers on these datasets. We publish no images, maps or films made from them.</p>
+        <div class="table-wrap"><table class="t">
+          <thead><tr><th>Dataset</th><th>Reference</th><th>Licence</th></tr></thead>
+          <tbody>
+            <tr><td>EuRoC MAV</td><td class="wrapcell">Burri, M. et al. "The EuRoC micro aerial vehicle datasets." IJRR, 2016. ETH Zurich.</td><td class="wrapcell">See the dataset's ETH Research Collection record.</td></tr>
+            <tr><td>KITTI odometry</td><td class="wrapcell">Geiger, A., Lenz, P., Stiller, C. and Urtasun, R. "Vision meets robotics: The KITTI dataset." IJRR, 2013.</td><td class="wrapcell">CC BY-NC-SA 3.0 (non-commercial)</td></tr>
+            <tr><td>4Seasons</td><td class="wrapcell">Wenzel, P. et al. "4Seasons: A cross-season dataset for multi-weather SLAM in autonomous driving." GCPR, 2020.</td><td class="wrapcell">CC BY-NC-SA 4.0 (non-commercial)</td></tr>
+            <tr><td>MADMAX</td><td class="wrapcell">Meyer, L. et al. "The MADMAX data set for visual-inertial rover navigation on Mars." Journal of Field Robotics, 2021. DLR.</td><td class="wrapcell">No licence named by its authors.</td></tr>
+            <tr><td>Rosario</td><td class="wrapcell">Pire, T. et al., IJRR 2019 (above).</td><td class="wrapcell">CC BY 4.0</td></tr>
+            <tr><td>Rosario v2</td><td class="wrapcell">CIFASIS-CONICET (one route on the board).</td><td class="wrapcell">See the dataset's official page.</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 id="package">Inside the xclean package</h2>
+        <div class="panel">
+          <h4>TartanAir (place-recognition vocabulary)</h4>
+          <p>xclean's ORB vocabulary was built from 1,318 TartanAir images; the file holds only cluster centres, no image data.</p>
+          <p>Wang, W. et al. "TartanAir: A dataset to push the limits of visual SLAM." IROS, 2020. Carnegie Mellon University, AirLab. <a href="https://theairlab.org/tartanair-dataset/">theairlab.org/tartanair-dataset</a>. Licence: CC BY 4.0. Its authors do not endorse xclean.</p>
+        </div>
+        <p class="muted">xclean's runtime dependencies (NumPy, SciPy, Numba, CuPy, OpenCV, depthai, the NVIDIA CUDA libraries and others) are installed separately and keep their own licences; <code>THIRD_PARTY.md</code> in the repository lists each one.</p>
+
+        <h2 id="baselines">Baseline systems</h2>
+        <p>We ran these systems separately to compare against. None of their code is part of xclean.</p>
+        <ul class="ticks">
+          <li><strong>ORB-SLAM3</strong>: Campos, C. et al. "ORB-SLAM3: An accurate open-source library for visual, visual-inertial and multi-map SLAM." IEEE T-RO, 2021. GPLv3.</li>
+          <li><strong>OKVIS2-X</strong>: Boche, S., Jung, J., Barbas Laina, S. and Leutenegger, S. IEEE T-RO, 2025. BSD-3-Clause.</li>
+        </ul>
+
+        <h2 id="software">Software on this site</h2>
+        <div class="table-wrap"><table class="t">
+          <thead><tr><th>Library</th><th>Version</th><th>Licence</th><th>Used for</th></tr></thead>
+          <tbody>
+            <tr><td>three.js</td><td class="num">0.186.1</td><td>MIT, © 2010-2026 three.js authors</td><td>3-D rendering</td></tr>
+            <tr><td>Spark (@sparkjsdev/spark)</td><td class="num">2.3.1</td><td>MIT, © 2025 World Labs Technologies, Inc.</td><td>Gaussian-splat rendering</td></tr>
+            <tr><td>fflate (bundled in Spark)</td><td class="num">0.8</td><td>MIT, © Arjun Barrett</td><td>decompression</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted" style="margin-top:14px">The libraries are served from this site, unmodified, with their licence files in <code>vendor/</code>. Text uses your device's system fonts; no font is downloaded. The map files are hosted on Hugging Face.</p>
+
+        <h2 id="privacy">Privacy</h2>
+        <p>This site sets no cookies, runs no analytics and loads no third-party trackers. Map files (the 3-D renders, films and point clouds) are fetched from Hugging Face, where they are hosted: by the landing page once it is idle, and by the 3-D viewer when you open a map.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+</body>
+</html>
