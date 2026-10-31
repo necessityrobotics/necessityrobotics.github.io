@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: dark;
-  /* surfaces: black (owner 2026-10-31); panels sit a hair above */
+  /* surfaces: black; panels sit a hair above */
   --bg: #000000;
   --bg-1: #0a0a0a;        /* band */
   --bg-2: #111111;        /* panel */
@@ -136,6 +136,8 @@ pre .c { color: var(--fg-3); }
   color: var(--fg); background: rgba(0,0,0,.4); text-decoration: none; font: 600 16.5px/1 var(--sans); letter-spacing: 0; transition: border-color .2s, background .2s, color .2s; cursor: pointer; }
 .btn:hover { border-color: var(--fg); color: var(--fg); background: rgba(255,255,255,.06); }
 .btn--ion { background: var(--ion); border-color: var(--ion); color: var(--ink); }
+.btn--static { cursor: default; }
+.btn--static:hover { background: var(--ion); border-color: var(--ion); }
 .btn--ion:hover { background: #a6deff; border-color: #a6deff; color: var(--ink); }
 .btn .arr { transition: transform .25s var(--ease); }
 .btn:hover .arr { transform: translateX(3px); }
@@ -245,3 +247,6 @@ dl.kv dd { margin: 0; color: var(--fg); }
 /* licence badge */
 .lic { display: inline-flex; white-space: nowrap; align-items: center; gap: 8px; font: 500 13px/1 var(--mono); letter-spacing: .04em; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line-2); color: var(--fg); background: rgba(0,0,0,.75); }
 .lic::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ion); }
+.specs.specs--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 960px) { .specs.specs--3 { grid-template-columns: minmax(0, 1fr); } .specs.specs--3 .spec + .spec { padding-left: 0; border-left: 0; } }
+.note.robust { margin-top: 28px; }

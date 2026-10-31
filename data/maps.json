@@ -1,11 +1,11 @@
 {
- "generated": "2026-10-31 03:23",
+ "generated": "2026-10-31 06:37",
  "hero": "oak_161834",
  "note": "Built from each staged map's ATTRIBUTION.json, manifest.json, traj.json, points.json, splats_lite.json and film/film.json; path length = sum of xclean keyframe-to-keyframe distances in traj.json.",
  "maps": [
   {
    "id": "oak_161834",
-   "title": "Street drive",
+   "title": "Street ride",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_161834",
@@ -14,8 +14,8 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from our live SLAM run on our OAK-D-Lite (no ground truth exists for this route). Where the car drives the same roads twice, the two passes are not checked against ground truth, so some surfaces may appear doubled or soft; our loop closures moved the second circuit by up to 9.3 m.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay of our OAK-D-Lite recording (no ground truth exists for this route). Where the route passes the same roads twice, the two passes are not checked against ground truth, so some surfaces may appear doubled or soft; our loop closures moved the second circuit by up to 9.3 m.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1873,
     "duration_s": 199.5,
@@ -45,43 +45,43 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 660,
-    "keyframes.json": 18748,
-    "manifest.json": 3390,
+    "ATTRIBUTION.json": 779,
+    "keyframes.json": 18705,
+    "manifest.json": 3388,
     "points.bin": 1629719,
-    "points.json": 1475,
+    "points.json": 1472,
     "preview.jpg": 124442,
     "splats.spz": 34909857,
-    "splats_lite.json": 1280,
+    "splats_lite.json": 976,
     "splats_lite.spz": 10667507,
     "thumb.jpg": 27748,
-    "traj.json": 137812,
+    "traj.json": 137716,
     "film/film.jpg": 72757,
-    "film/film.json": 1584,
+    "film/film.json": 830,
     "film/film.mp4": 3478381,
     "film/film.webm": 1412467,
     "film/film.webp": 29284,
     "full/splats.ply": 208000529
    },
    "keyframe_images": 80,
-   "bytes_total": 261935658,
+   "bytes_total": 261934575,
    "source_sha1": {
-    "manifest.json": "f4df579df81d6eecfaf69a05aa5566044e5f7a6f"
+    "manifest.json": "2556db8346ed617449e8623fe67496ec1767260f"
    }
   },
   {
    "id": "oak_160543",
-   "title": "Street drive",
+   "title": "Park walk",
    "place": "India",
-   "platform": "OAK-D-Lite, our own recording",
+   "platform": "OAK-D-Lite, our own recording (walking)",
    "board_route": "oak_20260329_160543",
    "source": "Recorded by Necessity Robotics with its own OAK-D-Lite camera.",
    "own_data": true,
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: 3 place(s) driven or flown twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 2632,
     "duration_s": 319.2,
@@ -111,33 +111,33 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 603,
-    "keyframes.json": 18631,
-    "manifest.json": 3392,
+    "ATTRIBUTION.json": 716,
+    "keyframes.json": 18588,
+    "manifest.json": 3390,
     "points.bin": 8517453,
-    "points.json": 1477,
+    "points.json": 1474,
     "preview.jpg": 196030,
     "splats.spz": 49003837,
-    "splats_lite.json": 1286,
+    "splats_lite.json": 982,
     "splats_lite.spz": 12323225,
     "thumb.jpg": 35977,
-    "traj.json": 186646,
+    "traj.json": 186541,
     "film/film.jpg": 195118,
-    "film/film.json": 1578,
+    "film/film.json": 826,
     "film/film.mp4": 3964906,
     "film/film.webm": 2050459,
     "film/film.webp": 120646,
     "full/splats.ply": 281487865
    },
    "keyframe_images": 80,
-   "bytes_total": 360377116,
+   "bytes_total": 360376020,
    "source_sha1": {
-    "manifest.json": "2fc37fed4fd7db2c02dd2a0634e2c496727bc483"
+    "manifest.json": "b9dc6df5d07ca74d579bec3d95f2d9aede7fc74b"
    }
   },
   {
    "id": "oak_164002",
-   "title": "Street recording",
+   "title": "Outdoor route",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_20260327_164002",
@@ -146,8 +146,8 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: 4 place(s) driven or flown twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 4 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1117,
     "duration_s": 116.6,
@@ -177,33 +177,33 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 603,
-    "keyframes.json": 18715,
-    "manifest.json": 3390,
+    "ATTRIBUTION.json": 716,
+    "keyframes.json": 18672,
+    "manifest.json": 3388,
     "points.bin": 1953903,
-    "points.json": 1479,
+    "points.json": 1476,
     "preview.jpg": 123386,
     "splats.spz": 35608000,
-    "splats_lite.json": 1282,
+    "splats_lite.json": 978,
     "splats_lite.spz": 10938590,
     "thumb.jpg": 27034,
-    "traj.json": 82200,
+    "traj.json": 82095,
     "film/film.jpg": 102085,
-    "film/film.json": 1581,
+    "film/film.json": 829,
     "film/film.mp4": 5549806,
     "film/film.webm": 2445306,
     "film/film.webp": 44938,
     "full/splats.ply": 207999385
    },
    "keyframe_images": 80,
-   "bytes_total": 266155711,
+   "bytes_total": 266154615,
    "source_sha1": {
-    "manifest.json": "e7324b9fbb71b9d40d4e5e1ec48a45507c86a247"
+    "manifest.json": "d8636bea999b39a01267a3e7728ef96a04353d77"
    }
   },
   {
    "id": "oak_164424",
-   "title": "Street recording",
+   "title": "Outdoor route",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_20260327_164424",
@@ -212,8 +212,8 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: V0.5. Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs); this route has no ground truth. During that run, 8 of the 4,068 camera frames were not published by the live stream, so the map is built from the 4,060 that were. Some surfaces may look soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1148,
     "duration_s": 135.7,
@@ -243,43 +243,43 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 532,
-    "keyframes.json": 18749,
-    "manifest.json": 3390,
+    "ATTRIBUTION.json": 753,
+    "keyframes.json": 18706,
+    "manifest.json": 3388,
     "points.bin": 2608788,
-    "points.json": 1479,
+    "points.json": 1476,
     "preview.jpg": 162525,
     "splats.spz": 35071876,
-    "splats_lite.json": 1280,
+    "splats_lite.json": 976,
     "splats_lite.spz": 10685157,
     "thumb.jpg": 34967,
-    "traj.json": 84638,
+    "traj.json": 84533,
     "film/film.jpg": 114271,
-    "film/film.json": 1581,
+    "film/film.json": 829,
     "film/film.mp4": 4054601,
     "film/film.webm": 1893782,
     "film/film.webp": 54152,
     "full/splats.ply": 208000321
    },
    "keyframe_images": 80,
-   "bytes_total": 264292780,
+   "bytes_total": 264291792,
    "source_sha1": {
-    "manifest.json": "9fbab5ae25297d43db5b85d9b6e38f93a9923ac8"
+    "manifest.json": "caf374b62fa1de3b6b9f81cc9c0bffcee459090e"
    }
   },
   {
    "id": "oak_161206",
-   "title": "Street recording",
+   "title": "Park walk",
    "place": "India",
-   "platform": "OAK-D-Lite, our own recording",
+   "platform": "OAK-D-Lite, our own recording (walking)",
    "board_route": "oak_161206",
    "source": "Recorded by Necessity Robotics with its own OAK-D-Lite camera.",
    "own_data": true,
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: 3 place(s) driven or flown twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 2023,
     "duration_s": 271.5,
@@ -309,28 +309,28 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 603,
-    "keyframes.json": 18588,
-    "manifest.json": 3392,
+    "ATTRIBUTION.json": 716,
+    "keyframes.json": 18545,
+    "manifest.json": 3390,
     "points.bin": 11678618,
-    "points.json": 1485,
+    "points.json": 1482,
     "preview.jpg": 214015,
     "splats.spz": 37644274,
-    "splats_lite.json": 1291,
+    "splats_lite.json": 987,
     "splats_lite.spz": 10963139,
     "thumb.jpg": 38976,
-    "traj.json": 143532,
+    "traj.json": 143435,
     "film/film.jpg": 179322,
-    "film/film.json": 1583,
+    "film/film.json": 829,
     "film/film.mp4": 4192780,
     "film/film.webm": 2405364,
     "film/film.webp": 99684,
     "full/splats.ply": 216108681
    },
    "keyframe_images": 80,
-   "bytes_total": 285780288,
+   "bytes_total": 285779198,
    "source_sha1": {
-    "manifest.json": "78aaedd92cba571fee6868cd5c2ff68d06649bfd"
+    "manifest.json": "dc8a64a127bad159a725685667d4fb4a08019845"
    }
   },
   {
@@ -344,8 +344,8 @@
    "source_licence": "CC BY 4.0",
    "map_licence": "CC BY 4.0",
    "credit": "Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses.",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: at 3 place(s) the route passes twice, the two passes differ from the ground truth by up to 1.7 degrees in heading; passes are up to 3.73 m apart sideways. Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: at 3 place(s) the route passes twice, the heading between our two passes differs from the heading implied by the ground-truth positions by up to 1.7 degrees in heading; passes are up to 3.73 m apart sideways. Some surfaces may look doubled or soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1838,
     "duration_s": 444.9,
@@ -375,28 +375,28 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 1019,
-    "keyframes.json": 18649,
-    "manifest.json": 3392,
+    "ATTRIBUTION.json": 1194,
+    "keyframes.json": 18606,
+    "manifest.json": 3390,
     "points.bin": 6560424,
-    "points.json": 1465,
+    "points.json": 1462,
     "preview.jpg": 161636,
     "splats.spz": 40774252,
-    "splats_lite.json": 1283,
+    "splats_lite.json": 979,
     "splats_lite.spz": 12633848,
     "thumb.jpg": 31424,
-    "traj.json": 241102,
+    "traj.json": 240648,
     "film/film.jpg": 109639,
-    "film/film.json": 1577,
+    "film/film.json": 831,
     "film/film.mp4": 5092804,
     "film/film.webm": 2284537,
     "film/film.webp": 52482,
     "full/splats.ply": 207999697
    },
    "keyframe_images": 80,
-   "bytes_total": 277425980,
+   "bytes_total": 277424603,
    "source_sha1": {
-    "manifest.json": "fa6535d0c8d77f68a32e3df8dc11e748491fc1f5"
+    "manifest.json": "a738295de0c18d278b07f783979e875118f791a0"
    }
   },
   {
@@ -410,8 +410,8 @@
    "source_licence": "CC BY 4.0",
    "map_licence": "CC BY 4.0",
    "credit": "Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses.",
-   "limitation": "Camera poses come from our live SLAM run (the median of three board runs), not from ground truth. The map's pose check found: at 1 place(s) the route passes twice, the two passes differ from the ground truth by up to 1.1 degrees in heading; passes are up to 0.18 m apart sideways. Some surfaces may look doubled or soft.",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: at 1 place(s) the route passes twice, the heading between our two passes differs from the heading implied by the ground-truth positions by up to 1.1 degrees in heading; passes are up to 0.18 m apart sideways. Some surfaces may look doubled or soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 654,
     "duration_s": 194.6,
@@ -441,28 +441,28 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 1019,
-    "keyframes.json": 18461,
-    "manifest.json": 3390,
+    "ATTRIBUTION.json": 1194,
+    "keyframes.json": 18418,
+    "manifest.json": 3388,
     "points.bin": 5216625,
-    "points.json": 1470,
+    "points.json": 1467,
     "preview.jpg": 142353,
     "splats.spz": 38540920,
-    "splats_lite.json": 1283,
+    "splats_lite.json": 979,
     "splats_lite.spz": 11805216,
     "thumb.jpg": 28161,
-    "traj.json": 94042,
+    "traj.json": 93573,
     "film/film.jpg": 79818,
-    "film/film.json": 1570,
+    "film/film.json": 826,
     "film/film.mp4": 3202564,
     "film/film.webm": 1437001,
     "film/film.webp": 33730,
     "full/splats.ply": 207999593
    },
    "keyframe_images": 80,
-   "bytes_total": 269603880,
+   "bytes_total": 269602490,
    "source_sha1": {
-    "manifest.json": "a7694f8772285053f40a69f43b40e0c48afb4d46"
+    "manifest.json": "498bed2a53d20d99509b5110c6c7dd3ddc62945d"
    }
   },
   {
@@ -476,8 +476,8 @@
    "source_licence": "CC BY 4.0",
    "map_licence": "CC BY 4.0",
    "credit": "Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses.",
-   "limitation": "",
-   "engine_note": "Camera poses: xclean's live output from the median of its three final-board runs (frozen engine p13f4b), not ground truth.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check passed; the route visits no place twice, so there was no revisit to check. Some surfaces may look soft.",
+   "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 597,
     "duration_s": 164.8,
@@ -507,28 +507,28 @@
     "duration_s": 12.0
    },
    "files": {
-    "ATTRIBUTION.json": 701,
-    "keyframes.json": 18488,
-    "manifest.json": 3390,
+    "ATTRIBUTION.json": 1042,
+    "keyframes.json": 18445,
+    "manifest.json": 3389,
     "points.bin": 4642524,
-    "points.json": 1471,
+    "points.json": 1468,
     "preview.jpg": 141162,
     "splats.spz": 38859850,
-    "splats_lite.json": 1283,
+    "splats_lite.json": 979,
     "splats_lite.spz": 11899735,
     "thumb.jpg": 29165,
-    "traj.json": 112949,
+    "traj.json": 112480,
     "film/film.jpg": 89584,
-    "film/film.json": 1570,
+    "film/film.json": 826,
     "film/film.mp4": 3388832,
     "film/film.webm": 1651003,
     "film/film.webp": 39188,
     "full/splats.ply": 207999697
    },
    "keyframe_images": 80,
-   "bytes_total": 269988814,
+   "bytes_total": 269987591,
    "source_sha1": {
-    "manifest.json": "640d3edfd04bfe3a413c8fa9988378f1b533d491"
+    "manifest.json": "d7b2390ab1eed6bfcd2c8874c4d4407827a6d6c8"
    }
   }
  ]

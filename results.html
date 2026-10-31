@@ -26,7 +26,7 @@
       <a href="maps.html">Maps</a>
       <a href="paper.html">Paper</a>
       <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics" data-code-href>GitHub</a>
     </nav>
   </div>
 </header>
@@ -35,8 +35,8 @@
   <header class="phead">
     <div class="wrap">
       <p class="eyebrow">Results · final board, 2026-10-30</p>
-      <h1>Every run counted. Losses included.</h1>
-      <p class="lead"><span class="js-h" data-k="routes">72</span> routes, three live runs each at the sensor's real rate: <span class="js-h" data-k="runs">216</span> runs, scored on the pose xclean published at each frame. Rules were fixed before the runs.</p>
+      <h1>216 runs of record. Losses included.</h1>
+      <p class="lead"><span class="js-h" data-k="routes">72</span> routes, three live runs each at the sensor's real rate: <span class="js-h" data-k="runs">216</span> valid runs of record, scored on what xclean published live: latency over every frame, accuracy (ATE) at keyframe level on its map stream (LIVE-MAP). The rules were written down before the runs; the amendments made during the board are <a href="#prereg">listed below</a>.</p>
     </div>
   </header>
 
@@ -44,7 +44,7 @@
     <div class="wrap doc">
       <aside class="toc" aria-label="On this page">
         <span class="label">On this page</span>
-        <a href="#disclosures">Disclosures</a><a href="#latency">Latency</a><a href="#robustness">Robustness</a><a href="#accuracy">Accuracy</a><a href="#claims">Pre-registered claims</a><a href="#routes">Every route</a><a href="#definitions">Definitions</a><a href="#source">Source</a>
+        <a href="#disclosures">Disclosures</a><a href="#latency">Latency</a><a href="#robustness">Robustness</a><a href="#accuracy">Accuracy</a><a href="#imu">IMU use</a><a href="#claims">Pre-registered claims</a><a href="#routes">Every route</a><a href="#definitions">Definitions</a><a href="#source">Source</a>
       </aside>
       <div class="prose">
         <h2 id="disclosures" class="sr">Disclosures</h2>
@@ -53,7 +53,12 @@
           <ul>
             <li><strong>Most of our pre-registered claims did not pass.</strong> On the 38 unseen routes, <span class="js-claims-pass">1</span> of <span class="js-claims-n">12</span> claims passed. <a href="#claims">The full list</a>.</li>
             <li><strong>The engine was frozen with a failed kill test.</strong> <span class="js-k14"></span></li>
-            <li><strong>Robustness is not perfect.</strong> No run was lost on the 38 unseen routes, but on 2 of them a replay attempt crashed or hung, and 4 failed the unsupported-frames check.</li>
+            <li><strong>Runs of record, not every attempt.</strong> <span class="js-attempts"></span></li>
+            <li><strong>A first launch was set aside.</strong> <span class="js-launch1"></span></li>
+            <li><strong>The IMU was often not in use.</strong> In the final board it stayed in use to the end on only 50 of 216 runs (mostly EuRoC and 4Seasons); on MADMAX, Rosario and our own OAK-D-Lite recordings xclean's consistency check dropped or refused it, and KITTI has no IMU. <a href="#imu">Per dataset</a>.</li>
+            <li><strong>The protocol was amended during the board.</strong> No accuracy number of any board run was read before an amendment, but validity outcomes (void and incomplete runs, feeder timing) were read and drove 8.36 and 8.40-8.44. They are <a href="#prereg">listed below</a>.</li>
+            <li><strong>Robustness is not perfect.</strong> No run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung, and the unsupported-frames check passed on <span class="js-c3b-p">9</span>, failed on <span class="js-c3b-f">4</span> and is pending on <span class="js-c3b-n">25</span> (all MADMAX, whose ground truth has known faults).</li>
+            <li><strong>Some wins are against a failed baseline.</strong> <span class="js-flagged"></span> <a href="#forfeit">How forfeits are counted</a>.</li>
             <li><strong>Our runs were live, on a loaded desktop.</strong> <span class="js-load"></span> The other systems ran in other configurations, named beside each comparison.</li>
           </ul>
         </div>
@@ -66,13 +71,13 @@
           <div class="spec"><div class="v"><span class="js-h" data-k="p99">30.7</span><small>ms</small></div><div class="k">99th percentile</div></div>
         </div>
         <p class="note js-lat-rule"></p>
-        <p>The pre-registered real-time bars, which also judge drops and frame gaps per route, passed on <span class="js-c1">28 of 38</span> unseen routes. They failed mostly on the 30 Hz 4Seasons car routes, where the 95th percentile is about one frame period. Per-route latency is in <a href="#routes">the table</a>.</p>
+        <p>The pre-registered real-time bars, which also judge dropped frames and frame gaps per route, passed on <span class="js-c1">28 of 38</span> unseen routes. <span class="js-c1-why"></span> <span class="js-load2"></span> Per-route latency is in <a href="#routes">the table</a>.</p>
 
         <h2 id="robustness">Robustness</h2>
         <div class="specs specs--3">
-          <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs on the <span class="js-h" data-k="unseen">38</span> unseen routes</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs of record on the <span class="js-h" data-k="unseen">38</span> held-out routes</div></div>
           <div class="spec"><div class="v"><span class="js-ch-n">2</span><small>routes</small></div><div class="k">with a crashed or hung replay attempt</div></div>
-          <div class="spec"><div class="v"><span class="js-us-n">4</span><small>routes</small></div><div class="k">failed the unsupported-frames check</div></div>
+          <div class="spec"><div class="v"><span class="js-us-n">4</span><small>routes</small></div><div class="k">failed the unsupported-frames check; <span class="js-c3b-p">9</span> passed, <span class="js-c3b-n">25</span> pending</div></div>
         </div>
         <p class="note js-rob-note"></p>
 
@@ -80,20 +85,30 @@
         <p>Trajectory error (ATE, metres) per route. Against offline ORB-SLAM3 on the 38 unseen routes: <strong><span class="js-t-w">10</span> wins, <span class="js-t-t">2</span> ties, <span class="js-t-l">26</span> losses</strong>, every route in the table below. We do not claim to be more accurate than either system.</p>
         <dl class="kv cfg">
           <dt>xclean</dt><dd>live, causal, paced at the sensor's rate, on the desktop with its normal background load; 3 runs per route.</dd>
-          <dt>ORB-SLAM3</dt><dd>offline, untuned: one generic configuration per sensor type; 5 runs per route; its end-of-run trajectory.</dd>
-          <dt>OKVIS2-X</dt><dd>causal, unpaced; 1 run per route.</dd>
+          <dt>ORB-SLAM3</dt><dd>V1.0 (UZ-SLAMLab/ORB_SLAM3, commit 4452a3c), built on Windows with portability-only patches (headless, MSVC); tracking, mapping, loop-closing and optimiser code unmodified. Offline, untuned: one generic configuration per sensor type; 5 runs per route; its end-of-run trajectory.</dd>
+          <dt>OKVIS2-X</dt><dd>ethz-mrl/OKVIS2-X, commit 38043e4, built on Windows with Windows-port patches (build system, integer width, compiler shims); per our build notes, no patch changes its estimator, front end or dataset logic. Causal, unpaced; 1 run per route.</dd>
         </dl>
         <div class="tallies">
           <div class="panel"><span class="label">38 unseen routes</span><h4>vs ORB-SLAM3</h4><div class="tally js-tally" data-k="unseen_vs_orb3"></div><p class="js-bt"></p></div>
-          <div class="panel"><span class="label">38 unseen routes</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="unseen_vs_okvis2x"></div><p>A ratio band: within 5 % of theirs is a tie.</p></div>
+          <div class="panel"><span class="label">38 unseen routes</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="unseen_vs_okvis2x"></div><p>A ratio band: within 5 % of theirs is a tie. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level.</p></div>
           <div class="panel"><span class="label">All 67 routes with ground truth · report only</span><h4>vs ORB-SLAM3</h4><div class="tally js-tally" data-k="all_gt_vs_orb3"></div><p>Includes the routes we designed on.</p></div>
-          <div class="panel"><span class="label">All 67 routes with ground truth · report only</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="all_gt_vs_okvis2x"></div><p>Includes the routes we designed on.</p></div>
+          <div class="panel"><span class="label">All 67 routes with ground truth · report only</span><h4>vs OKVIS2-X</h4><div class="tally js-tally" data-k="all_gt_vs_okvis2x"></div><p>Includes the routes we designed on. Frame-level ATE, as pre-registered. <span class="js-okv-all"></span></p></div>
         </div>
         <p class="muted">ORB-SLAM3 verdict rule (the board's own): keyframe-level ATE on the time window both systems cover, after alignment; our 3 runs against its 5. If the two ranges overlap, the route is a tie. The headline is the 38 unseen routes; the full-board tallies are reported, never claimed.</p>
+        <p class="note" id="forfeit"><b>Lost runs and forfeits</b> (the board's rule, applied to both sides). A run is lost as defined <a href="#def-lost">below</a> for xclean; an ORB-SLAM3 run is lost when its final map is split into more than one map. A lost run leaves its system's ATE range. A system that lost most of its runs forfeits the route to one that did not. A diverged run (a wildly wrong scale) is not "lost": its ATE on the common window decides. <span class="js-forfeit-text"></span></p>
+
+        <h2 id="imu">IMU use</h2>
+        <p>xclean uses the IMU while a built-in consistency check (W1) accepts it, and otherwise continues as stereo visual odometry with loop closure. Over the 216 valid runs of record:</p>
+        <div class="table-wrap"><table class="t imu-t"><thead><tr><th>Dataset</th><th class="num">IMU in use to the end</th><th class="num">Dropped during the run</th><th class="num">Refused at start</th><th class="num">No IMU</th></tr></thead><tbody class="js-imu"></tbody></table></div>
+        <p class="note js-imu-note">Source: data/board.json on this site (runs[].imu of the final board).</p>
+        <p>Both baselines are visual-inertial systems. ORB-SLAM3 ran stereo-inertial where the dataset has an IMU, except on rosario_01, 02, 03 and 06, where its IMU start-up crashed on every run and it ran stereo-only, and on 1 of its 5 madmax_B0 runs; on KITTI, which has no IMU, it ran stereo. OKVIS2-X ran visual-inertial, with the IMU off on KITTI. Our accuracy comparisons are therefore mostly against visual-inertial configurations, while xclean ran without its IMU on most runs.</p>
 
         <h2 id="claims">Pre-registered claims</h2>
-        <p>Before the final runs we wrote down what we would claim, and the rule for each. A claim passes only if every route of the table is counted and passes. On the 38 unseen routes:</p>
+        <p>Before the final runs we wrote down what we would claim, and the rule for each, in a pre-registration document (<a href="#prereg">its fingerprint below</a>). A claim passes only if every route of the table is counted and passes. On the 38 unseen routes:</p>
         <div class="table-wrap"><table class="t claims"><thead><tr><th>Claim</th><th>Result</th><th>Measured</th></tr></thead><tbody class="js-claims"></tbody></table></div>
+        <h3 id="prereg">The pre-registration, and its amendments</h3>
+        <p class="js-prereg">The pre-registration document is published with the code release.</p>
+        <ul class="ticks js-amend"></ul>
 
       </div>
     </div>
@@ -127,15 +142,16 @@
           <tbody class="js-rows"><tr><td colspan="9">Loading the board…</td></tr></tbody>
         </table>
       </div>
-      <p class="note">ATE: median of the runs; below it the range (lowest – highest) when the runs differ, and the number of runs used. OKVIS2-X ratio: ours divided by OKVIS2-X's; above 1.05 means OKVIS2-X was more accurate. Latency: median of the runs' p50, with their p95 below. Flags: <span class="flag">crash/hang</span> a replay attempt crashed or hung; <span class="flag">unsupported</span> failed the unsupported-frames check; <span class="flag">pending</span> that check awaits a decision because the route's ground truth has known faults.</p>
+      <p class="note">ATE: median of the runs; below it the range (lowest – highest) when the runs differ, and the number of runs used. OKVIS2-X ratio: our frame-level ATE divided by OKVIS2-X's (both shown under the ratio); above 1.05 means OKVIS2-X was more accurate. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level. Latency: median of the runs' p50, with their p95 below. <span class="js-identical"></span> Flags: <span class="flag">crash/hang</span> a replay attempt crashed or hung; <span class="flag">unsupported</span> failed the unsupported-frames check; <span class="flag">pending</span> that check awaits a decision because the route's ground truth has known faults.</p>
 
       <h2 id="definitions">Definitions</h2>
       <dl class="kv defs">
-        <dt id="def-unseen">Unseen route</dt><dd>A route xclean had never been run on before the final board. 22 were never run; 16 more were sealed, their data never opened. Seen routes were used while building xclean or by earlier kill tests.</dd>
-        <dt id="def-lost">Lost run</dt><dd>A run in which more than 10 % of the frames have no published pose, or a state other than tracking, relocalised or initialising, or which ends in an unrecovered loss.</dd>
-        <dt id="def-continuity">Continuity</dt><dd>Every correction of the published map pose is flagged, and the odometry stream is never corrected (claim C2).</dd>
+        <dt id="def-sets">Seen routes</dt><dd>The other 29 routes with ground truth: <em>design</em> routes, used while building xclean, and routes <em>seen once</em> by one of the earlier pre-registered kill tests (K12-e, the IMU-safety test; K13, the loop-closure test) or by the last one (K14), each run once before the board.</dd>
+          <dt id="def-unseen">Unseen (held-out) route</dt><dd>A route held out from xclean's development: 22 "unsealed" and 16 "sealed" (held out under an earlier charter). None was used to build xclean; 10 of the 22 unsealed routes were run in the set-aside first launch (see Disclosures), whose results were never read. Our previous system had run on 36 of the 38; claim C5 compares against it. About these routes we looked only at file metadata before the final runs (paths, frame and IMU counts, durations, flag codes); no ground-truth trajectory and no xclean result was read. Two accidental exposures to other systems' numbers are disclosed in the pre-registration: the paper 1 v3 board record (another system's and ORB-SLAM3's ATE ranges) of the sealed route 4s_20201222_115, and an older system's usability values on v2_01_easy; no rule depends on them. Seen routes were used while building xclean or by earlier kill tests.</dd>
+        <dt id="def-lost">Lost run</dt><dd>A run in which more than 10 % of the frames have no published map-stream pose, or a state other than tracking, relocalised or initialising, or are degraded; or which ends in an unrecovered loss (pre-registration 2.6). The board's accuracy rule uses the same definition through its export: such a run is marked as more than 10 % coasted.</dd>
+        <dt id="def-continuity">Continuity</dt><dd>xclean publishes two streams: the odometry stream (LIVE-ODOM), which loop closure never corrects, and the map stream (LIVE-MAP), which carries the loop corrections. Claim C2 passes on a route when, in every run, every jump of the map stream is flagged or also appears in the odometry stream; it passed on <span class="js-c2">37 of 38</span> unseen routes. The odometry stream itself had no jump at all in every run on <span class="js-c2-odom">6</span> of the 38.</dd>
         <dt id="def-unsupported">Unsupported frames</dt><dd>Frames with no published pose, a state other than tracking, or a two-second motion that disagrees with ground truth, as a share of the run. The bar is 2 % per route.</dd>
-        <dt id="def-ate">ATE</dt><dd>Absolute trajectory error in metres, at keyframe level, on the time window both systems cover, after rigid alignment to ground truth.</dd>
+        <dt id="def-ate">ATE</dt><dd>Absolute trajectory error in metres, at keyframe level on xclean's live map stream (LIVE-MAP at the keyframe stamps), on the time window both systems cover, after rigid alignment to ground truth. This is the ATE in the table and in the ORB-SLAM3 comparison. The OKVIS2-X comparison (claim C6) uses frame-level ATE instead, as pre-registered: each system's per-frame poses, each held until the next frame, scored by the same live scorer.</dd>
         <dt id="def-latency">Latency</dt><dd>Recorder receipt of the loop-corrected pose minus the release of its frame, over every frame; a dropped frame counts as infinitely late.</dd>
       </dl>
 
@@ -147,7 +163,7 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
 </body>

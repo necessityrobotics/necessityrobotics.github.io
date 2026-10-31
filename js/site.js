@@ -1,6 +1,15 @@
 // Necessity Robotics site shell: header state, phone menu, scroll reveals. Header and footer are plain HTML in every
 // page (readable without JS); this file only adds behaviour.
+import { CODE_PUBLIC, LINKS } from './config.js';
 document.documentElement.classList.add('js');
+
+// the code-release switch (config.js CODE_PUBLIC): static HTML ships the "coming soon" state
+if (CODE_PUBLIC) {
+  document.querySelectorAll('[data-code-when="pending"]').forEach(e => { e.hidden = true; });
+  document.querySelectorAll('[data-code-when="public"]').forEach(e => { e.hidden = false; });
+  document.querySelectorAll('a[data-code-href]').forEach(a => { a.href = LINKS.repo; });
+  document.querySelectorAll('[data-code-repo]').forEach(e => { e.textContent = LINKS.repo; });
+}
 export const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const head = document.querySelector('.head');

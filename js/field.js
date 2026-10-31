@@ -1,4 +1,5 @@
-// The "stars": a sparse sample of xclean's own SLAM map points (data/starfield.json, built by tools/build_site_data.py)
+// The "stars": a sparse sample of a map's points (stereo depth of xclean's keyframes, placed with xclean's live poses;
+// data/starfield.json, built by tools/build_site_data.py)
 // drawn on a 2-D canvas in perspective, slowly orbiting, with xclean's live trajectory drawing in as one thin ion line.
 // Cheap on every device (a few thousand dots per frame); pauses off-screen and in hidden tabs; one still frame under
 // prefers-reduced-motion.

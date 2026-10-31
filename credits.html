@@ -24,7 +24,7 @@
       <a href="maps.html">Maps</a>
       <a href="paper.html">Paper</a>
       <a href="credits.html" aria-current="page">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics" data-code-href>GitHub</a>
     </nav>
   </div>
 </header>
@@ -55,15 +55,15 @@
         </div>
         <div class="panel">
           <h4>Our OAK-D-Lite recordings</h4>
-          <p>Recorded by Necessity Robotics with its own OAK-D-Lite camera. Maps released under CC BY 4.0: "3-D map by Necessity Robotics (xclean)."</p>
+          <p>Recorded by Necessity Robotics with its own OAK-D-Lite camera (five routes, all mapped here). Maps released under CC BY 4.0: "3-D map by Necessity Robotics (xclean)."</p>
         </div>
 
         <h2 id="benchmark">Benchmark datasets (numbers only)</h2>
-        <p>We report our accuracy numbers on these datasets. We publish no images, maps or films made from them.</p>
+        <p>We report our accuracy numbers on these datasets. Except for Rosario (CC BY 4.0, above), we publish no images, maps or films made from them.</p>
         <div class="table-wrap"><table class="t">
           <thead><tr><th>Dataset</th><th>Reference</th><th>Licence</th></tr></thead>
           <tbody>
-            <tr><td>EuRoC MAV</td><td class="wrapcell">Burri, M. et al. "The EuRoC micro aerial vehicle datasets." IJRR, 2016. ETH Zurich.</td><td class="wrapcell">See the dataset's ETH Research Collection record.</td></tr>
+            <tr><td>EuRoC MAV</td><td class="wrapcell">Burri, M. et al. "The EuRoC micro aerial vehicle datasets." IJRR, 2016. ETH Zurich.</td><td class="wrapcell">In Copyright – Non-Commercial Use Permitted (ETH Research Collection, checked 2026-10-30)</td></tr>
             <tr><td>KITTI odometry</td><td class="wrapcell">Geiger, A., Lenz, P., Stiller, C. and Urtasun, R. "Vision meets robotics: The KITTI dataset." IJRR, 2013.</td><td class="wrapcell">CC BY-NC-SA 3.0 (non-commercial)</td></tr>
             <tr><td>4Seasons</td><td class="wrapcell">Wenzel, P. et al. "4Seasons: A cross-season dataset for multi-weather SLAM in autonomous driving." GCPR, 2020.</td><td class="wrapcell">CC BY-NC-SA 4.0 (non-commercial)</td></tr>
             <tr><td>MADMAX</td><td class="wrapcell">Meyer, L. et al. "The MADMAX data set for visual-inertial rover navigation on Mars." Journal of Field Robotics, 2021. DLR.</td><td class="wrapcell">No licence named by its authors.</td></tr>
@@ -83,8 +83,8 @@
         <h2 id="baselines">Baseline systems</h2>
         <p>We ran these systems separately to compare against. None of their code is part of xclean.</p>
         <ul class="ticks">
-          <li><strong>ORB-SLAM3</strong>: Campos, C. et al. "ORB-SLAM3: An accurate open-source library for visual, visual-inertial and multi-map SLAM." IEEE T-RO, 2021. GPLv3.</li>
-          <li><strong>OKVIS2-X</strong>: Boche, S., Jung, J., Barbas Laina, S. and Leutenegger, S. IEEE T-RO, 2025. BSD-3-Clause.</li>
+          <li><strong>ORB-SLAM3</strong> V1.0 (UZ-SLAMLab/ORB_SLAM3, commit 4452a3c, 2022-02-10), built on Windows with portability-only patches (headless, MSVC); tracking, mapping, loop-closing and optimiser code unmodified: Campos, C. et al. "ORB-SLAM3: An accurate open-source library for visual, visual-inertial and multi-map SLAM." IEEE T-RO, 2021. GPLv3.</li>
+          <li><strong>OKVIS2-X</strong> (ethz-mrl/OKVIS2-X, commit 38043e4, 2026-03-17), built on Windows with Windows-port patches; per our build notes, no patch changes its estimator, front end or dataset logic: Boche, S. et al. "OKVIS2-X: Open Keyframe-based Visual-Inertial SLAM Configurable with Dense Depth or LiDAR, and GNSS." Accepted to IEEE T-RO (arXiv:2510.04612, 2025). BSD-3-Clause.</li>
         </ul>
 
         <h2 id="software">Software on this site</h2>
@@ -107,7 +107,7 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
 </body>

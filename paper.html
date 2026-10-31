@@ -25,7 +25,7 @@
       <a href="maps.html">Maps</a>
       <a href="paper.html" aria-current="page">Paper</a>
       <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean">GitHub</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics" data-code-href>GitHub</a>
     </nav>
   </div>
 </header>
@@ -35,7 +35,7 @@
     <div class="wrap">
       <p class="eyebrow">Technical paper · in preparation</p>
       <h1>xclean, scored on what it publishes live.</h1>
-      <p class="lead">A stereo visual-inertial SLAM system, and an evaluation that scores the pose a robot would have received at each frame, not a trajectory refined after the run.</p>
+      <p class="lead">A stereo visual-inertial SLAM system, and an evaluation that scores what it published live: latency at every frame, accuracy at its keyframes, never a trajectory refined after the run.</p>
       <div class="status-line"><span class="chip chip--warn">Not yet released</span><span class="chip">Authors: to be announced</span><span class="chip">Final numbers: board of 2026-10-30</span></div>
     </div>
   </header>
@@ -48,7 +48,7 @@
       </aside>
       <div class="prose">
         <h2 id="summary">Summary</h2>
-        <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline, and we score it on exactly what it publishes live: runs paced at the sensors' real rate, every frame's pose as published, rules fixed before the runs. On a final board of 72 routes and 216 live runs, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop GPU, and no run was lost on the 38 routes it had not run before. It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
+        <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline. It uses the IMU while a built-in consistency check accepts it and otherwise runs as stereo visual odometry with loop closure (the IMU stayed in use to the end on 50 of 216 board runs). We score it on exactly what it publishes live: runs paced at the sensors' real rate and the poses it published live, with rules written down before the runs (amendments made during the board are disclosed). On a final board of 72 routes and 216 live runs, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop GPU, and no run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a set-aside first launch whose results were never read) (robustness was not perfect: see the limitations). It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
         <p class="muted">This page is a summary. The full paper is being revised to the final board; until it is released, the numbers here and on the <a href="results.html">results</a> page are the reference.</p>
 
         <h2 id="why">Why score the live output</h2>
@@ -59,7 +59,7 @@
           <li><strong>Front end.</strong> Stereo feature tracking on the GPU, with sparse stereo matching for depth.</li>
           <li><strong>Association by map matching.</strong> Features are matched against the local map, not only the previous frame.</li>
           <li><strong>Estimator.</strong> A tightly coupled visual-inertial sliding-window solve on the GPU; each frame's pose comes from a solve that contains that frame.</li>
-          <li><strong>IMU.</strong> Initialisation, an online trust watchdog and an online camera-IMU clock-offset estimate.</li>
+          <li><strong>IMU.</strong> Initialisation, an online consistency check (the watchdog that can drop or refuse the IMU) and an online camera-IMU clock-offset estimate. xclean is a stereo visual-inertial SLAM system: it uses the IMU while a built-in consistency check accepts it, and otherwise continues as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs (mostly EuRoC and 4Seasons). On MADMAX, Rosario and our own OAK-D-Lite recordings the check dropped or refused it. KITTI has no IMU. <a href="results.html#imu">Per dataset</a>.</li>
           <li><strong>Full SLAM.</strong> Loop closure with a global correction applied live, relocalisation, and map reuse.</li>
           <li><strong>One configuration.</strong> One frozen build ran every route on the board.</li>
           <li><strong>Maps.</strong> 3-D Gaussian-splat maps are built afterwards from the images and xclean's live poses (<a href="maps.html">maps</a>).</li>
@@ -68,16 +68,16 @@
         <h2 id="protocol">Live evaluation protocol</h2>
         <ul class="ticks">
           <li><strong>Harness.</strong> Frames and IMU samples are released at their recorded timestamps; the system never sees data newer than what was released; every published pose is recorded by a separate process.</li>
-          <li><strong>Live scorer.</strong> It scores the pose stream as published, every frame, with no run excluded.</li>
-          <li><strong>Bars fixed in advance.</strong> Latency, drops, continuity, robustness, accuracy and resources, each with a written pass rule.</li>
-          <li><strong>Kill tests and unseen routes.</strong> Each design step was decided by a pre-registered test. The final board's headline uses 38 routes xclean had never been run on.</li>
-          <li><strong>Baselines.</strong> ORB-SLAM3 offline and untuned (5 runs per route) and OKVIS2-X causal and unpaced (1 run per route), run separately; none of their code is part of xclean.</li>
+          <li><strong>Live scorer.</strong> It scores the poses as published live: latency over every frame, accuracy (ATE) at keyframe level on the map stream (LIVE-MAP). Each route has three valid runs of record; 8 void attempts were re-run (a first launch on a pre-fix build was set aside entirely; see the results page), and the rules for what voids a run and for incomplete attempts were amended during the board. Every attempt is in the board ledger.</li>
+          <li><strong>Bars written down in advance.</strong> Latency, drops, continuity, robustness, accuracy and resources, each with a written pass rule. The protocol was amended during the board: no accuracy number was read before any amendment, but validity outcomes (void and incomplete runs) were, and they drove 8.36 and 8.40-8.44. The amendments are listed on the <a href="results.html#prereg">results page</a>.</li>
+          <li><strong>Held-out routes.</strong> The final board's headline uses 38 routes held out from xclean's development. Ten of them were run in a first launch that was set aside with its results never read (see the results page), and our previous system had run on 36 of them (claim C5 compares against it).</li>
+          <li><strong>Baselines.</strong> ORB-SLAM3 offline and untuned (5 runs per route) and OKVIS2-X causal and unpaced (1 run per route), each built on Windows with portability-only patches and run separately; none of their code is part of xclean. ORB-SLAM3 ran stereo-inertial where the dataset has an IMU, except on rosario_01, 02, 03 and 06, where its IMU start-up crashed on every run and it ran stereo-only, and on 1 of its 5 madmax_B0 runs; on KITTI, which has no IMU, it ran stereo. OKVIS2-X ran visual-inertial, with the IMU off on KITTI. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level.</li>
         </ul>
 
         <h2 id="results">Results (final board)</h2>
         <div class="specs specs--3">
           <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median latency (p95 <span class="js-h" data-k="p95">26.4</span>, p99 <span class="js-h" data-k="p99">30.7</span> ms)</div></div>
-          <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">on <span class="js-h" data-k="routes">72</span> routes; <span class="js-h" data-k="lost">0</span> lost on the <span class="js-h" data-k="unseen">38</span> unseen</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">valid runs of record on <span class="js-h" data-k="routes">72</span> routes, 3 per route</div></div>
           <div class="spec"><div class="v"><span class="js-tw">10</span><small>/ <span class="js-tt">2</span> / <span class="js-tl">26</span></small></div><div class="k">wins / ties / losses vs offline ORB-SLAM3, 38 unseen routes</div></div>
         </div>
         <p>Against OKVIS2-X (causal) on the same routes: <span class="js-ow">11</span> wins, <span class="js-ot">10</span> ties, <span class="js-ol">17</span> losses. <span class="js-cp">1</span> of <span class="js-cn">12</span> pre-registered claims passed on the unseen routes. Every route, with its disclosures, is on the <a href="results.html">results</a> page.</p>
@@ -85,20 +85,27 @@
         <h2 id="limits">Limitations</h2>
         <ul class="ticks">
           <li>Not more accurate than ORB-SLAM3 or OKVIS2-X on our board.</li>
-          <li>The engine was frozen with kill test K14 failed on two routes (madmax_E0, kitti_02); the board ran on its twin build with identical engine code.</li>
-          <li>Robustness: on 2 of the 38 unseen routes a replay attempt crashed or hung, and 4 failed the unsupported-frames check.</li>
+          <li>The engine was frozen with its last pre-registered kill test (K14: no unflagged map jumps, and loop closure paying where routes revisit) failed on two routes (madmax_E0, kitti_02); on a third, kitti_09, no loop was fused and it passed only through the no-harm clause. The board ran on a twin build with identical engine code.</li>
+          <li>Robustness: no run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung; the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults).</li>
           <li>One machine: all timings come from one desktop with an RTX 5090. The embedded port is not done.</li>
-          <li>Some datasets' ground truth has known faults (MADMAX heading, Rosario position-only, 4Seasons scale); these affect every system scored.</li>
-          <li>Our own OAK-D-Lite routes have no ground truth: latency, drops and visual inspection only.</li>
+          <li>Some datasets have known faults: MADMAX's ground-truth heading departs from its own antenna track for long stretches, and Rosario v1's ground truth is position-only; these affect every system scored. On 4Seasons, the stereo images' metric scale disagrees with the RTK-GNSS ground truth per recording (by -11 to +5 %), for both stereo systems; the cause is open; it is not the ground truth (the camera calibration is suspected). (An earlier 2-11 % scale error was our own converter's bug, fixed on 2026-10-04 before any final score.)</li>
+          <li>Our own OAK-D-Lite routes were recorded on the camera and replayed in real time; they have no ground truth (latency, drops and visual inspection only). Live on-device testing of the release is pending.</li>
         </ul>
 
         <h2 id="cite">Citation</h2>
-        <p>The paper is not released yet. Until it is, please cite the software:</p>
-        <div class="code"><button class="copy" type="button">Copy</button><pre><code>@software{xclean2026,
+        <p>The paper is not released yet. Until it is, please cite the software<span data-code-when="pending"> (its repository goes public with the code release)</span>:</p>
+        <div class="code" data-code-when="pending"><button class="copy" type="button">Copy</button><pre><code>@software{xclean2026,
   title        = {xclean: real-time stereo visual-inertial SLAM},
   author       = {{Necessity Robotics}},
   year         = {2026},
-  url          = {https://github.com/necessityrobotics/xclean},
+  note         = {Open-source release (Apache-2.0) forthcoming},
+  url          = {https://necessityrobotics.github.io/xclean.html}
+}</code></pre></div>
+        <div class="code" data-code-when="public" hidden><button class="copy" type="button">Copy</button><pre><code>@software{xclean2026,
+  title        = {xclean: real-time stereo visual-inertial SLAM},
+  author       = {{Necessity Robotics}},
+  year         = {2026},
+  url          = {<span data-code-repo></span>},
   license      = {Apache-2.0}
 }</code></pre></div>
       </div>
@@ -108,7 +115,7 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/Pyassahu">Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
 </body>
