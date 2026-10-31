@@ -50,6 +50,10 @@ function ldd(key, text) { const x = LD[key]; if (!x) return; x.li.classList.add(
 function ldf(key, text) { const x = LD[key]; if (!x) return; x.li.classList.add('fail'); x.li.querySelector('.js-b').textContent = text || 'failed'; }
 
 // ---------------------------------------------------------------- catalogue panel
+const STXT = st => { let m = st.match(/^div (\d+)\/(\d+)$/); if (m) return `diverged in ${m[1]} of ${m[2]} runs`;
+  m = st.match(/^lost (\d+)\/(\d+)$/); if (m) return `lost tracking in ${m[1]} of ${m[2]} runs`; return st === 'partial span' ? 'covers only part of the route' : st; };
+const SETS = { design: 'design route, used during development', k12: 'seen once by an earlier kill test', k13: 'seen once by an earlier kill test', k14: 'seen once by the last kill test', unseen: 'unseen route', sealed: 'unseen route' };
+const VTXT = { win: 'xclean better', tie: 'tie', loss: 'ORB-SLAM3 better', win_forfeit: 'xclean, by forfeit', loss_forfeit: 'ORB-SLAM3, by forfeit', both_lost: 'both lost' };
 function catalogue(m, maps, board) {
   const s = m.stats;
   $('.js-cat-id').textContent = `Catalogue · ${m.id}`;
@@ -64,9 +68,9 @@ function catalogue(m, maps, board) {
     <dt>Keyframes</dt><dd>${fmtInt(s.keyframes)}</dd>
     <dt>Gaussians</dt><dd>${(s.gaussians / 1e6).toFixed(2)} M</dd>
     <dt>Points</dt><dd>${fmtInt(s.points)}</dd>
-    ${r?.gt && r.ours ? `<dt>Board ATE</dt><dd>${f3(r.ours.med)} m (ORB-SLAM3 ${f3(r.orb3.med)} m) · <a href="results.html#r-${esc(r.route)}">row</a></dd>` : ''}
+    ${r?.gt && r.ours ? `<dt>Board ATE</dt><dd>${f3(r.ours.med)} m (ORB-SLAM3 ${f3(r.orb3.med)} m${r.orb3.status ? `; ORB-SLAM3 ${esc(STXT(r.orb3.status))}` : ''}${r.orb3.stereo_only && r.orb3.stereo_only === r.orb3.draws ? '; ORB-SLAM3 ran stereo-only here: its IMU start-up crashed' : ''}): ${esc(VTXT[r.vs_orb3] || r.vs_orb3)}${SETS[r.group] ? ` (${esc(SETS[r.group])})` : ''} · <a href="results.html#r-${esc(r.route)}">row</a> · <a href="results.html#disclosures">K14 caveat</a></dd>` : ''}
     ${r && !r.gt ? `<dt>Latency</dt><dd>${r.lat_ms_p50.toFixed(1)} ms median · <a href="results.html#r-${esc(r.route)}">row</a></dd>` : ''}
-    <dt>Poses</dt><dd>xclean, live (median board run)</dd>`;
+    <dt>Poses</dt><dd>xclean's live output in a real-time (paced) replay: the median run of the three final-board runs</dd>`;
   $('.js-lim').textContent = m.limitation;
   $('.js-credit').textContent = m.credit;
   const sel = $('.js-map');
@@ -144,7 +148,7 @@ function play(on) {
   b.textContent = on ? 'Pause' : 'Play';
   b.setAttribute('aria-label', on ? 'Pause the run' : 'Play the run');
   if (on && S.t >= S.t1 - 0.05) setTime(S.t0);
-  // Play takes you into the camera's own POV (owner, 2026-10-31), unless you chose Free or Chase yourself
+  // Play takes you into the camera's own POV, unless you chose Free or Chase yourself
   if (on && S.cam === 'orbit' && !S.camChosen) setCam('pov');
   stage.invalidate();
 }

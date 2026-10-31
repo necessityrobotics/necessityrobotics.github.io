@@ -4,6 +4,11 @@
 // so the viewer can stream points.bin and the splats from a github.io page.
 // Development: tools/serve.py mounts the staged assets folder at /assets/ on 127.0.0.1.
 // To test the production host from a local preview, open any page with ?assets=prod.
+// RELEASE SWITCH (the only one): set to true on the day github.com/necessityrobotics/xclean goes public.
+// The pages ship in the "coming soon" state; site.js swaps every [data-code-when] element and every [data-code-href]
+// link when this is true, and fills [data-code-repo] with the repo URL. The repo URL lives only here.
+export const CODE_PUBLIC = false;
+
 export const ASSET_BASE_PROD = 'https://huggingface.co/datasets/Pyassahu/xclean-maps/resolve/main';
 export const ASSET_BASE_DEV = '/assets';
 
@@ -21,7 +26,6 @@ export function asset(mapId, file) {
 export const LINKS = {
   repo: 'https://github.com/necessityrobotics/xclean',
   github: 'https://github.com/necessityrobotics',
-  hf: 'https://huggingface.co/Pyassahu',
   maps: 'https://huggingface.co/datasets/Pyassahu/xclean-maps',
   email: 'necessityrobotics@gmail.com',
 };

@@ -4,6 +4,18 @@ import { asset } from './config.js';
 
 const [M, B] = await Promise.all([getJSON('data/maps.json'), getJSON('data/board.json').catch(() => null)]);
 const route = id => B?.rows.find(r => r.route === id);
+// every verdict code of data/board.json (tools/build_site_data.py VERDICT)
+export function statusText(st) {
+  if (!st) return '';
+  let m = st.match(/^div (\d+)\/(\d+)$/); if (m) return `diverged in ${m[1]} of ${m[2]} runs`;
+  m = st.match(/^lost (\d+)\/(\d+)$/); if (m) return `lost tracking in ${m[1]} of ${m[2]} runs`;
+  return st === 'partial span' ? 'trajectory covers only part of the route' : st;
+}
+const SETS = { design: 'design route, used during development', k12: 'seen once by an earlier kill test', k13: 'seen once by an earlier kill test', k14: 'seen once by the last kill test', unseen: 'unseen route', sealed: 'unseen route' };
+function verdictText(v, st) {
+  return { win: 'xclean better', tie: 'a tie', loss: 'ORB-SLAM3 better', both_lost: 'both lost the route',
+    win_forfeit: `xclean, by forfeit (ORB-SLAM3 ${statusText(st)})`, loss_forfeit: 'ORB-SLAM3, by forfeit (xclean lost tracking)' }[v] || v;
+}
 const f3 = x => (x < 10 ? x.toFixed(3) : x.toFixed(2));
 const dur = s => `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s`;
 
@@ -13,12 +25,12 @@ function plate(m, i) {
     ['Standard splats', 'splats.spz', 'the viewer\'s default'],
     ['Lite splats', 'splats_lite.spz', 'phones, quick look'],
     ['Full resolution', 'full/splats.ply', 'PLY, every Gaussian'],
-    ['Point cloud', 'points.bin', 'SLAM depth points'],
+    ['Point cloud', 'points.bin', 'stereo depth of the keyframes'],
     ['Film', m.film.mp4, `${m.film.duration_s} s, MP4`],
   ].filter(f => m.files[f[1]]);
   let board = '';
   if (r?.gt && r.ours) {
-    board = `<dt>Board ATE</dt><dd>xclean ${f3(r.ours.med)} m, ORB-SLAM3 ${f3(r.orb3.med)} m on this route: <a href="results.html#r-${esc(r.route)}">${r.vs_orb3 === 'win' ? 'xclean better' : r.vs_orb3 === 'tie' ? 'a tie' : 'ORB-SLAM3 better'}</a></dd>`;
+    board = `<dt>Board ATE</dt><dd>xclean ${f3(r.ours.med)} m, ORB-SLAM3 ${f3(r.orb3.med)} m${r.orb3.status ? ` (ORB-SLAM3 ${esc(statusText(r.orb3.status))})` : ''} on this route: <a href="results.html#r-${esc(r.route)}">${esc(verdictText(r.vs_orb3, r.orb3.status))}</a>${SETS[r.group] ? ` <span class="rng">(${esc(SETS[r.group])})</span>` : ''}${r.orb3.stereo_only && r.orb3.stereo_only === r.orb3.draws ? '. ORB-SLAM3 ran stereo-only here: its IMU start-up crashed.' : ''}</dd>`;
   } else if (r) {
     board = `<dt>Board</dt><dd>No ground truth: latency ${r.lat_ms_p50.toFixed(1)} ms median, ${r.lost_runs} of ${r.runs} runs lost. <a href="results.html#r-${esc(r.route)}">Its row</a></dd>`;
   }
