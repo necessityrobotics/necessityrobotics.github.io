@@ -1,7 +1,9 @@
 // Results page: everything rendered from data/board.json (built from the final board by tools/build_site_data.py).
-import { $, esc, getJSON } from './site.js';
+import { $, esc, getJSON, keepScroll, restoreScroll } from './site.js';
+import { CODE_PUBLIC, LINKS } from './config.js';
 import { tallyHTML } from './tally.js';
 
+keepScroll();   // back/forward and reload land where the visitor left, once the page is built (site.js)
 const b = await getJSON('data/board.json');
 const h = b.headline;
 const set = (sel, v) => document.querySelectorAll(sel).forEach(e => { e.textContent = v; });
@@ -36,7 +38,7 @@ const fw = b.flagged_wins.unseen;
 set('.js-flagged', `Of the ${b.tallies.unseen_vs_orb3.win} wins against ORB-SLAM3 on the 38 unseen routes, ${fw.length} are against an ORB-SLAM3 run set with a problem: ${fw.map(x => `${x.route} (ORB-SLAM3 ${ST(x.status)})`).join('; ')}. Of the ${b.tallies.unseen_vs_okvis2x.win} wins against OKVIS2-X, ${b.okvis2x_failed_unseen.length} (${b.okvis2x_failed_unseen.join(', ')}) is against a diverged OKVIS2-X run.`);
 if (b.prereg) {
   const P = b.prereg;
-  $('.js-prereg').innerHTML = `The pre-registration document was first written on ${esc(P.first_version)}; its last amendment is ${esc(P.last_amendment)}, and the file was last written on ${esc(P.file_last_written)}; the board was evaluated on ${esc(P.board_evaluated)}. (The header's approximate time is later than the file's write time; the file time is the recorded one, and the header gives only an approximate time written in the text.) That file's SHA-256 is <code class="hash">${esc(P.sha256)}</code>, first published here on ${esc(P.hash_published)}. The document will be published with the code release, and the fingerprint lets anyone check that it is the same file. The fingerprint proves that the document is unaltered from today on; it does not by itself prove when the document was written. The amendments made during the board (${esc(P.note)}):`;
+  $('.js-prereg').innerHTML = `The pre-registration document was first written on ${esc(P.first_version)}; its last amendment is ${esc(P.last_amendment)}, and the file was last written on ${esc(P.file_last_written)}; the board was evaluated on ${esc(P.board_evaluated)}. (The header's approximate time is later than the file's write time; the file time is the recorded one, and the header gives only an approximate time written in the text.) That file's SHA-256 is <code class="hash">${esc(P.sha256)}</code>, first published here on ${esc(P.hash_published)}. ${CODE_PUBLIC ? `The document is published unchanged in the code repository, in <a href="${LINKS.repo}/tree/main/docs/prereg">docs/prereg</a>` : 'The document will be published unchanged in the code repository (docs/prereg) when the code goes public'}, and the fingerprint lets anyone check that it is the same file. The fingerprint proves that the document is unaltered from today on; it does not by itself prove when the document was written. The amendments made during the board (${esc(P.note)}):`;
   $('.js-amend').innerHTML = P.amendments_during_board.map(x => `<li><strong>${esc(x.id)}</strong> (${esc(x.date)}): ${esc(x.what)}.</li>`).join('');
 }
 set('.js-load', b.load);
@@ -58,12 +60,35 @@ $('.js-claims').innerHTML = b.claims_unseen.map(c => `<tr><td class="wrapcell"><
 const src = b.source;
 $('.js-source').innerHTML = `Every number on this page is read from <a href="data/board.json">data/board.json</a> on this site. That file was built on ${esc(b.generated)} from the final board file (generated ${esc(src.board_generated)} by the frozen evaluator, sha1 <code>${esc(src.sha1.slice(0, 12))}</code>) for the board engine build <code>${esc(src.engine_md5.slice(0, 8))}</code> (the release package carries the same engine code with packaging changes, so its own hash differs), scored with the frozen live scorer (<code>${esc(src.scorer_md5.slice(0, 8))}</code>).`;
 
-// ---------------------------------------------------------------- the route table
+// ---------------------------------------------------------------- the header's verdict strip: one cell per unseen route
 const G = Object.fromEntries(b.groups.map(g => [g.id, g]));
+const KIND = v => (v === 'win' || v === 'win_forfeit' ? 'w' : v === 'loss' || v === 'loss_forfeit' ? 'l' : 't');
+const RANK = { w: 0, t: 1, l: 2 };
+const flagged = new Map(fw.map(x => [x.route, x.status]));
+const unseen = b.rows.filter(r => G[r.group].unseen && r.vs_orb3)
+  .sort((x, y) => RANK[KIND(x.vs_orb3)] - RANK[KIND(y.vs_orb3)] || x.family.localeCompare(y.family) || x.route.localeCompare(y.route));
+const strip = $('.js-vstrip'), read = $('.js-vread');
+const NAME = { w: 'xclean better', t: 'tie', l: 'ORB-SLAM3 better' };
+const HINT = read.textContent;
+strip.innerHTML = unseen.map((r, i) => `<a class="${KIND(r.vs_orb3)}${flagged.has(r.route) ? ' f' : ''}" href="#r-${esc(r.route)}" data-r="${esc(r.route)}" tabindex="-1" aria-hidden="true" style="--i:${i}"></a>`).join('');
+strip.setAttribute('aria-label', `${unseen.length} unseen routes against offline ORB-SLAM3, one cell each: ${T.win} xclean better (${fw.length} of them against an ORB-SLAM3 run set with a problem), ${T.tie} ties, ${T.loss} ORB-SLAM3 better. Every route is in the table below.`);
+const byRoute = Object.fromEntries(unseen.map(r => [r.route, r]));
+strip.addEventListener('pointerover', e => {
+  const r = byRoute[e.target.dataset?.r];
+  if (!r) return;
+  strip.querySelectorAll('a.is-on').forEach(x => x.classList.remove('is-on'));
+  e.target.classList.add('is-on');
+  read.classList.add('is-on');
+  read.textContent = `${r.route} · ${r.family} · ${NAME[KIND(r.vs_orb3)]}${flagged.has(r.route) ? ` (ORB-SLAM3 ${ST(flagged.get(r.route))})` : ''}`;
+});
+strip.addEventListener('pointerleave', () => { strip.querySelectorAll('a.is-on').forEach(x => x.classList.remove('is-on')); read.classList.remove('is-on'); read.textContent = HINT; });
+
+// ---------------------------------------------------------------- the route table
 const setName = { unseen: 'unseen', sealed: 'unseen (sealed)', k14: 'seen once (last kill test, K14)', design: 'design route', k13: 'seen once (earlier kill test)', k12: 'seen once (earlier kill test)', oak: 'own camera' };
 const fams = [...new Set(b.rows.map(r => r.family))].sort();
 $('.js-fam').insertAdjacentHTML('beforeend', fams.map(f => `<option>${esc(f)}</option>`).join(''));
-const S = { set: 'unseen', fam: '', ver: '', q: '' };
+// a back/forward visit gets its filter controls back from the browser: the table follows what they show
+const S = { set: 'unseen', fam: $('.js-fam').value, ver: $('.js-ver').value, q: $('.js-q').value.trim() };
 const f3 = x => (x == null ? '—' : x < 10 ? x.toFixed(3) : x.toFixed(2));
 function ate(a) {
   if (!a) return '—';
@@ -97,8 +122,22 @@ document.querySelectorAll('.js-set button').forEach(btn => btn.addEventListener(
 $('.js-fam').addEventListener('change', e => { S.fam = e.target.value; render(); });
 $('.js-ver').addEventListener('change', e => { S.ver = e.target.value; render(); });
 $('.js-q').addEventListener('input', e => { S.q = e.target.value.trim(); render(); });
-// deep link: results.html#r-kitti_08
-const hash = decodeURIComponent(location.hash.slice(1));
-if (hash.startsWith('r-')) { S.set = 'all'; document.querySelectorAll('.js-set button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.set === 'all'))); }
+// deep link (results.html#r-kitti_08, the strip's cells, the maps page): every filter cleared, the row centred and marked
+function landRow() {
+  const hash = decodeURIComponent(location.hash.slice(1));
+  if (!hash.startsWith('r-')) return;
+  if (!document.getElementById(hash)) {
+    Object.assign(S, { set: 'all', fam: '', ver: '', q: '' });
+    document.querySelectorAll('.js-set button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.set === 'all')));
+    $('.js-fam').value = ''; $('.js-ver').value = ''; $('.js-q').value = '';
+    render();
+  }
+  const tr = document.getElementById(hash);
+  if (!tr) return;
+  document.querySelectorAll('tr.is-hit').forEach(x => x.classList.remove('is-hit'));
+  tr.classList.add('is-hit');
+  tr.scrollIntoView({ block: 'center' });
+}
 render();
-if (hash.startsWith('r-')) document.getElementById(hash)?.scrollIntoView({ block: 'center' });
+if (!restoreScroll()) landRow();
+addEventListener('hashchange', landRow);

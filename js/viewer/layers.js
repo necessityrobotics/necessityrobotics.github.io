@@ -168,15 +168,18 @@ export class SplatLayer {
   get numSplats() { return this.mesh?.numSplats ?? 0; }
   has(tier) { return !!this.meshes[tier]; }
 
-  /** Load a tier (absolute URL; Spark ignores <base>). Resolves with the initialised mesh, kept hidden. */
-  load(tier, url, { onProgress } = {}) {
+  /**
+   * Load a tier from an absolute URL (Spark ignores <base>) or from bytes already in hand ({bytes, fileName}).
+   * Resolves with the initialised mesh, kept hidden.
+   */
+  load(tier, src, { onProgress } = {}) {
     if (this.meshes[tier]) return Promise.resolve(this.meshes[tier]);
     if (this.loading[tier]) return this.loading[tier];
     if (!this.stage.spark) return Promise.reject(this.stage.sparkError || new Error('Spark unavailable'));
     const mesh = new SplatMesh({
-      url,
+      ...(typeof src === 'string' ? { url: src, onProgress: e => onProgress?.(e.loaded, e.lengthComputable ? e.total : 0) }
+        : { fileBytes: src.bytes, fileName: src.fileName }),
       extSplats: true, // float32 centres: the float16 default moves KITTI / 4Seasons splats by 0.25-1.1 m (SPARK_NOTES §6)
-      onProgress: e => onProgress?.(e.loaded, e.lengthComputable ? e.total : 0),
     });
     mesh.name = `splats (${tier})`;
     mesh.maxSh = 1;            // the v3 maps carry SH degree 1

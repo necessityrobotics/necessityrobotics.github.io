@@ -1,106 +1,777 @@
-/* Landing page (DESIGN.md section 5.1). */
+/* Landing page, v3 (website_nr3/MASTER_PLAN.md sections 1, 2.6, 3.3): the beats of the world, the 2-D overlays over it,
+   the 2-D story. The stage itself (sticky canvas, posters, dip, labels host) is css/world.css (engine).
+   Only transform and opacity animate; state changes come from js/home/overlays.js as data-ov / data-* attributes. */
 
-/* ---------------- first screen */
-.hero { position: relative; min-height: 100svh; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; isolation: isolate; }
-@supports (min-height: 100svh) { .hero { min-height: 100svh; } }
-.hero-media { position: absolute; inset: 0; z-index: -1; background: var(--bg); }
-.hero-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; filter: contrast(1.05) brightness(.8);
-  animation: posterIn 2.4s var(--ease) both; }
-/* entrances never start from opacity 0: if a browser throttles the animation, the content is still there */
-@keyframes posterIn { from { transform: scale(1.06); } to { transform: none; } }
-/* Fig. 1: the point field */
-.field-fig { margin-top: clamp(48px, 6vw, 80px); }
-.field-box { position: relative; aspect-ratio: 21 / 8; border: 1px solid var(--line); border-radius: var(--r); background: #000; overflow: hidden; }
-.field-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-@media (max-width: 760px) { .field-box { aspect-ratio: 4 / 3; } }
-.hero-poster { opacity: .5; }
-.hero-live { position: absolute; inset: 0; }
-/* the live playback / film: fades in over the poster */
-.hero-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s var(--ease); }
-.hero-layer.in { opacity: 1; }
-video.hero-layer.in { opacity: .85; }
-.hero[data-live="live"] .hero-poster, .hero[data-live="film"] .hero-poster { opacity: 0; transition: opacity 1.2s var(--ease) 1s; }
-/* phones: the film drifts slowly instead of following a mouse */
-.hero-drift { animation: drift 26s ease-in-out infinite alternate; transform-origin: 60% 50%; }
-@keyframes drift { from { transform: scale(1.06) translate(-1.2%, .6%); } to { transform: scale(1.1) translate(1.2%, -.6%); } }
-.hero-state { display: inline-block; font: 600 12.5px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--ion); border: 1px solid rgba(108,201,255,.5); border-radius: 999px; padding: 4px 8px; margin-right: 6px; vertical-align: 1px; }
-.hero[data-live="poster"] .hero-state, .hero[data-live="loading"] .hero-state { color: var(--fg-2); border-color: var(--line-2); }
+/* ================================================================ beat lengths (screens x 100, read by nobody but CSS:
+   the engine measures the elements). Desktop; phones and short landscape screens below. */
+.world {
+  --ov-ease: cubic-bezier(.16, 1, .3, 1);
+  --k: 1;                                   /* length factor: .9 on short landscape screens */
+  --b-rise: 90; --b-atlas: 80; --b-explore: 90;
+  --b-g1: 30; --b-d1: 35; --b-r1: 90; --b-p1: 30;
+  --b-g2: 30; --b-d2: 30; --b-r2: 187; --b-p2: 25;    /* ch 2 ride: way in + look beat 46.75 as before, facts 140.25 (35 per fact; director.js rideU) */
+  --b-g3: 25; --b-d3: 25; --b-r3: 80; --b-p3: 30;
+  --edge: max(var(--gutter), calc((100% - var(--wrap)) / 2));   /* the content grid's edge, for HUD parts (DE-10) */
+  touch-action: pan-y pinch-zoom;
+}
+.beat--rise { --beat-h: var(--b-rise); }
+.beat--atlas { --beat-h: var(--b-atlas); }
+.beat--explore { --beat-h: var(--b-explore); }
+#ch-1 > [data-beat="glide"] { --beat-h: var(--b-g1); } #ch-1 > [data-beat="dive"] { --beat-h: var(--b-d1); }
+#ch-1 > [data-beat="ride"] { --beat-h: var(--b-r1); } #ch-1 > [data-beat="pullback"] { --beat-h: var(--b-p1); }
+#ch-2 > [data-beat="glide"] { --beat-h: var(--b-g2); } #ch-2 > [data-beat="dive"] { --beat-h: var(--b-d2); }
+#ch-2 > [data-beat="ride"] { --beat-h: var(--b-r2); } #ch-2 > [data-beat="pullback"] { --beat-h: var(--b-p2); }
+#ch-3 > [data-beat="glide"] { --beat-h: var(--b-g3); } #ch-3 > [data-beat="dive"] { --beat-h: var(--b-d3); }
+#ch-3 > [data-beat="ride"] { --beat-h: var(--b-r3); } #ch-3 > [data-beat="pullback"] { --beat-h: var(--b-p3); }
+.beat, .step { height: calc(var(--beat-h) * var(--k) * 1vh); height: calc(var(--beat-h) * var(--k) * 1lvh); }
+.beat, .chapter { position: relative; z-index: 1; pointer-events: none; }
+.chapter:focus, .beat:focus { outline: none; }
+
+/* ================================================================ overlays: pinned to the screen for their beat's range
+   Without .ov (no scripts) a pin is a plain block at the top of its section; the section heights never change. */
+.pinbox { position: absolute; left: 0; right: 0; top: 0; pointer-events: none; }
+.ov .pinbox { top: -70vh; top: -70lvh; bottom: -30vh; bottom: -30lvh; }          /* a beat starts at 70 % of the screen */
+.ov .beat--explore .pinbox { bottom: 0; }                                         /* leaves with the stage at the curtain */
+/* the explore UI rides on the curtain's edge (its pin ends where the story begins), so it sits above the story's feathered
+   top (.story[data-world-end]::before): the islands sink into the black, the note with the Rosario credit stays readable */
+.ov .beat--explore { z-index: 3; }
+.ov .pin { position: -webkit-sticky; position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
+.ov .pin-wrap { position: relative; height: 100%; }
+.pin a, .pin button, .ov-panel, .mcard, .strip, .xchip, .dive-bar { pointer-events: auto; }
+html:not(.ov) .pin-wrap { padding-top: calc(var(--head-h) + 6vh); }
+html:not(.ov) .strip, html:not(.ov) .sp-layer, html:not(.ov) .ch-cap, html:not(.ov) .split-note, html:not(.ov) .explore-card { display: none; }
+
+/* state: data-ov="on" | "off" (+ "strip" etc. on some parts), written by overlays.js only when it changes */
+.ov [data-ov] { transition: opacity .3s var(--ease), transform .42s var(--ov-ease); }
+.ov [data-ov="off"] { opacity: 0; transform: translate3d(0, 14px, 0); }
+.ov [data-ov="off"], .ov [data-ov="off"] a, .ov [data-ov="off"] button { pointer-events: none; }
+.ov [data-ov="on"] { opacity: 1; transform: none; }
+.ov [data-ov="off"]:focus-within { opacity: 1; transform: none; }               /* keyboard focus always shows its panel */
+
+/* ================================================================ the stage's blend into the page (engine: css/world.css) */
+.stage-veil { position: absolute; inset: 0; pointer-events: none; opacity: calc(1 - .45 * var(--atlas, 0));
+  background:
+    linear-gradient(rgba(0,0,0,.1), rgba(0,0,0,.1)),
+    radial-gradient(125% 95% at 58% 52%, rgba(0,0,0,0) 48%, rgba(0,0,0,.5) 76%, rgba(0,0,0,.94) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 70%, rgba(0,0,0,.82) 100%); }
+.stage-fade { position: absolute; inset: 0; background: #000; opacity: var(--out, 0); pointer-events: none; }
+
+/* ================================================================ HUD (in the stage): top view, atlas map, credit, look */
+.world-hud { position: absolute; inset: 0; pointer-events: none; }        /* no --out fade: the credit must outlast the islands it credits */
+.world-hud > * { position: absolute; opacity: 0; transition: opacity .35s var(--ease), transform .42s var(--ov-ease); transform: translate3d(0, 8px, 0); }
+/* review PH (H-PH2): a HUD button at opacity 0 took taps (the tilt button switched tilt on from an invisible spot) */
+.world-hud button { pointer-events: none; }
+.world-hud[data-tilt="1"] .hud-tilt, .world-hud .hud-tilt:focus-visible { pointer-events: auto; }
+html:not(.ov) .world-hud { display: none; }
+.hud-head, .hud-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0; max-width: none;
+  font: 500 12.5px/1.35 var(--mono); letter-spacing: .02em; color: var(--fg-2); white-space: nowrap; }
+.hud-k { text-transform: uppercase; color: var(--fg-2); }
+.hud-state { color: var(--fg); overflow: hidden; text-overflow: ellipsis; }
+.hud-state[data-s="live"], .hud-state[data-s="points"] { color: var(--ion); }
+.hud-foot { margin-top: 6px; color: var(--fg-2); }
+.hud-tele { white-space: normal; font-variant-numeric: tabular-nums; color: var(--fg); }
+.hud-scale { display: inline-flex; align-items: flex-end; gap: 6px; flex: none; }
+.hud-scale i { display: inline-block; height: 6px; border: 1.5px solid var(--fg-2); border-top: 0; }
+
+/* the small top view: rides and explore dives (desktop bottom right; phones a corner) */
+.hud-map { right: var(--edge); bottom: 26px; width: 248px; padding: 10px 12px 9px; background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: var(--r); }
+.hud-mini { display: block; width: 100%; height: 124px; margin-top: 8px; }
+.world-hud[data-mini="1"] .hud-map { opacity: 1; transform: none; }
+/* chapter 3: map vs view, the top view grows into one half of the screen (a cut, then a fade: no animated layout) */
+.world-hud[data-split="1"] .hud-map { top: calc(var(--head-h) + 12px); bottom: 20px; right: var(--edge); width: min(38%, 560px); padding: 14px 16px;
+  display: flex; flex-direction: column; opacity: 1; transform: none; animation: hud-cut .5s var(--ov-ease) both;
+  background: rgba(0,0,0,.93); }                                  /* the map half reads as a map, not a ghost of the view behind it */
+.world-hud[data-split="1"] .hud-mini { flex: 1; height: auto; min-height: 0; }
+.world-hud[data-split="1"] .hud-head { font-size: 13.5px; }
+.world-hud[data-split="1"] .hud-foot { font-size: 14px; margin-top: 10px; }
+@keyframes hud-cut { from { opacity: 0; transform: translate3d(16px, 0, 0); } }
+
+/* the atlas from the top: explore */
+.hud-atlas { right: var(--edge); bottom: 26px; width: 214px; padding: 10px 11px 9px; background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: var(--r); }
+.hud-atlasmap { display: block; width: 100%; height: 150px; margin-top: 6px; }      /* H-PH2: no script listens to it */
+.world-hud[data-atlas="1"] .hud-atlas { opacity: 1; transform: none; }
+
+/* the Rosario credit, on the stage whenever a Rosario island is in view and no panel carries the credit (section 1.5) */
+.world-credit { left: var(--edge); top: calc(var(--head-h) + 10px); max-width: min(560px, calc(100% - 2 * var(--gutter))); margin: 0; padding: 7px 11px;
+  font: 500 13px/1.4 var(--mono); color: var(--fg); background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 8px; }
+#world[data-rosario="1"] .world-credit:not([data-carried]), .world-credit[data-force]:not([data-carried]) { opacity: 1; transform: none; }
+
+/* the look beat's invitation (chapter 2) */
+.hud-hint { left: 50%; bottom: 30%; margin: 0; padding: 9px 16px 9px 34px; transform: translate3d(-50%, 8px, 0); border-radius: 999px; background: rgba(0,0,0,.84);
+  border: 1px solid rgba(108,201,255,.55); font: 500 14px/1.2 var(--mono); letter-spacing: .03em; color: var(--fg); white-space: nowrap; }
+.hud-hint::before { content: ""; position: absolute; left: 14px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--ion); }
+/* review PH (H-PH1): the pulse is a compositor-only ring (transform / opacity) and runs only while the hint shows; the old
+   box-shadow pulse repainted every frame for the whole visit at opacity 0 (about 12 % of a phone's main thread) */
+.hud-hint::after { content: ""; position: absolute; left: 14px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%;
+  border: 1px solid rgba(108,201,255,.55); opacity: 0; box-sizing: border-box; }
+.world-hud[data-hint="1"] .hud-hint::after { animation: ring 1.6s var(--ease) infinite; }
+.world-hud[data-hint="1"] .hud-hint { opacity: 1; transform: translate3d(-50%, 0, 0); }
+@keyframes ring { 0% { transform: scale(1); opacity: 1; } 70%, 100% { transform: scale(3.5); opacity: 0; } }
+
+/* tilt to look (touch screens; shown by overlays.js), its status text beside it (RA-20: the name never changes) */
+.hud-tilt { right: var(--edge); bottom: calc(26px + 200px); min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-3); background: rgba(0,0,0,.84);
+  color: var(--fg); font: 500 13px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
+.hud-tilt[aria-pressed="true"] { border-color: var(--ion); color: var(--ion); }
+.world-hud[data-tilt="1"] .hud-tilt, .hud-tilt:focus-visible { opacity: 1; transform: none; }
+.hud-tilt-msg { right: var(--edge); bottom: calc(26px + 252px); margin: 0; padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,.84); font: 500 13px/1.3 var(--mono); color: var(--fg-2); }
+.hud-tilt-msg:not(:empty) { opacity: 1; transform: none; }
+
+/* ================================================================ 3-D labels (cloned from #tpl-island-label by the engine) */
+.isl { position: absolute; left: 0; top: 0; display: flex; align-items: baseline; gap: 8px; padding: 6px 11px 6px 10px; border-radius: 999px;
+  border: 1px solid var(--line-2); background: rgba(0,0,0,.8); color: var(--fg); font: 500 13.5px/1.1 var(--sans); white-space: nowrap;
+  opacity: 0; transition: opacity .3s var(--ease), border-color .3s; pointer-events: none; cursor: pointer; will-change: transform; }
+.isl::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 18px; background: linear-gradient(var(--line-3), rgba(255,255,255,0)); }
+.isl::before { content: ""; position: absolute; inset: -8px -4px; }                  /* H-PH3: a 45 px hit area, same look */
+.isl b { font: 600 13px/1 var(--mono); color: var(--ion); letter-spacing: .04em; }
+.isl b:empty { display: none; }
+.isl small { font: 500 13px/1 var(--mono); color: var(--fg-2); letter-spacing: .02em; }
+.isl.on { opacity: .9; pointer-events: auto; }
+.isl.hi { opacity: 1; border-color: var(--ion); }
+.isl:hover { opacity: 1; border-color: var(--fg); }
+
+/* ================================================================ first screen (look unchanged from v1 / v2) */
+.hero { position: relative; z-index: 1; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate; }
 /* solid backing behind the words: the text never sits on bare imagery */
-.hero-scrim { position: absolute; inset: 0;
+.hero-scrim { position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
     linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.8) 34%, rgba(0,0,0,.3) 62%, rgba(0,0,0,.08) 100%),
-    linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.6) 22%, rgba(0,0,0,0) 50%),
+    linear-gradient(0deg, #000 0%, rgba(0,0,0,.6) 22%, rgba(0,0,0,0) 50%),
     linear-gradient(180deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,0) 18%); }
-.hero-inner { position: relative; padding-top: calc(var(--head-h) + 48px); padding-bottom: 28px; }
+/* the scrim eases out just below the first screen (DE-3: no hard edge, it starts at the same black it ends on), short
+   enough to leave the rise's view of the whole map clear */
+.hero-scrim::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 26vh;
+  background: linear-gradient(180deg, #000 0%, rgba(0,0,0,.9) 12%, rgba(0,0,0,.66) 32%, rgba(0,0,0,.34) 56%, rgba(0,0,0,.1) 80%, rgba(0,0,0,0) 100%); }
+/* the top gap gives way on short desktop screens (48 px at 1245 px tall and up, 16 px at 889 and below): with the company
+   line (11-01) the hero's copy is taller than a 1440 x 900 screen, and its caption stays on it (bottom 895) */
+.hero-inner { position: relative; padding-top: calc(var(--head-h) + clamp(16px, 9vh - 64px, 48px)); padding-bottom: 28px; }
 .hero-copy { max-width: 980px; }
 .hero-name { margin: 0; font: 700 clamp(56px, 11.2vw, 168px)/.9 var(--display); letter-spacing: -0.045em; color: var(--fg); }
 .hero-name span { display: inline-block; }
 .hero-name span + span { color: transparent; -webkit-text-stroke: 0; background: linear-gradient(180deg, #f2f5fa 0%, #b9c6d8 100%); -webkit-background-clip: text; background-clip: text; }
-.hero-lead { margin: 30px 0 0; font-size: clamp(19px, 1.8vw, 23px); line-height: 1.55; color: var(--fg); max-width: 40ch; }
+/* 50ch (was 40): the company line (11-01) is longer; at 40ch it took 7 lines on desktops, at 50ch 5 */
+.hero-lead { margin: 30px 0 0; font-size: clamp(19px, 1.8vw, 23px); line-height: 1.55; color: var(--fg); max-width: 50ch; }
 .hero .eyebrow { margin-bottom: 26px; }
+.skip-tour { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip-tour:focus { position: static; width: auto; height: auto; clip: auto; display: inline-flex; align-items: center; min-height: 44px; margin-top: 12px; padding: 0 16px;
+  border-radius: 999px; background: var(--fg); color: var(--ink); font: 600 15px/1 var(--sans); text-decoration: none; }
 .hero-foot { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 28px; }
 .hero-cap { margin: 0; max-width: 62ch; font-size: 16px; line-height: 1.55; color: var(--fg-2);
-  padding: 12px 16px; background: rgba(0,0,0,.82); border: 1px solid var(--line); border-radius: 8px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  padding: 12px 16px; background: rgba(0,0,0,.82); border: 1px solid var(--line); border-radius: 8px; }
 .hero-cap b { font: 600 13px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin-right: 6px; }
-.hero-scroll { flex: none; width: 28px; height: 46px; border: 1.5px solid var(--line-3); border-radius: 14px; position: relative; }
+/* the state chip has a fixed box, so its label changes never re-wrap the caption (RA-1, PH-4) */
+.hero-state { display: inline-block; width: 21ch; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: 1px; margin-right: 6px;
+  font: 600 13px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 8px; }
+.hero-state[data-s="live"], .hero-state[data-s="points"] { color: var(--ion); border-color: rgba(108,201,255,.5); }
+.hero-scroll { flex: none; width: 28px; height: 46px; border: 1.5px solid var(--line-3); border-radius: 14px; position: relative; transition: opacity .25s var(--ease); }
 .hero-scroll span { position: absolute; left: 50%; top: 9px; width: 3px; height: 9px; margin-left: -1.5px; border-radius: 2px; background: var(--fg); animation: cue 2.2s var(--ease) infinite; }
+.head:not(.is-top) ~ main .hero-scroll { opacity: 0; }                            /* DE-7: the cue leaves at the first scroll */
 @keyframes cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(14px); opacity: 0; } 100% { opacity: 0; } }
-/* entrance: staggered, short, and absent under reduced motion */
+/* entrance: staggered, short, never from opacity 0, transform only (PH-16: no letter-spacing, nothing re-wraps) */
 .hero-in { animation: rise 1s var(--ease) both; animation-delay: calc(var(--d) * 110ms + 120ms); }
 @keyframes rise { from { transform: translateY(26px); } to { transform: none; } }
-.hero-name.hero-in { animation-name: settle; animation-duration: 1.6s; }
-@keyframes settle { from { transform: translateY(18px); letter-spacing: -0.015em; } to { transform: none; letter-spacing: -0.045em; } }
+.hero-name.hero-in { animation-duration: 1.6s; }
+
+/* one hint per input, both in the HTML from the start (no text appears after the first paint) */
+.when-touch { display: none; }
+@media (hover: none), (pointer: coarse) { .when-fine { display: none; } .when-touch { display: inline; } }
+#world[data-input="touch"] .when-fine { display: none; }
+#world[data-input="touch"] .when-touch { display: inline; }
+#world[data-input="mouse"] .when-touch { display: none; }
+#world[data-input="mouse"] .when-fine { display: inline; }
+.when-live { display: none; }
+#world[data-mode="live"] .when-live { display: inline; }
+#world[data-mode="live"] .when-still { display: none; }
+/* the backdrop sentence holds only where the backdrop is drawn (live, not the weak-phone tier, governor below level 3) */
+#world:not([data-mode="live"]) .when-backdrop, #world[data-tier="T1"] .when-backdrop,
+#world[data-level="3"] .when-backdrop, #world[data-level="4"] .when-backdrop, #world[data-level="5"] .when-backdrop,
+#world[data-level="6"] .when-backdrop, #world[data-level="7"] .when-backdrop { display: none; }
+/* review FA: the notes name Fig. 1 only where the story shows it (1100 px and wider, .xc-fig); narrower screens get the
+   same facts from Fig. 1's own caption ("5,200 of the 232,817 points"), with no reference to a figure that is not there */
+.on-fig1 { display: none; }
+/* review FA: three captions describe what the 3-D stage draws. Over a poster (the still path, or a live page whose 3-D
+   side has not arrived yet: the engine's data-load="poster") they would describe a picture that is not on screen */
+#world[data-load="poster"] .ch-cap .when-live { display: none; }      /* "the finished map; the blue line ..." */
+#world[data-load="poster"] .ch-cap .when-still { display: inline; }   /* gives way to "a 3-D reconstruction ..., not camera video" */
+#world[data-load="poster"] .split-note { display: none; }             /* "the same moment": one poster does not follow the ride */
+#world[data-mode="live"][data-load="poster"] .rise-cap { display: none; }   /* the hero's poster; the still path draws the 2-D map here */
+
+/* ================================================================ panels over the world */
+.ov-panel { max-width: 600px; padding: 24px 26px 22px; background: rgba(0,0,0,.93); border: 1px solid var(--line); border-radius: var(--r); color: var(--fg); }
+.ov .ov-panel, .ov .mcard, .ov .strip, .ov .ch-cap, .ov .split-note { position: absolute; }
+
+/* rise: "the finished map", then the street ride's compact card (lower left) */
+.ov .rise-panel { left: var(--gutter); bottom: max(5vh, 22px); width: min(560px, calc(100% - 2 * var(--gutter))); }
+.rise-cap { margin: 0 0 16px; font-size: 17px; line-height: 1.55; color: var(--fg); }
+.rise-panel .mcard { position: static; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line-2); border-radius: 0; background: none; width: auto; }
+
+/* atlas: the title card over the overview */
+.ov .beat--atlas .pin-wrap { display: flex; align-items: center; }
+.ov .title-panel { position: relative; width: min(620px, 100%); margin-top: 4vh; }
+.title-panel h2 { margin-bottom: 14px; }
+.title-panel .lead { margin: 0; }
+.title-hint { position: relative; margin: 18px 0 0; padding-left: 18px; color: var(--fg-2); }
+.title-hint::before { content: ""; position: absolute; left: 0; top: .5em; width: 7px; height: 7px; border-radius: 50%; background: var(--ion); box-shadow: 0 0 0 3px var(--ion-dim); }
+.island-note { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14.5px; line-height: 1.55; color: var(--fg-2); max-width: none; }
+/* section titles over the black atlas (the maps title, the explore intro): the same .93 backing, feathered into the
+   black instead of a framed box, so the islands are not cut by a rectangle; data cards keep their frames (review DE) */
+@media (min-width: 761px) and (min-height: 501px) {
+  .ov .title-panel, .ov .ex-intro { border-color: transparent; box-shadow: 0 0 40px 18px rgba(0,0,0,.93); }
+  .title-panel h2, .ex-intro h2 { font-size: clamp(34px, 3.9vw, 58px); line-height: 1.04; letter-spacing: -0.025em; }
+  .ex-intro h2 { font-size: clamp(32px, 3.2vw, 46px); }               /* two lines in the 440 px intro */
+}
+
+/* ---------------- map cards (rise, chapters, explore) */
+.mcard { width: min(440px, 100%); padding: 20px 22px 18px; background: rgba(0,0,0,.93); border: 1px solid var(--line); border-radius: var(--r); color: var(--fg); }
+html:not(.ov) .ch-card { margin: 0 0 24px; }
+.ov .ch-card { left: var(--gutter); bottom: max(5vh, 22px); }
+/* each chapter's card arrives the way its camera does (review DE: one entrance for all three read as a template):
+   down with the descent, in from the left with the low swoop, a short fast snap with the drop-in */
+.ov #ch-1 .ch-card[data-ov="off"]:not(:focus-within) { transform: translate3d(0, -18px, 0); }
+.ov #ch-2 .ch-card[data-ov="off"]:not(:focus-within) { transform: translate3d(-30px, 0, 0); }
+.ov #ch-3 .ch-card[data-ov="off"]:not(:focus-within) { transform: scale(.97); }
+.ov #ch-3 .ch-card { transform-origin: 0 100%; transition-duration: .2s, .28s; }
+.mcard-k { margin: 0 0 8px; font: 500 13px/1.35 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-2); }
+.mcard-k b { color: var(--ion); font-weight: 600; }
+.mcard-k [data-f="id"] { text-transform: none; letter-spacing: .02em; color: var(--fg); }
+.mcard h3 { font-size: clamp(28px, 3vw, 38px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 6px; }
+.mcard--compact h3 { font-size: clamp(24px, 2.4vw, 30px); }
+.mcard-meta { margin: 0 0 12px; font: 500 14px/1.45 var(--mono); color: var(--fg-2); letter-spacing: .01em; }
+.mcard-line { margin: 0 0 14px; font-size: 16.5px; line-height: 1.5; color: var(--fg); }
+.mcard-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 14px; border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line); }
+.mcard-stats > div { padding: 10px 6px 9px 0; min-width: 0; }
+.mcard-stats > div + div { padding-left: 10px; border-left: 1px solid var(--line); }
+.mcard-stats dt { font: 500 12.5px/1.25 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); }
+.mcard-stats dt .nb { display: block; text-transform: none; letter-spacing: 0; }
+.mcard-stats dd { margin: 6px 0 0; font: 600 22px/1.05 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: -0.01em; }
+.mcard--compact .mcard-stats dd { font-size: 19px; }
+.mcard-credit { margin: 0 0 12px; font-size: 14.5px; line-height: 1.5; color: var(--fg-2); }
+.mcard-credit .lic { margin: 0 0 8px; }
+.mcard-credit > span { display: block; }
+.mcard-credit > .when-narrow { display: none; }
+a.lic { text-decoration: none; }
+a.lic:hover { border-color: var(--fg); color: var(--fg); }
+.mcard-cav { margin: 0 0 14px; font: 500 13px/1.45 var(--mono); color: var(--fg); }
+.mcard-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; margin: 0; }
+.mcard-links .btn { min-height: 44px; padding: 0 18px; font-size: 15.5px; }
+.mcard-lim { display: inline-flex; align-items: center; min-height: 44px; font: 600 15.5px/1.3 var(--sans); }
+
+/* ---------------- the strip: the card's second beat in a ride, so the map gets the screen (DE-12) */
+.strip { left: var(--gutter); bottom: max(3vh, 16px); width: min(760px, calc(100% - 2 * var(--gutter) - 290px)); padding: 10px 14px 11px;
+  background: rgba(0,0,0,.9); border: 1px solid var(--line); border-radius: var(--r); }
+.strip p { margin: 0; max-width: none; }
+.strip-id { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 600 18px/1.3 var(--display); color: var(--fg); }
+.strip-id b { font: 600 13px/1 var(--mono); color: var(--ion); }
+.strip-code { font: 500 13px/1 var(--mono); color: var(--fg-2); letter-spacing: .02em; }
+.strip-go { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--ion);
+  color: var(--ion); font: 600 14px/1 var(--sans); text-decoration: none; }
+.strip-go:hover { background: var(--ion); color: var(--ink); }
+.strip-cav { margin-top: 6px !important; font: 500 13px/1.45 var(--mono); color: var(--fg); }
+.strip-cav .lic { margin-right: 8px; padding: 4px 8px; }
+.strip-credit { margin-top: 6px !important; font-size: 13.5px; line-height: 1.45; color: var(--fg-2); }
+.when-narrow { display: none; }
+/* WIRE: chapter 3's strip stops short of the split top view (it covered the view's readout at 1440 x 900). Review DE: in
+   viewport units, because the strip sits in the content wrap and the top view in the full-width HUD (the % form left a
+   16 px overlap at 1440 x 900); the strip's left edge is the content edge in both frames */
+@media (min-width: 761px) and (min-height: 501px) {
+  #ch-3 .strip { width: min(760px, calc(100vw - 2 * max(var(--gutter), (100vw - var(--wrap)) / 2) - min(38vw, 560px) - 24px)); }
+}
+
+/* ---------------- the pull-back caption ("the finished map", short form) */
+.ch-cap { left: var(--gutter); bottom: max(5vh, 22px); max-width: min(560px, calc(100% - 2 * var(--gutter))); margin: 0; padding: 12px 16px;
+  background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 8px; font-size: 16px; line-height: 1.5; color: var(--fg); }
+.ch-cap-credit { display: block; margin-top: 4px; font: 500 13px/1.45 var(--mono); color: var(--fg-2); }
+
+/* ---------------- chapter 3: one line names the two halves of map vs view */
+.split-note { left: var(--gutter); top: calc(var(--head-h) + 12px); max-width: min(520px, calc(62% - 2 * var(--gutter))); margin: 0; padding: 8px 12px;
+  background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 8px; font: 500 13px/1.45 var(--mono); color: var(--fg-2); }
+
+/* ================================================================ the chapter rail (pinned over the chapters) */
+.rail { position: relative; z-index: 2; height: 0; }
+.rail { --b-sum: calc(var(--b-g1) + var(--b-d1) + var(--b-r1) + var(--b-p1) + var(--b-g2) + var(--b-d2) + var(--b-r2) + var(--b-p2)
+  + var(--b-g3) + var(--b-d3) + var(--b-r3) + var(--b-p3) + var(--b-explore)); }
+.ov .rail .pinbox { top: -70vh; top: -70lvh; bottom: auto; height: calc(var(--b-sum) * var(--k) * 1vh + 70vh); height: calc(var(--b-sum) * var(--k) * 1lvh + 70lvh); }
+html:not(.ov) .rail { display: none; }
+.rail-in { position: absolute; right: var(--edge); top: 0; bottom: 0; display: flex; align-items: center; pointer-events: none; }
+.rail-box { position: relative; padding-right: 14px; }
+.rail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.rail-list a { position: relative; display: flex; align-items: center; justify-content: flex-end; min-height: 44px; padding: 0 0 0 12px; text-decoration: none; color: var(--fg-2);
+  font: 600 13px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.rail-list b { font-weight: 600; color: inherit; background: rgba(0,0,0,.84); border: 1px solid var(--line); padding: 6px 8px; border-radius: 6px; min-width: 42px; text-align: center; }
+/* labels sit outside the flow, so the numbers form one column (DE-8, RA-19) */
+.rail-list a > span { position: absolute; right: calc(100% + 8px); top: 50%; transform: translate(6px, -50%); opacity: 0; white-space: nowrap; pointer-events: none;
+  transition: opacity .3s var(--ease), transform .3s var(--ease); background: rgba(0,0,0,.86); border: 1px solid var(--line); padding: 7px 10px; border-radius: 999px; color: var(--fg); letter-spacing: .04em; }
+.rail-list a:hover > span, .rail-list a:focus-visible > span, .rail-list a[aria-current="true"] > span { opacity: 1; transform: translate(0, -50%); }
+.rail-list a[aria-current="true"] { color: var(--ion); }
+.rail-list a[aria-current="true"] b { border-color: rgba(108,201,255,.6); }
+.rail-list a:hover { color: var(--fg); }
+.rail-track { position: absolute; right: 0; top: 12px; bottom: 12px; width: 2px; background: var(--line-2); border-radius: 2px; overflow: hidden; }
+.rail-track i { position: absolute; inset: 0; background: var(--ion); transform-origin: 50% 0; transform: scaleY(var(--rp, 0)); }
+/* the rail steps aside where the split view or the explore chips own the right-hand side */
+.ov .rail-in[data-aside="1"], .ov .rail-in[data-at="explore"] { opacity: 0; transform: none; }
+.ov .rail-in[data-aside="1"] a, .ov .rail-in[data-at="explore"] a { pointer-events: none; }
+.ov .rail-in:focus-within { opacity: 1; }
+
+/* ================================================================ chapter 2: the facts in the world (FACTS_WORLD_PLAN.md 1.3 /
+   1.4; concept K2, with K4's digit rise and K3's run to the end of the ride). From the end of the look beat to the end of
+   the ride four signposts stand in the park beside xclean's route: the engine draws each one in 3-D (a ground ring and a
+   post, js/world/marks.js) and hangs the current fact's card from its head (.sp-at: a transform snapped to device pixels,
+   written only when it moves); signposts.js writes the states on a change (data-s, data-layout, data-kbd, data-enter).
+   One card at a time: the old one is gone (0.18 s) before the next one fades in (+0.3 s) and its digits rise (transform
+   only, 40 ms apart, the unit last). The strip stays through the whole beat with the licence, the caveat and "Explore in
+   3-D" (nothing hands over). On phones, in still mode and before the island's 3-D is up, the fact sits in the strip's cap
+   instead (the dock: #world without data-marks="live", or a dock layout). No continuous animation: once the fades end,
+   nothing moves. */
+.sp-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  --sp-in: .3s; --sp-dur: .3s; --sp-rd: .32s; --sp-rise: .55s; --sp-step: 40ms; }
+/* back into a state (from the pull-back, or keyboard focus leaving the card): a 0.15 s fade once the leaving card is gone
+   (0.18 s), the number already in place (no rise), no light line */
+.sp-layer[data-enter="back"], .strip-fact[data-enter="back"] { --sp-in: .18s; --sp-dur: .15s; --sp-rd: 0s; --sp-rise: 0s; --sp-step: 0ms; }
+.spost, .sp-lead { position: absolute; left: 0; top: 0; }
+.sp-at { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+#world[data-marks="live"] .spost[data-s="cur"] .sp-at[data-vis] { will-change: transform; }
+/* the post's head: a node of light where the card hangs (on phones, at the stub's head) */
+.sp-at::before { content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: #e6f6ff;
+  box-shadow: 0 0 0 3px rgba(108,201,255,.35), 0 0 16px 4px rgba(108,201,255,.7); opacity: 0; transition: opacity .18s var(--ease); }
+#world[data-marks="live"] .sp-layer:not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis]::before { opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
+/* the card hangs from the head (marks.js cardAt; face l: outward, to the left of the post; r: to its right): up, its bottom
+   corner on the head, where that fits under the header; else beside the post (side), joined to the head by a level tie,
+   clear of its ring and post; down from the head's height last. The engine sets every place as the card's offset (up too)
+   and the tie's length, and moves a card that shows to a new place (round its ring), never a jump (verifier, 11-01) */
+.sp-card { position: absolute; top: 0; width: max-content; max-width: 360px; padding: 14px 18px 15px; border-radius: 12px;
+  background: rgba(0,0,0,.88); border: 1px solid rgba(108,201,255,.42); color: var(--fg);
+  opacity: 0; transition: opacity .18s var(--ease); }
+/* no blurred shadow on the card: its first raster cost the GPU 37-41 ms (any blur radius), one frame of 24-25 ms as the
+   first fact opened (tools/qa/engine/pl_matrix.py P01); the .88 black and the ion edge carry the card */
+.sp-at[data-face="l"] .sp-card { right: 0; border-top-right-radius: 3px; }
+.sp-at[data-face="r"] .sp-card { left: 0; border-top-left-radius: 3px; }
+.sp-at[data-hang="up"][data-face="l"] .sp-card { border-top-right-radius: 12px; border-bottom-right-radius: 3px; }
+.sp-at[data-hang="up"][data-face="r"] .sp-card { border-top-left-radius: 12px; border-bottom-left-radius: 3px; }
+.sp-at[data-hang="side"] .sp-card { border-radius: 12px; }
+/* the tie: a level line from the head to a card hung beside the post (scaleX: its length / 100 px, set by the engine) */
+.sp-tie { position: absolute; top: -1px; width: 100px; height: 2px; opacity: 0; transition: opacity .18s var(--ease);
+  background: linear-gradient(90deg, rgba(108,201,255,.45), var(--ion)); }
+.sp-at[data-face="l"] .sp-tie { right: 0; transform-origin: 100% 50%; }
+.sp-at[data-face="r"] .sp-tie { left: 0; transform-origin: 0 50%; background: linear-gradient(90deg, var(--ion), rgba(108,201,255,.45)); }
+#world[data-marks="live"] .sp-layer:is([data-layout="cards"], [data-layout="slim"]):not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis]:is([data-hang="side"], [data-hang="down"]) .sp-tie {
+  opacity: .9; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
+#world[data-marks="live"] .sp-layer:is([data-layout="cards"], [data-layout="slim"]):not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis] .sp-card {
+  opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
+/* reviewer B: a phone turned onto its side in a fact: the card comes out of the dock's display: none at opacity 1 (no
+   transition from none), over the dock's fading row of the same fact. It starts from 0 and fades in as a new card does,
+   once the row is gone (kept display: none in the dock: laid out there, the hidden card added 0.17 ms of Layerize per
+   frame on a phone at 4x CPU) */
+@starting-style {
+  #world[data-marks="live"] .sp-layer:is([data-layout="cards"], [data-layout="slim"]):not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis] .sp-card { opacity: 0; }
+}
+.sp-layer[data-layout^="dock"] .sp-card { display: none; }                       /* phones: the fact is in the dock */
+/* on opening, a line of light runs once along the card's top edge, from the post */
+.sp-card::after { content: ""; position: absolute; top: -1px; left: 12px; right: 12px; height: 1px; opacity: 0; transform: scaleX(0);
+  background: linear-gradient(90deg, rgba(108,201,255,0), #d7f0ff 50%, rgba(108,201,255,0)); }
+.sp-at[data-face="l"] .sp-card::after { transform-origin: 100% 50%; }
+.sp-at[data-face="r"] .sp-card::after { transform-origin: 0 50%; }
+.sp-layer:not([data-enter="back"]) .spost[data-s="cur"] .sp-card::after { animation: sp-scan .9s var(--ov-ease) .3s both; }
+@keyframes sp-scan { 0% { opacity: 1; transform: scaleX(0); } 60% { opacity: 1; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+/* the fact: key and ordinal, the number (its glyphs rise into place: K4's graft), one line of what it counts */
+.sp-k { display: flex; align-items: baseline; justify-content: space-between; gap: 22px; margin: 0; max-width: none; white-space: nowrap;
+  font: 600 13.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ion); }
+.sp-k b { font-weight: 500; color: var(--fg-2); letter-spacing: .04em; }
+.sp-k .nb { text-transform: none; letter-spacing: .02em; }
+.sp-v { margin: 6px 0 0; max-width: none; padding: .04em 0 .06em; overflow: hidden; overflow: clip; white-space: nowrap;
+  font: 650 clamp(46px, 4.2vw, 64px)/1 var(--display); letter-spacing: -0.03em; color: var(--fg); font-variant-numeric: tabular-nums; }
+.sp-n { margin: 9px 0 0; max-width: 34ch; font: 500 15.5px/1.4 var(--sans); color: var(--fg); }
+.dg { display: inline-block; transform: translateY(108%); transition: transform 0s linear .25s; }   /* 2-D: no layer at rest (a 3-D transform kept one per glyph) */
+.dg.un { font-size: .62em; font-weight: 600; color: var(--fg); letter-spacing: 0; }
+.dg-gap { font-size: .36em; }                                       /* the space before the unit: about .14 em of the unit */
+.spost[data-s="cur"] .dg, .sf[data-s="cur"] .dg { transform: translateY(0);
+  transition: transform var(--sp-rise) var(--ov-ease) calc(var(--sp-rd) + var(--i) * var(--sp-step)); }
+/* the keyframes card names its dots only where they are drawn; where none are, it has no line (as Route and Duration) */
+#world:not([data-marks="live"]) .when-dots { display: none; }
+/* phones: a leader drops from the current ring to the dock (the engine stretches it by scaleY) */
+.sp-lead { width: 2px; height: 100px; margin-left: -1px; transform-origin: 50% 0; opacity: 0; transition: opacity .18s var(--ease);
+  background: linear-gradient(180deg, var(--ion), rgba(108,201,255,.4)); }
+#world[data-marks="live"] .sp-layer[data-layout^="dock"]:not([data-kbd]) .sp-lead[data-vis] { opacity: .9; will-change: transform; transition: opacity var(--sp-dur) var(--ease); }   /* marks.js times its way in */
+
+/* the dock's fact cap: on chapter 2's strip, always laid out (only its opacity changes, so nothing shifts at 0.55); it
+   shows on phones, and on every size while no signpost stands (still mode, the 3-D not up yet). Its rows share one grid
+   cell, so a new fact never changes its height */
+.strip-fact { position: absolute; left: -1px; right: -1px; bottom: calc(100% + 1px); display: grid; padding: var(--cap-pt, 12px) 14px var(--cap-pb, 10px); pointer-events: none;
+  background: rgba(0,0,0,.9); border: 1px solid var(--line); border-top-color: rgba(108,201,255,.45); border-bottom: 0; border-radius: var(--r) var(--r) 0 0;
+  opacity: 0; transition: opacity .18s var(--ease);
+  --sp-in: .3s; --sp-dur: .3s; --sp-rd: .32s; --sp-rise: .55s; --sp-step: 40ms; }
+/* review A: the cap opens with its first fact (the same delay and fade), not 0.3 s ahead of it as an empty black box */
+.strip[data-facts^="dock"] .strip-fact, #world:not([data-marks="live"]) .strip[data-facts] .strip-fact { opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
+.strip[data-facts^="dock"], #world:not([data-marks="live"]) .strip[data-facts] { border-top-left-radius: 0; border-top-right-radius: 0; }
+.sf { position: relative; grid-area: 1 / 1; min-width: 0; opacity: 0; transition: opacity .18s var(--ease); }
+.sf[data-s="cur"] { opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
+.sf::before { content: ""; position: absolute; top: calc(-1px - var(--cap-pt, 12px)); left: 0; right: 0; height: 1px; opacity: 0; transform: scaleX(0); transform-origin: 0 50%;
+  background: linear-gradient(90deg, rgba(108,201,255,0), #d7f0ff 50%, rgba(108,201,255,0)); }
+.strip-fact:not([data-enter="back"]) .sf[data-s="cur"]::before { animation: sp-scan .9s var(--ov-ease) .3s both; }
+.strip-fact .sp-k { font-size: 13px; }
+.strip .strip-fact .sp-v { margin: 2px 0 0; font-size: 44px; }
+.strip .strip-fact .sp-n { margin: 4px 0 0; max-width: none; font-size: 15px; }
+.strip[data-facts="dock-slim"] .strip-fact .sp-n { display: none; }            /* short phones: the number, not its line */
+/* desktops without signposts: one 760 px cap, the number and its line side by side */
+@media (min-width: 761px) and (min-height: 501px) {
+  .sf { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 22px; align-items: end; }
+  .sf .sp-k { grid-column: 1 / -1; }
+  .strip .strip-fact .sp-v { font-size: clamp(40px, 3.4vw, 52px); }
+  .strip .strip-fact .sp-n { margin: 0 0 6px; }
+}
+/* the ride's end (run to the end: the strip has stayed through the beat). Into the pull-back, its caption waits for the
+   leaving strip (0.3 s), so a fast scroll past the ride's end never stacks them; back up into the ride, the strip cuts in
+   (overlays.js data-enter: "not camera video" is on screen from the ride's first frame) and the caption goes at once */
+.ov #ch-2 .ch-cap[data-ov="on"] { transition-delay: .3s; }
+.ov #ch-2 .strip[data-ov="on"][data-enter="back"] { transition: none; }
+.ov #ch-2 .strip[data-ov="on"] ~ .ch-cap[data-ov="off"], .ov #ch-2 .ch-cap[data-ov="off"][data-enter="back"] { transition-duration: 0s; }
+/* short laptops (1366 x 657, 1280 x 720): smaller numbers, so a card hangs clear of the strip for longer */
+@media (min-width: 761px) and (max-height: 720px) {
+  .sp-v { font-size: clamp(40px, 3.6vw, 52px); }
+  .sp-n { font-size: 14.5px; }
+}
+
+/* ================================================================ explore: every map as an island */
+.ov .ex-intro, .ov .explore-card { left: var(--gutter); top: calc(var(--head-h) + 6vh); width: min(440px, calc(100% - 2 * var(--gutter))); }
+.ex-intro h2 { margin-bottom: 12px; }
+.ex-lead { margin: 0; font-size: 17px; line-height: 1.55; color: var(--fg); }
+.ex-hint { margin: 14px 0 0; color: var(--fg-2); }
+.ex-chips, .xbar { display: flex; flex-wrap: wrap; gap: 6px; }
+.ov .ex-chips { position: absolute; right: var(--gutter); top: calc(var(--head-h) + 6vh); }
+.ov .xbar { flex-direction: column; flex-wrap: nowrap; align-items: flex-end; }
+html:not(.ov) .ex-chips { margin: 18px 0; }
+.xchip { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: rgba(0,0,0,.82); color: var(--fg); font: 500 15px/1 var(--sans); text-decoration: none; white-space: nowrap; cursor: pointer; }
+.xchip span { font: 500 13px/1 var(--mono); color: var(--fg-2); letter-spacing: .02em; }
+.xchip:hover { border-color: var(--line-3); color: var(--fg); }
+.xchip[aria-pressed="true"] { border-color: var(--ion); }
+.xchip[aria-pressed="true"] span { color: var(--ion); }
+.explore-card { width: min(440px, 100%); }
+.explore-card .mcard-links .btn { font-size: 15px; }
+.ex-foot { display: flex; align-items: flex-end; gap: 18px; }
+.ov .ex-foot { position: absolute; left: var(--gutter); right: calc(var(--gutter) + 232px); bottom: 26px; }
+.ex-note { margin: 0; max-width: 62ch; padding: 9px 12px; background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 8px;
+  font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }
+.ex-btns { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; flex: none; }
+.ex-btns .btn { min-height: 44px; padding: 0 16px; font-size: 15px; background: rgba(0,0,0,.84); }
+
+/* the dive: a slim bar, everything else steps back */
+/* on the content's left edge, clear of the top-view box on the right */
+.dive-bar { position: absolute; left: var(--edge); bottom: 26px; width: max-content; max-width: calc(100% - 2 * var(--edge) - 268px); display: flex; gap: 18px; align-items: center;
+  padding: 12px 14px 12px 20px; background: rgba(0,0,0,.86); border: 1px solid var(--line-2); border-radius: 14px; }
+.dive-txt { min-width: 0; }
+.dive-k { margin: 0; color: var(--ion); }
+.dive-t { margin: 3px 0 0; font: 600 19px/1.2 var(--display); color: var(--fg); }
+.dive-t span { margin-left: 8px; font: 500 13px/1 var(--mono); color: var(--fg-2); }
+.dive-c { margin: 4px 0 0; font: 500 13px/1.45 var(--mono); color: var(--fg); max-width: 56ch; }
+.dive-credit { display: none; color: var(--fg-2); }
+.dive-bar[data-rosario="1"] .dive-credit { display: inline; }
+.dive-btns { display: flex; gap: 10px; margin: 0; flex: none; }
+.dive-btns .btn { min-height: 44px; padding: 0 16px; font-size: 15px; }
+.dive-btns kbd { font: 500 12px/1 var(--mono); border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 5px; color: var(--fg-2); }
+
+/* ================================================================ the 2-D story: opaque, it slides over the world */
+.story { position: relative; z-index: 2; background: var(--bg); }
+/* the curtain's leading edge: the stage sinks into the black above the story instead of being cut by a straight line
+   through the islands (review DE); a static gradient, nothing animates */
+.story[data-world-end]::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 22vh; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.42) 40%, rgba(0,0,0,.86) 78%, #000 100%); }
+.nw { white-space: nowrap; }
+.section.story { padding: clamp(56px, 7vw, 100px) 0; }
+.story.band { background: var(--bg-1); }
+.split h2 { max-width: 14ch; }
+/* who we are: the stack the company is working towards, drawn as a stack (energy at the base, the product on top; the
+   list keeps the sentence's order). Labels only, no status; xclean's place in ion */
+.stack { list-style: none; margin: 0 0 26px; padding: 0; max-width: 30rem; display: flex; flex-direction: column-reverse;
+  border-bottom: 1px solid var(--line-2); }
+.stack li { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 8px 2px 7px;
+  border-top: 1px solid var(--line); font: 500 13px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); }
+.stack li.is-x { color: var(--ion); }
+.stack li span { font: 400 15px/1.4 var(--sans); letter-spacing: 0; text-transform: none; }
+.xc-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin-bottom: clamp(28px, 4vw, 44px); }
+.xc-head h2 { max-width: 22ch; }
+.xc-head .lead { margin-bottom: 0; }
+.xc-fig { display: none; }
+@media (min-width: 1100px) {
+  .xc-top { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: end; gap: clamp(32px, 4vw, 64px); }
+  .xc-fig { display: block; }
+  .on-fig1 { display: inline; }
+  .no-fig1 { display: none; }
+}
+.xc-field { position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: var(--r); background: #000; overflow: hidden; }
+.xc-field canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.xc-fig figcaption { font-size: 15px; }
+.xc-cards { margin: 0 0 8px; align-items: start; }
+.ntiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 30px 0 4px; }
+.ntile { position: relative; background: #000; border: 1px solid var(--line-2); border-radius: 14px; padding: 22px 22px 20px; }
+.ntile .v { position: relative; display: inline-flex; align-items: baseline; gap: 6px; margin: 0; padding-bottom: 10px; font: 650 clamp(56px, 7vw, 112px)/.95 var(--display); letter-spacing: -0.04em; color: var(--fg); font-variant-numeric: tabular-nums; }
+.ntile .v::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--ion); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1.2s var(--ease) .2s; }
+.ntiles.in .v::after { transform: none; }
+.ntile .v small { font: 500 clamp(17px, 1.6vw, 22px)/1 var(--mono); letter-spacing: 0; color: var(--fg-2); }
+.ntile .k { margin: 14px 0 0; font-size: 17px; line-height: 1.45; color: var(--fg); max-width: 26ch; }
+.ntile .s { margin: 8px 0 0; }
+.acc { margin-top: clamp(48px, 6vw, 80px); padding-top: clamp(36px, 4vw, 52px); border-top: 1px solid var(--line-2); }
+.acc h3 { font-size: clamp(24px, 2.6vw, 32px); }
+.acc .grid { margin: 26px 0 22px; }
+.acc .tally { min-height: 46px; }                                                /* the bars arrive with board.json: no shift */
+.contact-in { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end; }
+.contact-in h2 { max-width: 18ch; margin: 0; }
+.contact { border-top: 1px solid var(--line); }
+/* choreography (DE-19): rows reveal in sequence, eyebrow rules draw in */
+.story .grid > [data-reveal]:nth-child(2), .story .split > [data-reveal]:nth-child(2), .contact-in > [data-reveal]:nth-child(2) { transition-delay: 90ms; }
+.story .grid > [data-reveal]:nth-child(3) { transition-delay: 180ms; }
+.story .grid > [data-reveal]:nth-child(4) { transition-delay: 270ms; }
+.js .story [data-reveal] .eyebrow::before { width: 0; transition: width .6s var(--ease) .15s; }
+.js .story [data-reveal].in .eyebrow::before { width: 22px; }
+
+/* the header over the stage: no live blur over a redrawing canvas (SP-16) */
+.home .head:not(.is-top) { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(0,0,0,.88); }
+
+/* ================================================================ tablets and narrow windows */
+@media (max-width: 1100px) {
+  .ex-foot { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+@media (max-width: 900px) {
+  .ntiles { grid-template-columns: minmax(0, 1fr); }
+  .ntile .v { font-size: clamp(56px, 14vw, 88px); }
+}
+
+/* ================================================================ phones (portrait) */
 @media (max-width: 760px) {
-  .hero-scrim { background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.88) 45%, rgba(0,0,0,.55) 75%, rgba(0,0,0,.7) 100%); }
-  .hero-poster { object-position: 70% 50%; }
+  .world { --b-rise: 85; --b-atlas: 75; --b-explore: 85;
+    --b-g1: 30; --b-d1: 30; --b-r1: 85; --b-p1: 30;
+    --b-g2: 25; --b-d2: 30; --b-r2: 176; --b-p2: 25;    /* way in + look beat 44 as before, facts 132 (33 per fact) */
+    --b-g3: 25; --b-d3: 25; --b-r3: 75; --b-p3: 25; }
+  .hero-scrim { background: linear-gradient(0deg, #000 0%, rgba(0,0,0,.88) 45%, rgba(0,0,0,.55) 75%, rgba(0,0,0,.7) 100%); }
   .hero-scroll { display: none; }
   .hero-cap { font-size: 15.5px; }
   .hero-inner { padding-top: calc(var(--head-h) + 28px); }
+  .hero-foot { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+  /* panels dock to the bottom, full width, above the home indicator (PH-1, PH-11) */
+  .ov .rise-panel, .ov .ch-card, .ov .strip, .ov .ch-cap, .ov .explore-card {
+    left: 10px; right: 10px; width: auto; max-width: none; bottom: calc(10px + env(safe-area-inset-bottom)); top: auto; }
+  .ov .beat--atlas .pin-wrap { align-items: flex-end; padding: 0 10px calc(10px + env(safe-area-inset-bottom)); }
+  .ov .title-panel { width: 100%; margin: 0; }
+  .ov-panel { padding: 18px 16px 16px; background: rgba(0,0,0,.93); }
+  .title-panel .lead { font-size: 17px; }
+  .island-note { font-size: 13.5px; }
+  .rise-cap { font-size: 15.5px; margin-bottom: 12px; }
+  .mcard { padding: 14px 14px 12px; background: rgba(0,0,0,.93); }
+  .mcard h3 { font-size: 26px; }
+  .mcard-k { font-size: 13px; margin-bottom: 6px; }
+  .mcard-meta { font-size: 13px; margin-bottom: 8px; }
+  .mcard-line { font-size: 15px; margin-bottom: 10px; }
+  .mcard-stats { margin-bottom: 10px; }
+  .mcard-stats > div { padding: 7px 4px 7px 0; }
+  .mcard-stats > div + div { padding-left: 7px; }
+  .mcard-stats dt { font-size: 13px; letter-spacing: 0; }
+  /* review FA: "(full map)" stays (FA-14): the phone draws a 0.3-0.6 M cut. Integrator: 13 px (H-PH4's floor) in the sans
+     face on one line (13 px mono broke it into "(full / map)" in the 75 px column) */
+  .mcard-stats dt .nb { font: 500 13px/1.2 var(--sans); white-space: nowrap; }
+  .mcard-stats dd { font-size: 17px; }
+  .mcard-credit { font-size: 13px; margin-bottom: 8px; }
+  .mcard-cav { margin-bottom: 8px; }
+  .mcard-links .btn { min-height: 44px; font-size: 15px; }
+  .strip { padding: 6px 6px 9px 12px; background: rgba(0,0,0,.9); }
+  .strip-id { font-size: 16.5px; gap: 8px; flex-wrap: nowrap; }
+  .strip-go { flex: none; width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .strip-go .arr { font-size: 18px; }
+  .strip-cav { margin-top: 2px !important; padding-right: 6px; font: 400 13.5px/1.4 var(--sans); }
+  .strip-cav .lic { display: none; }
+  .strip-credit { margin-top: 4px !important; padding-right: 6px; font-size: 13px; }
+  .when-wide, .mcard-credit > .when-wide { display: none; }
+  .when-narrow { display: inline; }
+  .mcard-credit > .when-narrow { display: block; }
+
+  /* the rail: one row of 44 px segments under the header */
+  .rail-in { top: calc(var(--head-h) + 4px); bottom: auto; left: 10px; right: 10px; display: block; }
+  .rail-box { padding: 0 0 6px; }
+  .rail-list { flex-direction: row; gap: 4px; }
+  .rail-list li { flex: 1; }
+  .rail-list a { justify-content: center; padding: 0; }
+  .rail-list b { width: 100%; }
+  .rail-list a > span { display: none; }
+  .rail-track { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 2px; }
+  .rail-track i { transform-origin: 0 50%; transform: scaleX(var(--rp, 0)); }
+
+  /* HUD: a 96 px top-view corner; the split view is a band under the header */
+  .hud-map { right: 10px; top: calc(var(--head-h) + 58px); bottom: auto; width: 112px; padding: 6px 7px; }
+  .hud-map .hud-head .hud-k, .hud-map .hud-foot { display: none; }
+  .hud-head { font-size: 13px; }
+  .hud-mini { height: 80px; margin-top: 4px; }
+  .world-hud[data-split="1"] .hud-map { top: var(--head-h); bottom: auto; left: 0; right: 0; width: auto; height: 18svh; border-radius: 0; border-width: 0 0 1px; padding: 6px 12px; }
+  .world-hud[data-split="1"] .hud-map .hud-foot { display: flex; font-size: 13px; margin-top: 4px; }
+  .split-note { display: none; }
+  .hud-atlas { display: none; }                                    /* the islands themselves are the map here; the chips navigate */
+  .world-credit { left: 10px; right: 10px; top: calc(var(--head-h) + 58px); padding: 6px 9px; }
+  .hud-tilt { right: 10px; top: calc(var(--head-h) + 148px); bottom: auto; }
+  .hud-tilt-msg { right: 10px; top: calc(var(--head-h) + 198px); bottom: auto; }
+  .hud-hint { bottom: 42%; font-size: 13.5px; }
+
+  /* chapter 2's facts: the strip shows its licence for the whole ride (a chip at the head of the caveat: two lines, not
+     three, from 360 px up), so the dock's foot holds the licence, the caveat and the link through the facts beat */
+  #ch-2 .strip-cav { font-size: 13px; }
+  #ch-2 .strip-cav .lic { display: inline-flex; margin-right: 6px; padding: 3px 7px; letter-spacing: 0; vertical-align: 1px; }
+  /* the cap: the number with its key and ordinal beside it, then its line (the dock stays low: the signposts' rings keep
+     16 px above it, tools/build_marks.py). A fact without a line keeps its number where the others have it (align-content:
+     start; the rows share one cell, so the cap's height never changes between facts) */
+  .sf { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 14px; align-items: end; align-content: start; }
+  .sf .sp-k { grid-area: 1 / 2; flex-direction: column; align-items: flex-end; gap: 4px; padding-bottom: 5px; }
+  .sf .sp-v { grid-area: 1 / 1; }
+  .sf .sp-n { grid-column: 1 / -1; }
+  .strip-fact { --cap-pt: 10px; --cap-pb: 8px; }
+  .strip .strip-fact .sp-v { margin-top: 0; }
+  .strip .strip-fact .sp-n { line-height: 1.35; }
+
+  /* explore: chips in one scrolling row under the header, the card as a bottom sheet (<= 38 % of the screen) */
+  .ov .ex-chips { left: 0; right: 0; top: calc(var(--head-h) + 6px); overflow-x: auto; padding: 0 10px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+  .ov .xbar { flex-direction: row; align-items: center; width: max-content; }
+  .ex-chips::-webkit-scrollbar { display: none; }
+  .xchip { min-height: 44px; flex: none; }
+  .ov .ex-intro { left: 10px; right: 10px; width: auto; top: calc(var(--head-h) + 58px); padding: 14px 14px 12px; }
+  .ex-intro h2 { font-size: 24px; margin-bottom: 8px; }
+  .ex-lead { font-size: 15px; }
+  .ex-hint { margin-top: 8px; }
+  .ov .explore-card { max-height: 38svh; overflow-y: auto; overscroll-behavior-x: contain; }   /* H-PL1: vertical chains to the page */
+  .ov .ex-foot { left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); }
+  .ex-foot { flex-direction: column; align-items: stretch; gap: 8px; }
+  .ex-note { font-size: 13px; padding: 7px 10px; }
+  .ex-btns { gap: 8px; }
+  .ex-btns .btn { flex: 1 1 auto; justify-content: center; padding: 0 12px; font-size: 14.5px; white-space: nowrap; }
+  .explore-card .mcard-meta { display: none; }
+  .ov .ex-wrap[data-card="1"] .ex-foot, .ov .ex-wrap[data-card="1"] .ex-foot * { opacity: 0; pointer-events: none; }
+  .dive-bar { left: 10px; right: 10px; width: auto; max-width: none; bottom: calc(10px + env(safe-area-inset-bottom)); flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 14px; }
+  .dive-btns { flex-wrap: wrap; }
+
+  .contact-in { grid-template-columns: minmax(0, 1fr); }
+  .contact .btn { font-size: 15.5px; }
+  .story[data-world-end]::before { height: 14svh; }                 /* short: the explore sheet docks at the bottom */
 }
 
-/* ---------------- sections */
-.split h2 { max-width: 14ch; }
-.split .ticks { margin-top: 26px; }
-.xc-head { max-width: 860px; margin-bottom: clamp(32px, 4vw, 52px); }
-.xc-head h2 { max-width: 18ch; }
-.xc-cards { margin: clamp(32px, 4vw, 48px) 0 24px; }
+/* ================================================================ short landscape screens (phones on their side: PH-5, RA-4) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .world { --k: .9; }
+  .hero-inner { padding-top: calc(var(--head-h) + 16px); }
+  .hero-name { font-size: clamp(44px, 8vw, 96px); }
+  .hero-lead { margin-top: 16px; font-size: 17px; max-width: 70ch; }   /* 4 lines: both buttons stay on a 390 px screen */
+  .hero .btns { margin-top: 16px; }
+  .hero-cap { font-size: 14px; padding: 8px 12px; }
+  /* the card docks left (40 vw) between the header and the bottom edge, and scrolls inside itself if it must */
+  .ov .rise-panel, .ov .ch-card, .ov .explore-card, .ov .ex-intro {
+    left: max(10px, env(safe-area-inset-left)); right: auto; top: calc(var(--head-h) + 8px); bottom: auto; width: min(52vw, 480px);
+    max-height: calc(100svh - var(--head-h) - 16px); overflow-y: auto; overscroll-behavior-x: contain; }   /* H-PL1 */
+  .ov .beat--atlas .pin-wrap { align-items: flex-start; padding: calc(var(--head-h) + 8px) 0 0 max(10px, env(safe-area-inset-left)); }
+  .ov .title-panel { width: min(64vw, 600px); margin: 0; max-height: calc(100svh - var(--head-h) - 16px); overflow-y: auto; }
+  .ov .rise-panel { width: min(58vw, 540px); }
+  .ov .strip, .ov .ch-cap { left: max(10px, env(safe-area-inset-left)); right: auto; width: min(52vw, 520px); bottom: 8px; }
+  .ov-panel, .mcard { padding: 12px 14px; }
+  .mcard-meta, .mcard-stats { display: none; }                     /* the stats stay on the maps page and the explore card's page */
+  .mcard h3 { font-size: 24px; margin-bottom: 4px; }
+  .mcard-k { margin-bottom: 4px; }
+  .mcard-line { font-size: 14.5px; margin-bottom: 8px; }
+  .mcard-credit, .mcard-cav { margin-bottom: 8px; }
+  .when-wide, .mcard-credit > .when-wide { display: none; }
+  .when-narrow { display: inline; }
+  .mcard-credit > .when-narrow { display: block; }
+  .rise-cap { font-size: 14.5px; margin-bottom: 10px; }
+  .title-panel h2 { font-size: 26px; margin-bottom: 8px; }
+  .title-panel .lead { font-size: 14.5px; }
+  /* integrator: the title panel overflowed its box by 8-12 px here, so it became a tiny scroll container under the
+     reader's thumb (a drag on it scrolled the panel, not the page; synthesized touch gestures stalled at the atlas) */
+  .title-hint { margin-top: 6px; }
+  .island-note { margin-top: 6px; padding-top: 6px; font-size: 13px; line-height: 1.4; }
+  /* the HUD becomes a strip on the right */
+  .rail-in { right: max(10px, env(safe-area-inset-right)); top: calc(var(--head-h) + 6px); bottom: auto; display: block; }
+  .rail-box { padding: 0 0 6px; }
+  .rail-list { flex-direction: row; }
+  .rail-list a > span { display: none; }
+  .rail-track { left: 0; right: 14px; top: auto; bottom: 0; width: auto; height: 2px; }
+  .rail-track i { transform-origin: 0 50%; transform: scaleX(var(--rp, 0)); }
+  .hud-map, .hud-atlas { right: max(10px, env(safe-area-inset-right)); top: auto; bottom: 8px; width: 150px; padding: 6px 8px; }
+  .hud-mini { height: 72px; }
+  .hud-map .hud-tele, .hud-atlas, .split-note { display: none; }
+  .world-hud[data-split="1"] .hud-map { top: calc(var(--head-h) + 58px); bottom: 8px; width: 40vw; }
+  /* WIRE: in the split view the top view owns the right 40vw; the tilt button moves to its left edge (it covered the view).
+     Integrator (RA-H2): it moves by a transform from one layout anchor (it jumped (702, 210) -> (357, 130) by top / right
+     while visible: a layout shift), with a cut instead of a slide */
+  .hud-tilt { right: max(10px, env(safe-area-inset-right)); top: auto; bottom: 144px; --tx: 0px; transform: translate3d(var(--tx), 8px, 0); transition: opacity .35s var(--ease); }
+  .world-hud[data-split="1"] .hud-tilt { --tx: calc(-40vw - 8px); }
+  .world-hud[data-tilt="1"] .hud-tilt, .world-hud .hud-tilt:focus-visible { transform: translate3d(var(--tx), 0, 0); }
+  .hud-tilt-msg { display: none; }
+  /* integrator (RA-H2 + H-PH5): ONE layout anchor for every beat (top left, under the header), placed by a transform:
+     bottom RIGHT by default (the cards, the title, the explore intro and the captions own the left 52-64vw: a card
+     covered the credit's first line in chapter 2's glide and in explore), top left in rides and dives (the strip owns
+     the bottom left, the top view the bottom right). It used to switch top <-> bottom by layout while visible: 5 layout
+     shifts, CLS 0.26 at 844 x 390. A transform is not a layout shift; it moves without a slide (opacity fades only). */
+  .world-credit { left: max(10px, env(safe-area-inset-left)); right: auto; top: calc(var(--head-h) + 8px); bottom: auto; max-width: 44vw;
+    --cx: calc(100vw - 100% - max(10px, env(safe-area-inset-left)) - max(10px, env(safe-area-inset-right)));
+    --cy: calc(100vh - var(--head-h) - 16px - 100%);
+    transform: translate3d(var(--cx), calc(var(--cy) + 8px), 0); transition: opacity .35s var(--ease); }
+  @supports (height: 1lvh) { .world-credit { --cy: calc(100lvh - var(--head-h) - 16px - 100%); } }
+  .world-hud[data-mini="1"] .world-credit, .world-hud[data-split="1"] .world-credit { --cx: 0px; --cy: 0px; }
+  #world[data-rosario="1"] .world-credit:not([data-carried]), .world-credit[data-force]:not([data-carried]) { transform: translate3d(var(--cx), var(--cy), 0); }
+  /* chapter 2's facts: a compact card; the strip is slim for the whole ride (below) */
+  .sp-card { max-width: 300px; padding: 9px 13px 10px; }
+  .sp-k { font-size: 13px; gap: 16px; }
+  .sp-v { margin-top: 4px; font-size: 32px; }
+  .sp-n { margin-top: 5px; font-size: 13.5px; }
+  .strip .strip-fact .sp-v { font-size: 32px; }
+  .strip .strip-fact .sp-n { font-size: 13.5px; }
+  .strip-fact { --cap-pt: 8px; --cap-pb: 7px; padding-left: 12px; padding-right: 12px; }
+  /* WIRE: two columns of chips, so all 8 names fit beside the title panel (one column showed 5 of 8 at 844 x 390) */
+  .ov .ex-chips { top: calc(var(--head-h) + 8px); right: max(10px, env(safe-area-inset-right)); left: auto; max-width: calc(46vw - 20px);
+    max-height: calc(100svh - var(--head-h) - 16px); overflow-y: auto; overscroll-behavior-x: contain; }   /* H-PL1 */
+  .ov .xbar { display: grid; grid-template-columns: repeat(2, minmax(0, auto)); justify-content: end; gap: 6px; }
+  .xchip { min-height: 44px; font-size: 13.5px; padding: 0 10px; gap: 6px; }       /* H-PH3 / RA-H3: 44 px */
+  .xchip span { font-size: 13px; }                                                   /* H-PH4: 13 px floor */
+  .strip-go { min-height: 44px; }                                                    /* H-PH3 */
+  .hud-head, .hud-foot, .hud-k, .hud-state, .hud-scale { font-size: 13px; }          /* H-PH4 */
+  .ov .ex-foot { display: none; }
+  /* integrator: the dive bar keeps its caveat and the Rosario credit in landscape (".dive-c { display: none }" left an
+     explore dive into a Rosario map with neither on screen: A6 / A7); text above, buttons below, clear of the top view */
+  .dive-bar { bottom: 8px; padding: 8px 12px; flex-direction: column; align-items: stretch; gap: 6px; width: min(64vw, 600px); max-width: none; }
+  .dive-k { display: none; }
+  .dive-t { font-size: 17px; }
+  .dive-c { margin-top: 2px; line-height: 1.35; }
+}
 
-/* the 3D figure: poster, then a live canvas or the film fades in over it */
-.fly .plate { aspect-ratio: 16 / 10; }
-.fly .plate > img, .fly-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.fly-layer { opacity: 0; transition: opacity 1.2s var(--ease); }
-.fly-layer.in { opacity: 1; }
-.fly-hud { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; z-index: 2; pointer-events: none; }
-.fly-hud > span:not(.fly-load) { font: 500 13.5px/1 var(--mono); color: var(--fg); background: rgba(0,0,0,.84); border: 1px solid var(--line-2); border-radius: 999px; padding: 8px 12px; }
-.fly-badge { display: inline-flex; align-items: center; gap: 8px; }
-.fly-badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--fg-3); }
-.fly[data-state="live"] .fly-badge i { background: var(--ion); box-shadow: 0 0 0 3px var(--ion-dim); }
-.fly[data-state="film"] .fly-badge i { background: var(--warn); }
-.fly-load { position: absolute; left: 0; right: 0; bottom: -14px; height: 2px; background: transparent; }
-.fly-load i { display: block; height: 100%; width: var(--p, 0%); background: var(--ion); transition: width .3s; }
-.fly[data-state="live"] .fly-load, .fly[data-state="film"] .fly-load, .fly[data-state="poster"] .fly-load { display: none; }
+/* chapter 2's strip, slim for the whole ride on short screens (phones on their side, short phones): the licence and the
+   caveat in one block beside the 44 px link, the chapter's title left to the rail's "02" (FACTS_WORLD_PLAN.md 1.3). For
+   the whole ride, not from 0.55: a change at the beat would be a layout shift */
+@media (orientation: landscape) and (max-height: 500px), (max-width: 760px) and (max-height: 700px) {
+  #ch-2 .strip { display: flex; align-items: center; gap: 8px; padding: 5px 5px 5px 10px; }
+  #ch-2 .strip-id { order: 2; flex: none; }
+  #ch-2 .strip-id > :not(.strip-go) { display: none; }
+  #ch-2 .strip-go { width: 44px; min-height: 44px; padding: 0; margin-left: 0; justify-content: center; font-size: 0; }
+  #ch-2 .strip-go .arr { font-size: 18px; }
+  #ch-2 .strip-cav { order: 1; flex: 1; min-width: 0; margin-top: 0 !important; padding-right: 0; font: 400 13px/1.4 var(--sans); }
+  #ch-2 .strip-cav .lic { display: inline-flex; margin-right: 6px; padding: 3px 7px; letter-spacing: 0; vertical-align: 1px; }
+}
+/* a phone on its side, 760 px or narrower: chapter 2's slim strip a little wider, so the licence and the caveat keep to two
+   lines (60 px: the signposts' fit, tools/build_marks.py) */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
+  #ch-2 .strip { width: min(66vw, 520px); }
+}
 
-.acc { margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(40px, 5vw, 56px); border-top: 1px solid var(--line-2); }
-.acc h3 { font-size: clamp(24px, 2.6vw, 32px); }
-.acc .grid { margin: 26px 0 22px; }
-
-.mapcard { display: block; text-decoration: none; color: var(--fg); }
-.mapcard .plate { aspect-ratio: 16 / 10; }
-.mapcard .plate img { transition: transform .8s var(--ease); }
-.mapcard:hover .plate img { transform: scale(1.03); }
-.mapcard .plate .lic { position: absolute; left: 12px; top: 12px; }
-.mapcard h3 { margin: 16px 0 4px; }
-.mapcard p { margin: 0; color: var(--fg-2); font-size: 16.5px; }
-.mapcard .label { display: block; margin-top: 10px; }
-.js-maps { margin: 32px 0 24px; }
-
-.contact-in { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end; }
-.contact-in h2 { max-width: 18ch; margin: 0; }
-@media (max-width: 760px) { .contact-in { grid-template-columns: minmax(0, 1fr); } .contact .btn { font-size: 15.5px; } }
+@media (hover: hover) and (pointer: fine) {
+  #world[data-mode="live"] .stage { cursor: grab; }
+  #world[data-hovering] .stage { cursor: pointer; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-in, .hero-name.hero-in, .hero-poster { animation: none; }
-  .hero-poster { opacity: .5; }
-  .hero-drift { animation: none; }
-  .hero-scroll span { animation: none; }
+  .hero-in, .hero-name.hero-in, .hero-scroll span, .hud-hint::before, .hud-hint::after { animation: none !important; }
+  .ov [data-ov], .world-hud > *, .isl, .rail-list span { transition: none; }
+  .world-hud[data-split="1"] .hud-map { animation: none; }
+  .ntile .v::after { transition: none; transform: none; }
+  .when-fine, .when-touch, .hud-hint { display: none !important; }
+  /* chapter 2's facts: opacity only: the leaving fact goes at once, the next one fades in (0.2 s); no rise, no light line */
+  .dg { transform: none !important; transition: none !important; }
+  .sp-card::after, .sf::before { animation: none !important; }
+  .sp-card, .sf, .sp-lead, .sp-tie, .sp-at::before { transition: none !important; }
+  .spost[data-s="cur"] .sp-card, .spost[data-s="cur"] .sp-tie, .spost[data-s="cur"] .sp-at::before, .sf[data-s="cur"], .sp-lead[data-vis], .strip-fact { transition: opacity .2s var(--ease) !important; }
+}
+
+/* Windows contrast themes: backplates must not clip the hero (RA-18) */
+@media (forced-colors: active) {
+  .hero-name { line-height: 1.05; }
+  .hero .eyebrow { margin-bottom: 40px; }
 }

@@ -3,14 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (site.css repeats it): without it the
+       incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
+  <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>3-D map viewer · Necessity Robotics</title>
   <meta name="description" content="Fly through 3-D Gaussian-splat maps built from xclean's live camera poses, along xclean's own trajectory.">
+  <!-- sharing: absolute URLs (GitHub Pages); the card image is the home page's poster (our recording, CC BY 4.0) -->
+  <link rel="canonical" href="https://necessityrobotics.github.io/viewer.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Necessity Robotics">
+  <meta property="og:title" content="3-D map viewer · Necessity Robotics">
+  <meta property="og:description" content="Fly through 3-D Gaussian-splat maps built from xclean's live camera poses, along xclean's own trajectory.">
+  <meta property="og:url" content="https://necessityrobotics.github.io/viewer.html">
+  <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/site.css">
-  <link rel="stylesheet" href="css/viewer.css">
-  <link rel="preload" href="data/maps.json" as="fetch" crossorigin>
-  <link rel="modulepreload" href="vendor/three/three.module.js">
+  <!-- integrator: the page's first data, fetched at once and handed to getJSON() (js/site.js). WebKit (Safari and every
+       iOS browser) never reused a <link rel=preload as=fetch> answer for fetch(): it downloaded each file twice -->
+  <script>window.__nrPre = Object.fromEntries(['data/maps.json'].map(u => [u, fetch(u).catch(() => null)]));</script>
+  <!-- the import map comes before every module request: Firefox and Safari drop a map added after a modulepreload -->
   <script type="importmap">
   {"imports":{
     "three":"./vendor/three/three.module.js",
@@ -18,47 +34,67 @@
     "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
   }}
   </script>
+  <!-- integrator (H-PL3): the 3-D modules are preloaded only where they can run (WebGL2 and import maps); the film
+       fallback for browsers without WebGL2 no longer fetches three.js (about 0.4 MB gzip) -->
+  <script>
+    if ('WebGL2RenderingContext' in window && window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap')) {
+      for (const h of ['vendor/three/three.module.js', 'vendor/three/three.core.js']) { const l = document.createElement('link'); l.rel = 'modulepreload'; l.href = h; document.head.appendChild(l); }
+    }
+  </script>
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/viewer.css">
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/viewer/main.js"></script>
 </head>
 <body class="vbody">
 <a class="skip" href="#vw-canvas">Skip to the 3-D view</a>
-<main id="main" class="vw" data-state="boot">
+<main id="main" class="vw" data-state="boot" tabindex="-1">
   <div class="vw-stage">
     <img class="vw-poster js-poster" alt="" decoding="async">
-    <canvas id="vw-canvas" class="vw-canvas" tabindex="0" aria-label="3-D view of the map. Space plays the run in the camera's own view: drag to look around, scroll to pull back, double-click to recenter. O: free orbit, P: camera view, F: chase."></canvas>
+    <canvas id="vw-canvas" class="vw-canvas" tabindex="0" aria-label="3-D view of the map. Space plays the run in the camera's own view: drag or use the arrow keys to look around, scroll to pull back, double-click to recenter. O: free orbit, P: camera view, F: chase."></canvas>
     <div class="vw-fallback js-fallback" hidden>
       <video class="js-fb-video" muted loop playsinline controls preload="none"></video>
       <p class="js-fb-msg"></p>
     </div>
   </div>
 
-  <!-- top bar -->
+  <!-- top bar: home, map, panels, site menu -->
   <header class="vw-top">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <h1 class="sr js-sr-title">3-D map viewer</h1>
+    <a class="wordmark" href="./" aria-label="Necessity Robotics, home"><span class="vw-wm">Necessity <i>Robotics</i></span></a>
     <div class="vw-pick">
       <label class="label" for="vw-map">Map</label>
       <select id="vw-map" class="sel js-map"></select>
     </div>
     <div class="vw-top-r">
-      <button type="button" class="vbtn js-info-btn" aria-expanded="true" aria-controls="vw-cat">Info</button>
-      <a class="vbtn" href="maps.html">All maps</a>
+      <button type="button" class="vbtn js-info-btn" aria-expanded="true" aria-controls="vw-cat vw-tel">Info</button>
+      <a class="vbtn vbtn--wide" href="maps.html">All maps</a>
+      <button type="button" class="vbtn js-menu-btn" aria-expanded="false" aria-controls="vw-nav">Menu</button>
     </div>
+    <nav class="vw-nav" id="vw-nav" aria-label="Main" hidden>
+      <a href="./">Home</a>
+      <a href="maps.html">Maps</a>
+      <a href="xclean.html">xclean</a>
+      <a href="results.html">Results</a>
+      <a href="paper.html">Paper</a>
+      <a href="credits.html">Data credits</a>
+      <a href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+    </nav>
   </header>
 
   <!-- left: catalogue -->
   <aside class="vw-panel vw-cat" id="vw-cat" aria-labelledby="vw-title">
     <span class="label js-cat-id">—</span>
-    <h1 class="vw-title" id="vw-title">Loading…</h1>
+    <h2 class="vw-title" id="vw-title">Loading…</h2>
     <p class="vw-sub js-sub"></p>
-    <span class="lic js-lic"></span>
+    <a class="lic js-lic" href="credits.html#maps"></a>
     <dl class="kv vw-kv js-kv"></dl>
     <div class="vw-lim"><h2 class="label">Known limits</h2><p class="js-lim"></p></div>
     <p class="vw-credit js-credit"></p>
   </aside>
 
   <!-- right: telemetry -->
-  <aside class="vw-panel vw-tel" aria-label="Run telemetry and loading">
+  <aside class="vw-panel vw-tel" id="vw-tel" aria-label="Run telemetry and loading">
     <h2 class="label">Telemetry</h2>
     <dl class="kv vw-kv">
       <dt>Run time</dt><dd class="num js-t">—</dd>
@@ -66,13 +102,16 @@
       <dt>Keyframe</dt><dd class="num js-kf">—</dd>
       <dt>Drawing</dt><dd class="num js-draw">—</dd>
     </dl>
-    <figure class="vw-feed js-feed" hidden>
+    <figure class="vw-feed is-empty js-feed">
       <img class="js-feed-img" alt="" width="320" height="200">
       <figcaption><b>Camera</b> <span class="js-feed-t">the real keyframe image nearest this time</span></figcaption>
     </figure>
     <h2 class="label vw-ld-h">Loading</h2>
     <ul class="vw-ld js-ld"></ul>
   </aside>
+
+  <!-- always on screen: the map's licence and source (the Rosario credit in full), whatever the panels do (FA-1 / SB-4) -->
+  <p class="vw-chip js-chip" hidden></p>
 
   <!-- bottom: controls -->
   <div class="vw-bar" role="group" aria-label="Playback and view">

@@ -1,5 +1,6 @@
-// Necessity Robotics viewer (ported from the approved review viewer) — asset loading: small JSON, the progressive point cloud, the optional LITE splat sidecar, the films
-// index, and a per-asset load timeline (performance marks; window.__viewer.loadLog for QA and VIEWER_NOTES.md).
+// Necessity Robotics viewer: asset loading. Small files and the splats come through the shared map cache when the site
+// has it (js/world/cache.js, keyed by the stable map-host URL), so a map the home page or an earlier visit already
+// fetched opens without downloading it again (SB-3); the point cloud streams in HTTP Range chunks.
 //
 // points.bin (DESIGN §8) is planar: count x 3 uint16 positions, then count x (1 | 3) colour bytes, and its points are a
 // random permutation, so ANY PREFIX IS A UNIFORM SUBSAMPLE. The cloud is fetched as HTTP Range chunks of matching
@@ -7,44 +8,48 @@
 // de-quantised on the CPU: the uint16 positions are a normalised vertex attribute and the object transform maps them
 // into the map frame (layers.js), so a chunk costs a typed-array view and one small GPU upload.
 
-const T0 = performance.timeOrigin;
-export const loadLog = [];   // {row, asset, url, bytes, start, end, onScreen} in ms since navigation start
+// the shared map cache, or null (a browser without the Cache API, or a site build without it)
+const CACHE = import('../world/cache.js').catch(() => null);
 
-export function logStart(row, asset, url, bytes = null) {
-  const rec = { row, asset, url, bytes, start: +performance.now().toFixed(1), end: null, onScreen: null };
-  loadLog.push(rec);
-  try { performance.mark(`xv:${row}:${asset}:start`); } catch (e) { /* ignore */ }
-  return rec;
-}
-export function logEnd(rec, extra = {}) {
-  if (!rec) return;
-  rec.end = +performance.now().toFixed(1);
-  Object.assign(rec, extra);
-  try { performance.mark(`xv:${rec.row}:${rec.asset}:end`); } catch (e) { /* ignore */ }
-}
-export function logOnScreen(rec) {
-  if (rec && rec.onScreen == null) rec.onScreen = +performance.now().toFixed(1);
-}
-export const navStart = () => T0;
-
-/** JSON with byte progress (onProgress(loaded, total)). */
-export async function fetchJSON(url, { signal, onProgress } = {}) {
-  const r = await fetch(url, { signal });
-  if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
-  if (!onProgress || !r.body) return r.json();
+/** The whole body of a response as bytes, streamed into one buffer, with onProgress(loaded, total). */
+async function readBytes(r, onProgress) {
   const total = Number(r.headers.get('content-length')) || 0;
+  // a compressed answer's Content-Length is its compressed size: never size the buffer from it then
+  const exact = total && !r.headers.get('content-encoding');
+  if (!r.body) { const b = new Uint8Array(await r.arrayBuffer()); onProgress?.(b.length, b.length); return b; }
   const reader = r.body.getReader();
-  const parts = [];
-  let loaded = 0;
+  let buf = new Uint8Array(exact ? total : 1 << 20), n = 0;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    parts.push(value);
-    loaded += value.byteLength;
-    onProgress(loaded, total);
+    if (n + value.length > buf.length) { const g = new Uint8Array(Math.max(buf.length * 2, n + value.length)); g.set(buf.subarray(0, n)); buf = g; }
+    buf.set(value, n);
+    n += value.length;
+    onProgress?.(n, exact ? total : 0);
   }
-  const blob = new Blob(parts);
-  return JSON.parse(await blob.text());
+  return n === buf.length ? buf : buf.slice(0, n);
+}
+
+/**
+ * A map file's bytes: from the shared map cache when it holds them, else from the network (then stored there when
+ * `keep` is set). onProgress(loaded, total) reports real bytes; a cache hit reports the whole file at once.
+ */
+export async function mapBytes(url, { onProgress, signal, keep = true } = {}) {
+  const C = await CACHE;
+  const hit = await C?.cachedBytes(url).catch(() => null);
+  if (hit) { onProgress?.(hit.length, hit.length); return hit; }
+  const r = await fetch(url, { signal });
+  if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+  const bytes = await readBytes(r, onProgress);
+  // stored before the bytes are handed on (Spark may transfer the buffer to its worker); a failed store (quota,
+  // private mode) only means the next visit downloads again
+  if (keep) await C?.putBytes(url, bytes).catch(() => {});
+  return bytes;
+}
+
+/** A map's JSON file (cache first), with byte progress. */
+export async function mapJSON(url, opts = {}) {
+  return JSON.parse(new TextDecoder().decode(await mapBytes(url, opts)));
 }
 
 async function rangeBuffer(url, a, b, signal) {
@@ -89,6 +94,3 @@ export async function loadPointChunks(url, meta, { signal, onChunk, onProgress, 
     onProgress?.(loaded, total);
   }
 }
-
-/** Yield to the event loop (a macrotask; not throttled like rAF in hidden tabs). */
-export const yieldTask = () => new Promise(r => { const ch = new MessageChannel(); ch.port1.onmessage = () => r(); ch.port2.postMessage(0); });

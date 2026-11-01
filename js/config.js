@@ -7,7 +7,7 @@
 // RELEASE SWITCH (the only one): set to true on the day github.com/necessityrobotics/xclean goes public.
 // The pages ship in the "coming soon" state; site.js swaps every [data-code-when] element and every [data-code-href]
 // link when this is true, and fills [data-code-repo] with the repo URL. The repo URL lives only here.
-export const CODE_PUBLIC = false;
+export const CODE_PUBLIC = true;
 
 export const ASSET_BASE_PROD = 'https://huggingface.co/datasets/Pyassahu/xclean-maps/resolve/main';
 export const ASSET_BASE_DEV = '/assets';

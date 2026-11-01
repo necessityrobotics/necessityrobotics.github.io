@@ -3,13 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (site.css repeats it): without it the
+       incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
+  <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>Maps · Necessity Robotics</title>
   <meta name="description" content="3-D Gaussian-splat maps reconstructed with xclean's own camera poses: our OAK-D-Lite recordings and the Rosario Dataset. Licences, credits and known limits.">
+  <!-- sharing: absolute URLs (GitHub Pages); the card image is the home page's poster (our recording, CC BY 4.0) -->
+  <link rel="canonical" href="https://necessityrobotics.github.io/maps.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Necessity Robotics">
+  <meta property="og:title" content="Maps · Necessity Robotics">
+  <meta property="og:description" content="3-D Gaussian-splat maps reconstructed with xclean's own camera poses: our OAK-D-Lite recordings and the Rosario Dataset. Licences, credits and known limits.">
+  <meta property="og:url" content="https://necessityrobotics.github.io/maps.html">
+  <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <!-- integrator: the page's first data, fetched at once and handed to getJSON() (js/site.js). WebKit (Safari and every
+       iOS browser) never reused a <link rel=preload as=fetch> answer for fetch(): it downloaded each file twice -->
+  <script>window.__nrPre = Object.fromEntries(['data/maps.json'].map(u => [u, fetch(u).catch(() => null)]));</script>
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/pages.css">
-  <link rel="preload" href="data/maps.json" as="fetch" crossorigin>
+  <script type="importmap">
+  {"imports":{
+    "three":"./vendor/three/three.module.js",
+    "three/addons/":"./vendor/three/addons/",
+    "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
+  }}
+  </script>
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/maps.js"></script>
 </head>
@@ -25,25 +50,60 @@
       <a href="maps.html" aria-current="page">Maps</a>
       <a href="paper.html">Paper</a>
       <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics" data-code-href>GitHub</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
     </nav>
   </div>
 </header>
 
-<main id="main">
-  <header class="phead">
-    <div class="wrap">
-      <p class="eyebrow">Maps · 3-D Gaussian splats</p>
-      <h1>What xclean saw, in 3-D.</h1>
-      <p class="lead">Each map is reconstructed from a route's images and xclean's own live camera poses, not ground truth: the median run of the three final-board runs (by ATE on routes with ground truth; on our OAK routes, the run whose end position is closest to the other two). Where the poses are wrong, the map shows it. Each map says where.</p>
-      <div class="btns"><a class="btn btn--ion" href="viewer.html">Open the 3-D viewer <span class="arr" aria-hidden="true">→</span></a><a class="btn" href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Download the maps</a></div>
+<main id="main" tabindex="-1">
+  <!-- the atlas: every published map as an island (js/world atlas-mount via mountAtlas); before it is up, and wherever
+       it cannot run, the maps' posters stand in (hover a name to see that map) -->
+  <header class="mx-head" data-head-over data-atlas="poster">
+    <div class="mx-stage" aria-hidden="true">
+      <div class="mx-posters"><img class="on" src="img/maps/oak_161834.webp" alt="" width="1280" height="800" decoding="async" fetchpriority="high" data-id="oak_161834"></div>
+      <div class="mx-atlas"></div>
+      <p class="mx-credit js-credit"></p>
     </div>
+    <div class="wrap mx-copy">
+      <div class="mx-copy-in">
+        <p class="eyebrow">Maps · 3-D Gaussian splats</p>
+        <h1>What xclean saw, in 3-D.</h1>
+        <p class="lead">Each map is reconstructed from a route's images and xclean's own live camera poses, not ground truth. Where the poses are wrong, the map shows it. Each map says where.</p>
+        <div class="btns"><a class="btn btn--ion" href="viewer.html">Open the 3-D viewer <span class="arr" aria-hidden="true">→</span></a><a class="btn" href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Download the maps</a></div>
+      </div>
+      <nav class="mx-chips" aria-label="Fly a map in xclean's camera view">
+        <a class="mx-chip" data-id="oak_161834" href="viewer.html?map=oak_161834&amp;cam=pov"><b>01</b> Street ride · oak_161834</a>
+        <a class="mx-chip" data-id="oak_160543" href="viewer.html?map=oak_160543&amp;cam=pov"><b>02</b> Park walk · oak_160543</a>
+        <a class="mx-chip" data-id="oak_164002" href="viewer.html?map=oak_164002&amp;cam=pov"><b>03</b> Outdoor route · oak_164002</a>
+        <a class="mx-chip" data-id="oak_164424" href="viewer.html?map=oak_164424&amp;cam=pov"><b>04</b> Outdoor route · oak_164424</a>
+        <a class="mx-chip" data-id="oak_161206" href="viewer.html?map=oak_161206&amp;cam=pov"><b>05</b> Park walk · oak_161206</a>
+        <a class="mx-chip" data-id="rosario_01" href="viewer.html?map=rosario_01&amp;cam=pov"><b>06</b> Soybean field · rosario_01</a>
+        <a class="mx-chip" data-id="rosario_03" href="viewer.html?map=rosario_03&amp;cam=pov"><b>07</b> Soybean field · rosario_03</a>
+        <a class="mx-chip" data-id="rosario_04" href="viewer.html?map=rosario_04&amp;cam=pov"><b>08</b> Soybean field · rosario_04</a>
+      </nav>
+      <div class="mx-legend">
+        <p class="mx-cap"><b>Behind this text</b> <span class="js-cap-t">Street ride (oak_161834), rendered from the map. Our own recording.</span></p>
+        <p class="mx-note">Each island is a point subsample of one of our published maps (the stereo depth of xclean's keyframes, placed with xclean's live poses), with xclean's live keyframe route in blue. Island sizes and positions are an arrangement, not to scale. Rosario islands: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0. Hover or tap an island to lift it; choose it, or a name, to ride its route in xclean's camera view.</p>
+      </div>
+    </div>
+    <aside class="mx-card js-card" aria-live="polite" hidden></aside>
   </header>
 
-  <section class="section">
+  <section class="section section--tight mx-gallery" aria-labelledby="gallery-h">
     <div class="wrap">
-      <div class="plates js-plates"><p>Loading the maps…</p></div>
-      <p class="note">Only maps from data we may share are published here: our own OAK-D-Lite recordings and the Rosario Dataset (CC BY 4.0). Routes from datasets with non-commercial or unstated licences appear on the <a href="results.html">results</a> page as numbers only. Map facts are read from each map's own files (attribution, manifest, trajectory, point cloud); path length is the sum of xclean's keyframe-to-keyframe distances. The board numbers shown come from an engine frozen with its last pre-registered kill test (K14) failed on two routes; <a href="results.html#disclosures">details</a>.</p>
+      <h2 class="sr" id="gallery-h">Every map, with its credit and its known limits</h2>
+      <div class="mx-grid">
+        <div class="mx-list js-plates"><p>Loading the maps…</p></div>
+        <figure class="mx-view js-view" hidden>
+          <a class="mx-view-pic js-view-a" href="viewer.html">
+            <span class="mx-view-imgs js-view-imgs"></span>
+            <video class="mx-view-film js-view-film" muted loop playsinline preload="none" disablepictureinpicture></video>
+            <span class="sr js-view-name"></span>
+          </a>
+          <figcaption class="mx-view-cap js-view-cap"></figcaption>
+        </figure>
+      </div>
+      <p class="note">Only maps from data we may share are published here: our own OAK-D-Lite recordings and the Rosario Dataset (CC BY 4.0). Routes from datasets with non-commercial or unstated licences appear on the <a href="results.html">results</a> page as numbers only. The poses of each map are the median run of the three final-board runs (by ATE on routes with ground truth; on our OAK routes, the run whose end position is closest to the other two). Map facts are read from each map's own files (attribution, manifest, trajectory, point cloud); path length is the sum of xclean's keyframe-to-keyframe distances. The board numbers shown come from an engine frozen with its last pre-registered kill test (K14) failed on two routes; <a href="results.html#disclosures">details</a>.</p>
     </div>
   </section>
 </main>
