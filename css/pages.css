@@ -1,11 +1,11 @@
-/* Content pages: xclean, results, maps, paper, credits (DESIGN.md section 5.3, "deep-field editorial"). */
+/* Content pages: xclean, results, maps, paper, credits, 404 (DESIGN.md section 5.3, "deep-field editorial"). */
 
 .doc { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
 .toc { position: sticky; top: calc(var(--head-h) + 28px); display: flex; flex-direction: column; gap: 2px; padding-top: 6px; }
 .toc .label { margin-bottom: 10px; }
 .toc a { color: var(--fg-2); text-decoration: none; font-size: 16px; padding: 6px 0 6px 14px; border-left: 1px solid var(--line-2); }
 .toc a:hover { color: var(--fg); border-left-color: var(--ion); }
-@media (max-width: 960px) { .doc { grid-template-columns: minmax(0, 1fr); } .toc { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px 14px; } .toc .label { width: 100%; margin: 0; } .toc a { border: 0; padding: 4px 0; } }
+@media (max-width: 960px) { .doc { grid-template-columns: minmax(0, 1fr); } .toc { position: static; flex-direction: row; flex-wrap: wrap; gap: 0 14px; } .toc .label { width: 100%; margin: 0; } .toc a { border: 0; padding: 10px 0; } }
 
 .prose { min-width: 0; }
 .prose > h2 { margin-top: clamp(56px, 6vw, 84px); padding-top: 28px; border-top: 1px solid var(--line); font-size: clamp(26px, 3vw, 36px); }
@@ -13,23 +13,42 @@
 .prose > h3 { margin-top: 34px; }
 .prose ul.ticks { margin: 8px 0 22px; }
 .prose .specs { margin: 18px 0 0; }
-.specs--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 960px) { .specs--3 { grid-template-columns: minmax(0, 1fr); } .specs--3 .spec + .spec { padding-left: 0; border-left: 0; } }
 
 .code { position: relative; margin: 0 0 22px; }
 .code pre { padding-right: 86px; }
-.code .copy { position: absolute; top: 10px; right: 10px; background: var(--bg-2); color: var(--fg); border: 1px solid var(--line-2); border-radius: 6px; font: 500 13.5px/1 var(--mono); padding: 8px 10px; cursor: pointer; }
+.code .copy { position: absolute; top: 6px; right: 6px; min-height: 44px; min-width: 64px; background: var(--bg-2); color: var(--fg); border: 1px solid var(--line-2); border-radius: 6px; font: 500 13.5px/1 var(--mono); padding: 8px 10px; cursor: pointer; }
 .code .copy:hover { border-color: var(--fg); }
 kbd { border: 1px solid var(--line-3); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; font-size: .85em; }
-.status .panel h4 { margin-bottom: 6px; }
-.status .ticks li { font-size: 17px; }
 .disclose--ion { border-color: rgba(108,201,255,.5); background: rgba(108,201,255,.06); }
-.disclose--ion h4 { color: var(--ion); }
+.disclose--ion h3 { color: var(--ion); }
+.disclose h3, .disclose .disclose-h { font-size: 18px; line-height: 1.35; letter-spacing: 0; }
+.disclose .disclose-h { margin: 0 0 .5em; }
+.disclose--ion .disclose-h { color: var(--ion); }
 
-/* results */
+/* ---------------------------------------------------------------- page headers with a visual (SB-6)
+   two columns on wide screens: the words, and a visual from our own data with a caption naming it */
+.phead--media { padding-bottom: clamp(36px, 4vw, 56px); }
+.phead--media .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: end; }
+@media (min-width: 961px) { .phead--media .wrap { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); } }
+.phead--media h1 { max-width: 16ch; }
+.phead-fig { margin: 0; min-width: 0; }
+.phead-fig .field-box { aspect-ratio: 16 / 10; }
+.phead-fig figcaption { font-size: 15.5px; margin-top: 12px; }
+/* a dimmed map poster behind the right half, blended into the black (paper, 404) */
+.phead--poster { min-height: min(72svh, 680px); display: flex; flex-direction: column; justify-content: flex-end; }
+.phead-bg { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.phead-bg img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 70% 60%; opacity: .5; }
+.phead-bg::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #000 0%, rgba(0,0,0,.88) 34%, rgba(0,0,0,.3) 72%, rgba(0,0,0,.5) 100%),
+    linear-gradient(0deg, #000 0%, rgba(0,0,0,0) 42%), linear-gradient(180deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,0) 28%); }
+@media (max-width: 760px) { .phead-bg::after { background: linear-gradient(0deg, #000 0%, rgba(0,0,0,.86) 52%, rgba(0,0,0,.55) 100%); } }
+.phead-cap { margin: 28px 0 0; max-width: 62ch; font-size: 15px; line-height: 1.5; color: var(--fg-2); padding: 10px 14px; background: rgba(0,0,0,.82); border: 1px solid var(--line); border-radius: 8px; }
+.phead-cap b { font: 600 12.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin-right: 6px; }
+
+/* ---------------------------------------------------------------- results */
 .tallies { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin: 22px 0; }
 @media (max-width: 760px) { .tallies { grid-template-columns: minmax(0, 1fr); } }
-.tallies .panel h4 { margin: 6px 0 2px; }
+.tallies .panel h3 { margin: 6px 0 2px; font-size: 18px; letter-spacing: 0; }
 .tallies .panel p { font-size: 17px; color: var(--fg-2); margin: 10px 0 0; }
 .cfg { margin: 8px 0 22px; }
 .cfg dt { white-space: nowrap; }
@@ -38,31 +57,30 @@ table.t td .rng { color: var(--fg-2); }
 .count { font: 500 15px/1.4 var(--mono); color: var(--fg-2); margin: 0 0 10px; }
 .defs dt { color: var(--fg); font: 600 17px/1.4 var(--sans); text-transform: none; letter-spacing: 0; margin-top: 18px; }
 .defs dd { margin: 4px 0 0; color: var(--fg-2); max-width: var(--measure); }
+tr.is-hit td { background: rgba(108,201,255,.1); }
 
-/* maps */
-.plates { display: grid; gap: clamp(48px, 7vw, 96px); }
-.mplate { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 56px); align-items: start; scroll-margin-top: calc(var(--head-h) + 24px); }
-.mplate .plate { aspect-ratio: 16 / 10; }
-.mplate .plate .lic { position: absolute; left: 12px; top: 12px; }
-.mplate h2 { font-size: clamp(26px, 3vw, 36px); margin-bottom: 6px; }
-.mplate .cat { font: 500 14px/1.5 var(--mono); color: var(--fg-2); margin: 0 0 18px; letter-spacing: .02em; }
-.mplate dl.kv { margin: 18px 0; }
-.mplate .lim { margin: 18px 0; }
-.mplate .lim p { font-size: 17px; margin: 0; }
-.mplate .credit { font-size: 17px; color: var(--fg-2); }
-.files { font-size: 15.5px; }
-.files td { padding: 8px 12px; }
-@media (max-width: 960px) { .mplate { grid-template-columns: minmax(0, 1fr); } }
-
-/* paper */
-.abstract { font-size: 19px; line-height: 1.7; }
-.status-line { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; }
-
-/* credits */
-.cred h3 { margin-top: 28px; }
-.cred .panel { margin: 12px 0; }
-.cred .panel p { margin: 6px 0 0; font-size: 17px; }
-.cred .panel p:first-child { margin-top: 0; }
+/* the header's verdict panel: 38 unseen routes as 38 cells, wins / ties / losses (SB-8) */
+.vpanel { background: rgba(10,10,10,.92); border: 1px solid var(--line-2); border-radius: var(--r); padding: clamp(18px, 2vw, 26px); }
+.vpanel h2 { font-size: 20px; letter-spacing: 0; margin: 6px 0 4px; }
+/* fixed row heights and reserved space: the panel is filled from data/board.json without moving anything (CLS) */
+.vpanel .tally { min-height: 45px; }
+.vstrip { display: grid; grid-template-columns: repeat(19, minmax(0, 1fr)); grid-auto-rows: 26px; gap: 3px; min-height: 55px; margin: 18px 0 8px; }
+@media (max-width: 520px) { .vpanel .tally { min-height: 66px; } .vstrip { grid-template-columns: repeat(10, minmax(0, 1fr)); grid-auto-rows: 28px; min-height: 121px; } }
+.vstrip a { display: block; border-radius: 3px; background: var(--tie); transition: transform .2s var(--ease), opacity .4s ease calc(var(--i, 0) * 18ms); }
+.vstrip a.w { background: var(--ion); }
+.vstrip a.l { background: repeating-linear-gradient(-45deg, var(--loss) 0 3px, rgba(255,173,122,.35) 3px 6px); }
+.vstrip a.f { box-shadow: inset 0 0 0 2px var(--warn); }
+.vstrip a:hover, .vstrip a.is-on { transform: translateY(-3px) scale(1.12); }
+.js .vpanel:not(.in) .vstrip a { opacity: 0; }
+.vread { min-height: 3em; margin: 6px 0 0; font: 400 14.5px/1.5 var(--mono); color: var(--fg-2); }
+.vread.is-on { color: var(--fg); }
+.vkey { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 12px 0 0; font-size: 15px; color: var(--fg-2); }
+.vkey span::before { content: ""; display: inline-block; width: 10px; height: 13px; margin-right: 7px; border-radius: 2px; vertical-align: -1px; }
+.vkey .w::before { background: var(--ion); }
+.vkey .t::before { background: var(--tie); }
+.vkey .l::before { background: var(--loss); }
+.vkey .f::before { background: var(--ion); box-shadow: inset 0 0 0 2px var(--warn); }
+.vpanel .claim { margin: 14px 0 0; font-size: 16px; color: var(--fg); }
 
 /* the full route table spans the page width (outside the TOC grid) */
 .routes-sec .prose > h2:first-child { margin-top: 0; }
@@ -75,3 +93,185 @@ table.t td .rng { color: var(--fg-2); }
 .routes-sec table.t td:last-child { white-space: normal; min-width: 7.5em; }
 .routes-sec table.t td:last-child .flag { margin: 0 4px 4px 0; }
 @media (min-width: 1200px) { .routes-sec .wrap { padding: 0 24px; } }
+
+/* ---------------------------------------------------------------- xclean: Fig. 1, the SLAM point field (in the header) */
+.field-box { position: relative; aspect-ratio: 21 / 9; border: 1px solid var(--line); border-radius: var(--r); background: #000; overflow: hidden; }
+.field-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+@media (max-width: 760px) { .field-box { aspect-ratio: 4 / 3; } }
+
+/* ---------------------------------------------------------------- paper */
+.abstract { font-size: 19px; line-height: 1.7; }
+.status-line { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; }
+
+/* ---------------------------------------------------------------- credits: each source with a picture of what we made from it */
+.cred h3 { margin-top: 28px; }
+.cred .panel { margin: 12px 0; }
+.cred .panel h3 { margin: 0 0 6px; font-size: 19px; letter-spacing: 0; }
+.cred .panel p { margin: 6px 0 0; font-size: 17px; }
+.cred .panel p:first-of-type { margin-top: 0; }
+.cred-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 761px) { .cred-row { grid-template-columns: minmax(0, 1fr) 260px; align-items: start; } }
+.cred-fig { margin: 0; }
+.cred-fig .plate { aspect-ratio: 16 / 10; }
+.cred-fig figcaption { font-size: 14.5px; margin-top: 8px; }
+
+/* ---------------------------------------------------------------- maps: the atlas header
+   wide: the words on the left on black, the atlas (or the posters standing in) on the right, blended into the black;
+   narrow: the atlas on top, the words below it. The page scrolls natively over the atlas: the engine takes no wheel. */
+.mx-head { position: relative; overflow: hidden; background: #000; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: calc(var(--head-h) + 32px) 0 clamp(28px, 4vw, 48px); --copy-w: 540px; }
+/* the atlas starts where the words end (a centred column on wide screens), so no island ever sits under the text */
+.mx-stage { position: absolute; top: 0; right: 0; bottom: 0;
+  left: max(40%, calc(max(0px, (100% - var(--wrap) - 2 * var(--gutter)) / 2) + var(--gutter) + var(--copy-w))); }
+.mx-stage::before, .mx-stage::after { content: ""; position: absolute; z-index: 2; pointer-events: none; }
+.mx-stage::before { left: 0; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, #000, rgba(0,0,0,0)); }
+.mx-stage::after { left: 0; right: 0; bottom: 0; height: 26%; background: linear-gradient(0deg, #000, rgba(0,0,0,0)); }
+.mx-posters, .mx-atlas { position: absolute; inset: 0; }
+.mx-posters { transition: opacity .8s ease; -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.25), #000 24%); mask-image: linear-gradient(180deg, rgba(0,0,0,.25), #000 24%); }   /* the nav reads on black */
+.mx-posters img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 55%; opacity: 0; transition: opacity .45s ease; }
+.mx-posters img.on { opacity: .55; }
+.mx-atlas canvas { display: block; width: 100%; height: 100%; touch-action: pan-y pinch-zoom; -webkit-touch-callout: none; }
+/* atlas up: the posters leave; with the 3-D atlas, the map whose card is open comes back in behind the islands, screened
+   over them (the islands stay at full brightness), named by the card (wide layout only; maps.js sets data-behind) */
+.mx-head:not([data-atlas="poster"]) .mx-posters { opacity: 0; z-index: 1; mix-blend-mode: screen; pointer-events: none; }
+@media (min-width: 1200px) { .mx-head:not([data-atlas="poster"])[data-behind] .mx-posters { opacity: .7; } }
+/* the Rosario credit stays on screen over the atlas at every size, whatever the words below the fold do */
+.mx-credit { position: absolute; z-index: 3; top: calc(var(--head-h) + 12px); right: max(var(--gutter), env(safe-area-inset-right)); margin: 0;
+  max-width: min(52ch, calc(100% - 2 * var(--gutter))); font: 500 12.5px/1.45 var(--mono); letter-spacing: .02em; color: var(--fg);
+  padding: 6px 10px; background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 6px; pointer-events: none; }
+.mx-credit:empty { display: none; }
+.mx-copy { position: relative; z-index: 2; pointer-events: none; }
+.mx-copy > * { pointer-events: auto; }
+.mx-copy-in { max-width: var(--copy-w); }
+.mx-copy h1 { max-width: 14ch; }
+.mx-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0; max-width: var(--copy-w); }
+.mx-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: rgba(0,0,0,.8); color: var(--fg); text-decoration: none; font: 500 14.5px/1.2 var(--sans); white-space: nowrap;
+  transition: border-color .2s, background .2s, transform .3s var(--ease); }
+.mx-chip b { font: 600 13px/1 var(--mono); color: var(--ion); }
+.mx-chip:hover, .mx-chip:focus-visible, .mx-chip.is-on { color: var(--fg); border-color: var(--ion); background: rgba(10,22,30,.92); transform: translateY(-2px); }
+/* the poster caption and the island note share one slot (the taller one sets its height: nothing moves when the atlas arrives) */
+.mx-legend { display: grid; max-width: var(--copy-w); margin: 20px 0 0; }
+.mx-cap, .mx-note { grid-area: 1 / 1; align-self: start; width: fit-content; margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); padding: 10px 14px; background: rgba(0,0,0,.84); border: 1px solid var(--line); border-radius: 8px; }
+.mx-cap b { font: 600 12.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin-right: 6px; }
+.mx-head:not([data-atlas="poster"]) .mx-cap, .mx-head[data-atlas="poster"] .mx-note { visibility: hidden; }
+/* the card: inside the first screen whatever the header's height (its foot at the screen's foot, or the header's when
+   that is higher); maps.js moves it to the top (data-at="top") when the island it describes would sit under it */
+.mx-card { position: absolute; z-index: 4; right: max(var(--gutter), env(safe-area-inset-right)); width: min(420px, 36vw);
+  top: calc(min(100%, 100svh) - clamp(28px, 4vw, 48px)); translate: 0 -100%; max-height: calc(min(100%, 100svh) - var(--head-h) - 124px);
+  overflow: auto; overscroll-behavior: contain;
+  background: rgba(8,8,8,.95); border: 1px solid var(--line-2); border-radius: 12px; padding: 18px 20px 20px; animation: card-in .42s cubic-bezier(.16,1,.3,1); }
+.mx-card[data-at="top"] { top: calc(var(--head-h) + 76px); translate: none; }   /* under the credit line */
+.mx-card .label { margin: 0 44px 6px 0; }
+.mx-card-t { margin: 0; font: 650 22px/1.25 var(--display); color: var(--fg); }
+.mx-card-t .mono { font-size: 14px; font-weight: 500; color: var(--fg-2); margin-left: 6px; }
+.mx-card-m { margin: 6px 0 0; font-size: 15px; color: var(--fg-2); }
+.mx-card-c { margin: 10px 0 0; font-size: 15px; color: var(--fg); }
+.mx-card .btns { margin-top: 14px; align-items: center; }
+.mx-card .btn { min-height: 44px; padding: 0 16px; font-size: 15.5px; }
+.mx-card-x { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: 0; border-radius: 8px; background: none; color: var(--fg-2); font: 400 26px/1 var(--sans); cursor: pointer; }
+.mx-card-x:hover { color: var(--fg); background: var(--bg-3); }
+@keyframes card-in { from { opacity: 0; transform: translateY(12px); } }
+@media (pointer: coarse) { .mx-chip { min-height: 44px; } }
+/* laptop screens (720-940 px tall): a tighter column, so the words, the names and the note fit the first screen more often */
+@media (min-width: 1200px) and (max-height: 940px) {
+  .mx-head { padding-top: calc(var(--head-h) + 20px); }
+  .mx-copy .eyebrow { margin-bottom: 12px; }
+  .mx-copy h1 { font-size: clamp(36px, min(5.2vw, 6.4svh), 64px); }
+  .mx-copy .lead { font-size: clamp(17px, min(1.7vw, 2.3svh), 22px); margin-top: 12px; }
+  .mx-copy .btns { margin-top: clamp(14px, 2.4svh, 28px); }
+  .mx-chips { margin-top: clamp(12px, 2.2svh, 26px); }
+  .mx-chip { min-height: 38px; }
+  .mx-legend { margin-top: 14px; }
+  .mx-cap, .mx-note { font-size: 14px; }
+}
+/* narrower than 1200 px (tablets, small laptops): the atlas on top at full width, the words below it */
+@media (max-width: 1199px) {
+  .mx-head { min-height: 0; display: block; padding: 0 0 clamp(28px, 5vw, 44px); --copy-w: 560px; }
+  .mx-stage { position: relative; left: 0; height: max(300px, 56svh); }
+  .mx-stage::before { display: none; }
+  .mx-stage::after { height: 38%; }
+  .mx-copy { margin-top: -28px; }
+  .mx-credit { left: max(var(--gutter), env(safe-area-inset-left)); right: auto; top: calc(var(--head-h) + 8px); }
+  @media (max-height: 520px) { .mx-credit { max-width: none; font-size: 11.5px; padding: 4px 8px; } }   /* landscape phones: one short line */
+  /* the card sits over the atlas, never over the words: at its foot, or under the credit when the island is low */
+  /* a compact card (about half the atlas, clear of the eyebrow below it), so the island it names stays in sight */
+  .mx-card { left: auto; right: max(8px, env(safe-area-inset-right)); width: min(440px, calc(100% - 16px)); padding: 12px 14px 14px;
+    top: calc(max(300px, 56svh) - 36px); translate: 0 -100%; max-height: calc(max(300px, 56svh) - var(--head-h) - 100px); }
+  .mx-card[data-at="top"] { top: calc(var(--head-h) + 64px); translate: none; }
+  .mx-card[data-side="left"] { right: auto; left: max(8px, env(safe-area-inset-left)); }
+  .mx-card .label { margin-bottom: 2px; }
+  .mx-card-t { font-size: 19px; }
+  .mx-card-t .mono { font-size: 13px; }
+  .mx-card-m, .mx-card-c { font-size: 14px; line-height: 1.45; margin-top: 4px; }
+  .mx-card .btns { margin-top: 10px; gap: 8px; }
+  .mx-card .btn { padding: 0 14px; font-size: 15px; }
+}
+/* phones and landscape phones: the smallest card (about a third of the atlas): the place joins the facts line, and the
+   credit line over the atlas (always on screen above the card) carries the Rosario credit and licence */
+.mx-card-pl { display: none; }
+@media (max-width: 760px), (max-width: 1199px) and (max-height: 520px) {
+  .mx-card .label, .mx-card .lic, .mx-card-c { display: none; }
+  .mx-card-pl { display: inline; }
+  .mx-card-t { margin-right: 40px; }
+}
+@media (min-width: 761px) and (max-width: 1199px) and (max-height: 520px) {
+  /* a wide, short atlas: a narrower card that can stand left or right of the island it names */
+  .mx-card { width: min(400px, 48%); max-height: calc(max(300px, 56svh) - var(--head-h) - 52px); }
+  .mx-card[data-at="top"] { top: calc(var(--head-h) + 40px); }
+}
+@media (max-width: 760px) {
+  .mx-chips { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin-right: calc(-1 * var(--gutter)); padding: 2px var(--gutter) 6px 0; }
+  .mx-chips::-webkit-scrollbar { display: none; }
+  .mx-chip { flex: none; }
+}
+
+/* ---------------------------------------------------------------- maps: the gallery (plates + the sticky view) */
+.mx-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); }
+@media (min-width: 1100px) { .mx-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; } }
+.mx-list { display: grid; gap: clamp(28px, 4vw, 44px); min-width: 0; }
+.mplate { position: relative; background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(20px, 2.4vw, 30px);
+  transition: border-color .35s, transform .35s var(--ease); }   /* deep links land under the header via html's scroll-padding */
+.mplate.is-current { border-color: var(--line-3); }
+@media (hover: hover) and (pointer: fine) { .mplate:hover { transform: translateY(-3px); } }
+.mp-fig { margin: 0 0 20px; }
+.mp-fig .plate { aspect-ratio: 16 / 10; width: 100%; }
+.mp-fig video.plate { object-fit: cover; background: #000; }
+.mp-fig figcaption { font-size: 15px; margin-top: 10px; }
+@media (min-width: 1100px) { .mp-fig { display: none; } }
+.mplate h2 { font-size: clamp(26px, 3vw, 34px); margin: 4px 0 6px; }
+.mplate .cat { font: 500 14px/1.5 var(--mono); color: var(--fg-2); margin: 0 0 16px; letter-spacing: .02em; }
+.mplate .btns { margin: 0 0 4px; align-items: center; }
+.mplate dl.kv { margin: 6px 0 16px; }
+.mplate .stats { margin: 16px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--fg-2); }
+.mplate .board { margin: 10px 0 0; font-size: 16.5px; color: var(--fg); }
+.mplate .board .label { margin-right: 6px; }
+.mplate .lim { margin: 18px 0; }
+.mplate .lim h3 { font-size: 17px; margin: 0 0 6px; }
+.mplate .lim p { font-size: 17px; margin: 0; }
+.lim.pulse { animation: pulse 1.6s ease 1; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,210,122,0); } 30% { box-shadow: 0 0 0 4px rgba(255,210,122,.55); } }
+.mplate .credit { font-size: 17px; color: var(--fg-2); }
+details.files { margin-top: 14px; border-top: 1px solid var(--line); }
+details.files summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font: 500 14px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-2); list-style: none; }
+details.files summary::-webkit-details-marker { display: none; }
+details.files summary::before { content: "+"; width: 14px; color: var(--ion); }
+details.files[open] summary::before { content: "−"; }
+details.files .table-wrap { margin-top: 6px; }
+details.files table.t { font-size: 15.5px; }
+details.files td { padding: 8px 12px; }
+.mx-view { position: sticky; top: max(calc(var(--head-h) + 24px), calc(50svh - 240px)); margin: 0; min-width: 0; }   /* about centred on the screen */
+.mx-view-pic { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; max-height: calc(100svh - var(--head-h) - 170px); overflow: hidden;
+  border-radius: var(--r); border: 1px solid var(--line-2); background: #050505; }
+.mx-view-imgs img, .mx-view-film { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
+.mx-view-imgs img.on { opacity: 1; }
+.mx-view.is-film .mx-view-film { opacity: 1; }
+.mx-view-cap { margin-top: 14px; font-size: 15.5px; }
+.mx-gallery .note { margin-top: clamp(40px, 5vw, 64px); }
+@media (prefers-reduced-motion: reduce) { .mx-posters img, .mx-view-imgs img, .mx-view-film, .mplate, .vstrip a { transition: none; } .mx-card { animation: none; } .js .vpanel:not(.in) .vstrip a { opacity: 1; } }
+
+/* ---------------------------------------------------------------- short pages (the 404): the header fills the screen,
+   so the footer sits at the screen's foot instead of mid-screen over black */
+.page-fill { min-height: 100svh; display: flex; flex-direction: column; }
+.page-fill > main { flex: 1 0 auto; display: flex; flex-direction: column; }
+.page-fill > main > .phead--poster { flex: 1 0 auto; }

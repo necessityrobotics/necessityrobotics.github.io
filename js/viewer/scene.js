@@ -10,7 +10,9 @@
 //
 // Adaptive resolution: the render scale (device px per CSS px) follows the GPU time of each frame, measured with
 // EXT_disjoint_timer_query_webgl2 when available (rAF intervals otherwise), to hold ~60 fps; when the view comes to
-// rest, one frame is re-drawn at full resolution. Rendering pauses while the tab is hidden.
+// rest, one frame is re-drawn at full resolution. The scale never exceeds a device-pixel-ratio cap nor a drawing-buffer
+// pixel cap (phones 1.25 / 1.2 MP, desktops 2 / 4.2 MP: a 4K screen draws at about 0.75 of its pixels), so fill rate is
+// bounded on high-DPI screens. Rendering pauses while the tab is hidden and while the WebGL context is lost.
 import * as THREE from 'three';
 import { SparkRenderer } from '@sparkjsdev/spark';
 
@@ -18,14 +20,24 @@ const BUDGET_HI = 12.5;   // ms of GPU per frame above which the scale drops (le
 const BUDGET_LO = 5.5;    // ms below which it may climb back
 const STREAK_GAP = 60;    // ms: frames closer than this belong to one continuous streak (motion)
 
+/** The display's vsync period from recent render gaps: the shortest interval that recurs (3 within 12 %), since rAF
+ *  timestamps are vsync-aligned (the engine's governor uses the same rule, engine_PL F1). */
+function vsyncOf(frames) {
+  const g = frames.slice(-120).map(x => x[1]).filter(x => x >= 4 && x < 200).sort((a, b) => a - b);
+  for (let i = 0; i + 2 < g.length; i++) if (g[i + 2] <= g[i] * 1.12) return g[i];
+  return null;
+}
+
 export class Stage {
-  constructor(canvas, { clear = 0x04060a, context = null } = {}) {
+  constructor(canvas, { clear = 0x04060a, context = null, maxDpr = 2, maxPixels = 4.2e6, onContext = null } = {}) {
     this.canvas = canvas;
+    this.maxDpr = maxDpr;
+    this.maxPixels = maxPixels;
     // throws when WebGL2 is unavailable (three r186 is WebGL2-only); main.js catches it and shows the fallback
     this.renderer = new THREE.WebGLRenderer({ canvas, context: context || undefined, antialias: false, alpha: false, stencil: false, powerPreference: 'high-performance' });
     this.renderer.setClearColor(clear, 1);
     this.gl = this.renderer.getContext();
-    this.maxScale = Math.min(window.devicePixelRatio || 1, 2);
+    this.maxScale = Math.min(window.devicePixelRatio || 1, maxDpr);
     this.minScale = Math.min(0.5, this.maxScale);
     this.scale = this.maxScale;       // adaptive scale used while the view moves
     this.drawScale = this.maxScale;   // scale of the current drawing buffer
@@ -70,6 +82,7 @@ export class Stage {
     this.renderCount = 0;
     this.frames = [];         // [t, dtSincePreviousRender, gpuMs|null] for the recent renders (QA + FPS readout)
     this._streak = 0;
+    this._chain = false;      // integrator (H-PL2): the pending frame was asked for by the previous rendered frame
     this._tick = this._tick.bind(this);
 
     // GPU timing (async, never blocks): one TIME_ELAPSED query per frame, read back a few frames later
@@ -83,6 +96,18 @@ export class Stage {
 
     document.addEventListener('visibilitychange', () => this._visibility());
     window.addEventListener('pagehide', () => this._visibility(true));
+    window.addEventListener('pageshow', e => { if (e.persisted) this._visibility(); });
+    // context loss (iOS evicts WebGL contexts under memory pressure): stop drawing, let the page show its poster
+    this.lost = false;
+    canvas.addEventListener('webglcontextlost', e => {
+      e.preventDefault();
+      this.lost = true;
+      this._chain = false;
+      if (this._raf) cancelAnimationFrame(this._raf);
+      this._raf = 0;
+      onContext?.('lost');
+    });
+    canvas.addEventListener('webglcontextrestored', () => onContext?.('restored'));
   }
 
   // ------------------------------------------------------------------ scheduling
@@ -92,12 +117,13 @@ export class Stage {
     this._schedule();
   }
   _schedule() {
-    if (this._raf || this._inTick || this.paused) return;
+    if (this._raf || this._inTick || this.paused || this.lost) return;
     this._raf = requestAnimationFrame(this._tick);
   }
   _visibility(forceHidden = false) {
     const hidden = forceHidden || document.hidden;
     this.paused = hidden;
+    this._chain = false;                                 // a run never spans a hidden period
     if (hidden) {
       if (this._raf) cancelAnimationFrame(this._raf);
       this._raf = 0;
@@ -109,7 +135,7 @@ export class Stage {
 
   _tick(now) {
     this._raf = 0;
-    if (this.paused) return;
+    if (this.paused || this.lost) return;
     this._inTick = true;
     let more = false;
     try {
@@ -120,15 +146,19 @@ export class Stage {
       if (this._dirty || more) {
         this._dirty = false;
         this._adapt(now);
+        this._chainNow = this._chain;
+        this._tickNow = now;            // the rAF timestamp (vsync-aligned): render gaps from it, not from after the render
         this.render(true);
+        this._chainNow = false;
+        this._tickNow = null;
       }
     } catch (e) {
       console.error('[viewer] frame', e);
     } finally {
       this._inTick = false;
     }
-    if (more || this._dirty) this._schedule();
-    else this._idleSoon();
+    if (more || this._dirty) { this._chain = true; this._schedule(); }
+    else { this._chain = false; this._idleSoon(); }
   }
 
   /** Draw one frame now. timed: wrap it in a GPU timer query (only from the frame loop). */
@@ -141,9 +171,11 @@ export class Stage {
       gl.beginQuery(this.tq.TIME_ELAPSED_EXT, q);
     }
     this.renderer.render(this.scene, this.camera);
-    const t = performance.now();
+    const t = timed && this._tickNow != null ? this._tickNow : performance.now();
     const gap = this._lastRender ? t - this._lastRender : 1e9;
-    this._streak = gap < STREAK_GAP ? this._streak + 1 : 0;
+    // a frame the previous frame asked for stays in the run whatever its gap: a GPU stall (100-190 ms with no timer)
+    // used to reset the run, so the scaler never judged the frames that showed the overload (H-PL2, engine_PL F3)
+    this._streak = gap < STREAK_GAP || (timed && this._chainNow) ? this._streak + 1 : 0;
     this._lastRender = t;
     const rec = [t, gap, null];
     this.frames.push(rec);
@@ -181,8 +213,21 @@ export class Stage {
       const r = this.gpuMs.slice(-8).sort((a, b) => a - b);
       cost = r[r.length >> 1];
     } else if (!this.tq) {
-      const f = this.frames.slice(-8).map(x => x[1]).sort((a, b) => a - b);
-      cost = f[f.length >> 1] * 0.75;                   // rAF interval: an upper bound on the frame cost
+      // no GPU timer (phones, Safari, Firefox): the MEAN rAF interval of the current run over the last 750 ms, against the
+      // display's own vsync period. Under a GPU load Chrome draws about 4 frames on time and then stalls 100-190 ms: the
+      // median of 8 stayed at the vsync interval and the viewer played at about 16 fps at full resolution (H-PL2). Judged
+      // relative to vsync, a 30 Hz display (iOS Low Power Mode) is not overload, and a one-off hitch is diluted by the
+      // window. cost = the budget's middle x (mean / vsync): slow above 1.39 x vsync, neutral below (never "fast": with no
+      // timer the scale only steps down, as before, so it cannot oscillate; the rest refine still draws full resolution).
+      // Judged only over at least 600 ms of the run since the last scale change, and only a RECURRING stall counts (3 or
+      // more gaps over 2.5 vsyncs in the window): one hitch (a decode, an upload) is not overload. A short window
+      // stepped a calm 165 Hz viewer to its floor during loading when this was first tried.
+      const f = this.frames, t0 = Math.max(now - 750, this._judgeFrom || 0);
+      if (this.renderCount - (this._vsAt || -1e9) >= 30) { this._vsAt = this.renderCount; this._vs = vsyncOf(f) || this._vs; }
+      const vs = this._vs;
+      let sum = 0, n = 0, long = 0;
+      for (let i = f.length - 1, k = 0; i >= 0 && k < this._streak && f[i][0] >= t0; i--, k++) { sum += f[i][1]; n++; if (vs && f[i][1] > 2.5 * vs) long++; }
+      if (sum >= 600 && n >= 6 && vs) cost = ((this.budgetHi + this.budgetLo) / 2) * (long >= 3 ? Math.max(1, (sum / n) / vs) : 1);
     }
     if (cost == null) return;
     if (cost > this.budgetHi) { this._slow++; this._fast = 0; } else if (cost < this.budgetLo) { this._fast++; this._slow = 0; } else { this._slow = 0; this._fast = 0; }
@@ -191,11 +236,11 @@ export class Stage {
       const k = Math.max(0.7, Math.min(0.95, Math.sqrt(((this.budgetHi + this.budgetLo) / 2) / cost)));
       this.scale = Math.max(this.minScale, +(this.scale * k).toFixed(3));
       this._applyScale(this.scale);
-      this._slow = 0; this.gpuMs.length = 0;
+      this._slow = 0; this.gpuMs.length = 0; this._judgeFrom = now;
     } else if (this._fast >= 45 && this.scale < this.maxScale - 1e-3) {
       this.scale = Math.min(this.maxScale, +(this.scale * 1.12).toFixed(3));
       this._applyScale(this.scale);
-      this._fast = 0; this.gpuMs.length = 0;
+      this._fast = 0; this.gpuMs.length = 0; this._judgeFrom = now;
     }
   }
   _applyScale(s) {
@@ -209,7 +254,7 @@ export class Stage {
     if (this.drawScale >= this.maxScale - 1e-3) return;
     clearTimeout(this._refineTimer);
     this._refineTimer = setTimeout(() => {
-      if (this._raf || this.paused) return;
+      if (this._raf || this.paused || this.lost) return;
       this._applyScale(this.maxScale);
       this._streak = 0;
       this.render(false);
@@ -221,6 +266,10 @@ export class Stage {
   resize(w, h) {
     if (!w || !h) return false;            // a hidden pane reports 0
     this.size = { w, h };
+    this.maxScale = Math.min(window.devicePixelRatio || 1, this.maxDpr, Math.sqrt(this.maxPixels / (w * h)));
+    this.minScale = Math.min(0.5, this.maxScale);
+    this.scale = Math.min(this.scale, this.maxScale);
+    this.drawScale = Math.min(this.drawScale, this.maxScale);
     this.renderer.setPixelRatio(this.drawScale);
     this.renderer.setSize(w, h, false);
     this.invalidate();

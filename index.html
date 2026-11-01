@@ -1,15 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="ov">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (site.css repeats it): without it the
+       incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
+  <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>Necessity Robotics</title>
-  <meta name="description" content="Necessity Robotics builds perception for robots in India. xclean, our real-time stereo visual-inertial SLAM; its open-source release (Apache-2.0) is coming soon.">
+  <meta name="description" content="Necessity Robotics is a robotics company in India building humanoids, robots for edge cases and surveillance technology for defence, working to pass the physical Turing test. Our first open system: xclean, real-time stereo visual-inertial SLAM.">
+  <!-- sharing: absolute URLs (GitHub Pages); the card image is the hero's own poster (our recording, CC BY 4.0) -->
+  <link rel="canonical" href="https://necessityrobotics.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Necessity Robotics">
+  <meta property="og:title" content="Necessity Robotics">
+  <meta property="og:description" content="A robotics company in India building humanoids, robots for edge cases and surveillance technology for defence, working to pass the physical Turing test. Our first open system: xclean, real-time stereo visual-inertial SLAM.">
+  <meta property="og:url" content="https://necessityrobotics.github.io/">
+  <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
   <link rel="preload" as="image" href="img/maps/oak_161834.webp" fetchpriority="high">
+  <!-- integrator: the page's first data, fetched at once and handed to getJSON() (js/site.js). WebKit (Safari and every
+       iOS browser) never reused a <link rel=preload as=fetch> answer for fetch(): it downloaded each file twice -->
+  <script>window.__nrPre = Object.fromEntries(['data/maps.json', 'data/atlas.json', 'data/routes.json'].map(u => [u, fetch(u).catch(() => null)]));</script>
   <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/world.css">
   <link rel="stylesheet" href="css/home.css">
+  <!-- html.ov pins the overlays from the first paint (no layout change when the scripts start); without scripts they
+       are plain panels over the hero poster instead -->
+  <noscript><style>
+    .ov .pinbox { top: 0; bottom: auto; }
+    .ov .pin { position: static; height: auto; overflow: visible; }
+    .ov .pin-wrap { height: auto; padding-top: calc(var(--head-h) + 6vh); display: block; }
+    .ov .ov-panel, .ov .mcard, .ov .ex-chips { position: static; margin: 0 0 24px; }
+    .ov .ex-foot { position: static; }
+    .ov .beat--explore { z-index: 1; height: auto; padding-bottom: 24vh; } .ov .beat--explore .pinbox { position: relative; }   /* the atlas list is taller than its beat on phones; the story's feathered top falls below it */
+    .ov [data-ov], .ov [data-ov] a { opacity: 1; transform: none; pointer-events: auto; }
+    .ov .rail, .ov .world-hud, .ov .strip, .ov .sp-layer, .ov .ch-cap, .ov .split-note, .ov .dive-bar, .ov .hero-hint, .ov .when-fine, .ov .when-touch { display: none; }
+    .ov .title-hint, .ov .ex-hint, .ov .rise-cap, .ov .island-note, .ov .ex-note { display: none; }   /* they describe the moving stage (finished map, islands, rides), which needs scripts: only the hero's poster shows here */
+    .ov .rise-panel .mcard { border-top: 0; padding-top: 0; }
+  </style></noscript>
+  <!-- the import map comes before every module request (a modulepreload above it would void the map) -->
   <script type="importmap">
   {"imports":{
     "three":"./vendor/three/three.module.js",
@@ -17,10 +52,35 @@
     "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
   }}
   </script>
+  <link rel="modulepreload" href="js/home.js">
+  <link rel="modulepreload" href="js/world/api.js">
+  <link rel="modulepreload" href="js/home/overlays.js">
+  <link rel="modulepreload" href="js/home/explore.js">
+  <link rel="modulepreload" href="js/home/facts.js">
+  <link rel="modulepreload" href="js/home/signposts.js">
+  <link rel="modulepreload" href="js/home/story.js">
+  <!-- review SP (H-SP1): the world's static module graph, three import levels deep, starts at once instead of after
+       home.js has run (4G phone: first 3-D frame 5.34-5.38 s -> 4.94-5.05 s); the 3-D modules (three, Spark, stage,
+       scene) are not preloaded, so devices on the still path never fetch them; routes.json starts with the data above -->
+  <link rel="modulepreload" href="js/world/world.js">
+  <link rel="modulepreload" href="js/world/debug.js">
+  <link rel="modulepreload" href="js/world/caps.js">
+  <link rel="modulepreload" href="js/world/timeline.js">
+  <link rel="modulepreload" href="js/world/core.js">
+  <link rel="modulepreload" href="js/world/input.js">
+  <link rel="modulepreload" href="js/world/loader.js">
+  <link rel="modulepreload" href="js/world/cache.js">
+  <link rel="modulepreload" href="js/world/camera.js">
+  <link rel="modulepreload" href="js/world/director.js">
+  <link rel="modulepreload" href="js/world/atlasmap.js">
+  <link rel="modulepreload" href="js/tour/track.js">
+  <link rel="modulepreload" href="js/tour/minimap.js">
+  <link rel="modulepreload" href="js/config.js">
+  <link rel="modulepreload" href="js/tally.js">
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/home.js"></script>
 </head>
-<body>
+<body class="home">
 <a class="skip" href="#main">Skip to content</a>
 <header class="head is-top">
   <div class="wrap">
@@ -32,153 +92,383 @@
       <a href="maps.html">Maps</a>
       <a href="paper.html">Paper</a>
       <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics" data-code-href>GitHub</a>
+      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
     </nav>
   </div>
 </header>
 
-<main id="main">
-  <!-- ============ 1. FIRST SCREEN: the company name over our own map ============ -->
-  <section class="hero" data-head-over aria-labelledby="hero-name">
-    <div class="hero-media" aria-hidden="true">
-      <img class="hero-poster" src="img/maps/oak_161834.webp" alt="" width="1280" height="800" fetchpriority="high" decoding="async">
-      <div class="hero-live"></div>
-      <div class="hero-scrim"></div>
+<main id="main" tabindex="-1">
+  <!-- ============ THE WORLD: one sticky 3-D stage under every beat (MASTER_PLAN.md sections 1 and 3.3) ============
+       The engine (js/world, css/world.css) draws the stage and writes the data-* state on #world; this file holds the
+       beats (each [data-beat] element's height is its scroll length, css/home.css --beat-h) and the 2-D overlays.
+       Without scripts the overlays are plain panels that scroll over the hero poster. -->
+  <div class="world" id="world" data-mode="still" data-beat="hero">
+    <div class="stage">
+      <div class="stage-media" aria-hidden="true">
+        <canvas class="stage-canvas" data-world="canvas"></canvas>
+        <div class="stage-posters" data-world="posters">
+          <img data-island="oak_161834" src="img/maps/oak_161834.webp" alt="" width="1280" height="800" fetchpriority="high" decoding="async" draggable="false">
+          <img data-island="rosario_01" data-src="img/maps/rosario_01.webp" alt="" width="1280" height="716" decoding="async" draggable="false">
+          <img data-island="oak_161206" data-src="img/maps/oak_161206.webp" alt="" width="1280" height="800" decoding="async" draggable="false">
+          <img data-island="oak_164424" data-src="img/maps/oak_164424.webp" alt="" width="1280" height="800" decoding="async" draggable="false">
+          <img data-island="oak_160543" data-src="img/maps/oak_160543.webp" alt="" width="1280" height="800" decoding="async" draggable="false">
+          <img data-island="oak_164002" data-src="img/maps/oak_164002.webp" alt="" width="1280" height="800" decoding="async" draggable="false">
+          <img data-island="rosario_03" data-src="img/maps/rosario_03.webp" alt="" width="1280" height="716" decoding="async" draggable="false">
+          <img data-island="rosario_04" data-src="img/maps/rosario_04.webp" alt="" width="1280" height="716" decoding="async" draggable="false">
+        </div>
+        <div class="stage-dip"></div>
+      </div>
+      <div class="stage-veil" aria-hidden="true"></div>
+      <div class="stage-fade" aria-hidden="true"></div>
+      <div class="world-labels" data-world="labels" aria-hidden="true"></div>
+      <div class="world-hud">
+        <div class="hud-map">
+          <p class="hud-head"><span class="hud-k">Top view</span><span class="hud-state" data-world="state">Preview</span></p>
+          <canvas class="hud-mini" data-world="minimap" aria-hidden="true"></canvas>
+          <p class="hud-foot"><span class="hud-tele" data-world="telemetry"></span><span class="hud-scale" data-world="scale"></span></p>
+        </div>
+        <div class="hud-atlas">
+          <p class="hud-head"><span class="hud-k">Atlas · top view</span></p>
+          <canvas class="hud-atlasmap" data-world="atlasmap" role="img" aria-label="Top view of the atlas"></canvas>
+        </div>
+        <p class="world-credit">Rosario islands: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0</p>
+        <p class="hud-hint"><span class="when-fine">Drag to look around</span><span class="when-touch">Swipe sideways to look around</span></p>
+        <button class="hud-tilt" data-world="tilt" type="button" aria-pressed="false" hidden>Tilt to look</button>
+        <p class="hud-tilt-msg" role="status"></p>
+      </div>
     </div>
-    <div class="wrap hero-inner">
-      <div class="hero-copy">
-        <p class="eyebrow hero-in" style="--d:0">Perception for robots · Built in India</p>
-        <h1 class="hero-name hero-in" id="hero-name" style="--d:1"><span>Necessity</span> <span>Robotics</span></h1>
-        <p class="hero-lead hero-in" style="--d:2">We build the part of a robot that knows where it is. Our first system, <strong>xclean</strong>, is a real-time stereo visual-inertial SLAM. <span data-code-when="pending">Its open-source release (Apache-2.0) is coming soon.</span><span data-code-when="public" hidden>It is open source under Apache-2.0.</span></p>
-        <div class="btns hero-in" style="--d:3">
-          <a class="btn btn--ion" href="#work">See our work <span class="arr" aria-hidden="true">↓</span></a>
-          <a class="btn" href="viewer.html">Fly a 3-D map <span class="arr" aria-hidden="true">→</span></a>
+
+    <!-- 0. FIRST SCREEN: the company name over our own map (look unchanged) -->
+    <section class="hero" data-beat="hero" data-island="oak_161834" data-head-over aria-labelledby="hero-name">
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow hero-in" style="--d:0">Robotics · Built in India</p>
+          <h1 class="hero-name hero-in" id="hero-name" style="--d:1"><span>Necessity</span> <span>Robotics</span></h1>
+          <p class="hero-lead hero-in" style="--d:2">We are building physical agents: humanoids and robots that do real work in the physical world, as well as people do, and then better. Our goal is to pass the physical Turing test. Our first open system, <strong>xclean</strong>, is a real-time stereo visual-inertial SLAM. <span data-code-when="pending" hidden>Its open-source release (Apache-2.0) is coming soon.</span><span data-code-when="public">It is open source under Apache-2.0: <a href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.1.0.zip">download xclean 0.1.0</a>.</span></p>
+          <div class="btns hero-in" style="--d:3">
+            <a class="btn btn--ion" href="#maps">See our work <span class="arr" aria-hidden="true">↓</span></a>
+            <a class="btn" href="viewer.html">Fly a 3-D map <span class="arr" aria-hidden="true">→</span></a>
+          </div>
+          <a class="skip-tour" href="#work">Skip the 3-D tour</a>
         </div>
       </div>
-    </div>
-    <div class="wrap hero-foot">
-      <p class="hero-cap"><b>Behind this text</b> <span class="hero-state js-hero-state">Poster</span> Our 3-D map of <a href="viewer.html?map=oak_161834">oak_161834</a>, a street ride we recorded in India with our OAK-D-Lite camera, flown along the trajectory xclean published in a real-time replay of that recording. <span class="js-hero-hint">Move the mouse to look around.</span> A reconstruction, not camera video.</p>
-      <a class="hero-scroll" href="#work" aria-label="Scroll to our work"><span></span></a>
-    </div>
-  </section>
+      <div class="wrap hero-foot">
+        <p class="hero-cap"><b>Behind this text</b> <span class="hero-state" data-s="poster">Preview</span> Our 3-D map of <a href="viewer.html?map=oak_161834">oak_161834</a>, a street ride we recorded in India with our OAK-D-Lite camera, flown along the trajectory xclean published in a real-time replay of that recording. <span class="hero-hint"><span class="when-fine">Move the mouse to look around.</span><span class="when-touch">Swipe sideways to look around.</span></span> A reconstruction, not camera video.</p>
+        <a class="hero-scroll" href="#maps" aria-label="Scroll to the maps"><span></span></a>
+      </div>
+    </section>
 
-  <!-- ============ 2. WHO WE ARE ============ -->
-  <section class="section" id="work" aria-labelledby="who-h">
-    <div class="wrap split">
-      <div data-reveal>
-        <p class="eyebrow">01 · Who we are</p>
-        <h2 id="who-h">A perception company.</h2>
-      </div>
-      <div data-reveal>
-        <p class="lead">Necessity Robotics works on perception: how a robot works out where it is and what is around it, from its own cameras, live, on its own computer.</p>
-        <p class="muted">We publish our results, losses included. We measure on public benchmarks and on our own recordings, we write our rules down before the runs (and disclose every later amendment), and we publish every result, including the losses.</p>
-        <ul class="ticks">
-          <li><strong>xclean</strong>: real-time stereo visual-inertial SLAM. <span data-code-when="pending">Open-source release (Apache-2.0) coming soon.</span><span data-code-when="public" hidden>Open source (Apache-2.0).</span></li>
-          <li><strong>Maps</strong>: 3-D Gaussian-splat maps built from xclean's own live camera poses.</li>
-          <li><strong>A technical paper</strong> on the system and on how we score it live.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="wrap">
-      <figure class="field-fig" data-reveal>
-        <div class="field-box frame"><canvas class="field-canvas" aria-hidden="true"></canvas></div>
-        <figcaption><b>Fig. 1</b> Not stars: <span class="js-field-n">5,200</span> of the <span class="js-field-of">232,817</span> points of route oak_161834, seen from above. The points come from stereo depth of xclean's keyframes, computed afterwards by our map builder and placed with xclean's live poses; the blue line is xclean's live trajectory. The only "space" on this site is our own data.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <!-- ============ 3. XCLEAN (the second 3D moment) ============ -->
-  <section class="section band" aria-labelledby="xc-h">
-    <div class="wrap">
-      <div class="xc-head" data-reveal>
-        <p class="eyebrow">02 · xclean</p>
-        <h2 id="xc-h">Live stereo visual-inertial SLAM.</h2>
-        <p class="lead">xclean turns a stereo camera into a camera pose for every frame, while the robot moves, with loop closure, relocalisation and map reuse. Its GPU code is written in CuPy: no C++ build step, no ROS, no learned networks in the SLAM pipeline, native on Windows 11.</p>
-      </div>
-      <figure class="fly" data-reveal>
-        <div class="plate frame">
-          <img class="fly-poster js-fig2-poster" src="img/maps/rosario_01.webp" alt="A soybean field rendered from our 3-D Gaussian-splat map: crop rows running to the horizon." width="1280" height="716" loading="lazy" decoding="async">
-          <div class="fly-hud" aria-hidden="true">
-            <span class="fly-badge"><i></i><span class="js-fly-state">Poster</span></span>
-            <span class="fly-t">our map, not camera video</span>
+    <!-- 1. RISE: the camera climbs out of the street until the whole finished map lies below -->
+    <section class="beat beat--rise" data-beat="rise" data-island="oak_161834" data-variant="reveal" aria-labelledby="rise-h">
+      <div class="pinbox"><div class="pin">
+        <div class="wrap pin-wrap">
+          <div class="ov-panel rise-panel" data-ov="off">
+            <h2 class="sr" id="rise-h">The finished map</h2>
+            <p class="rise-cap">The finished map, seen whole: the stereo depth of xclean's keyframes, computed afterwards by our map builder and placed with xclean's live poses; the blue line is xclean's live trajectory.</p>
+            <article class="mcard mcard--compact" data-map="oak_161834" aria-labelledby="mc0-h">
+              <p class="mcard-k"><span data-f="place">India</span> · <span data-f="id">oak_161834</span></p>
+              <h3 id="mc0-h" data-f="title">Street ride</h3>
+              <p class="mcard-meta" data-f="platform">OAK-D-Lite, our own recording</p>
+              <dl class="mcard-stats">
+                <div><dt>Route</dt><dd data-f="path">1.02 km</dd></div>
+                <div><dt>Duration</dt><dd data-f="dur">199.5 s</dd></div>
+                <div><dt>Keyframes</dt><dd data-f="kf">1,873</dd></div>
+                <div><dt>Gaussians <span class="nb">(full map)</span></dt><dd data-f="g">2.00 M</dd></div>
+              </dl>
+              <p class="mcard-credit"><a class="lic" href="credits.html#maps" data-f="lic">CC BY 4.0 · own data</a> <span data-f="credit">3-D map by Necessity Robotics (xclean).</span></p>
+              <p class="mcard-links"><a class="btn btn--ion" href="viewer.html?map=oak_161834&amp;cam=pov" data-explore>Explore in 3-D<span class="sr"> the Street ride map (oak_161834)</span> <span class="arr" aria-hidden="true">→</span></a> <a class="mcard-lim" href="maps.html#lim-oak_161834">Known limits<span class="sr"> of oak_161834</span></a></p>
+            </article>
           </div>
         </div>
-        <figcaption><b>Fig. 2</b> <span class="js-fig2-cap">Route rosario_01 (a farm robot in a soybean field, Rosario Dataset, CC BY 4.0), rendered from our 3-D Gaussian-splat map along xclean's own trajectory.</span> A pre-rendered film that plays while it is on screen; it is a reconstruction, not camera video. <a href="viewer.html?map=rosario_01">Fly it yourself</a>, or see <a href="maps.html#rosario_01">its known limits</a>.</figcaption>
-      </figure>
-      <div class="grid g3 xc-cards">
-        <div class="card" data-reveal><span class="label">Sensors</span><h3>Stereo, plus the IMU when it checks out</h3><p>It uses the IMU while a built-in consistency check accepts it, and otherwise runs as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs; <a href="results.html#imu">per dataset</a>. Built for a Luxonis OAK-D-Lite: our OAK routes were recorded on it and replayed in real time; live on-device testing of the release is pending.</p></div>
-        <div class="card" data-reveal><span class="label">Full SLAM</span><h3>Loops, relocalisation, map reuse</h3><p>A sliding-window factor graph on the GPU, with loop corrections applied live.</p></div>
-        <div class="card" data-reveal><span class="label">Licence</span><h3>Apache-2.0</h3><p><span data-code-when="pending">Release coming soon, after its GPU checks. It will be free for research and commercial use, with a NOTICE credit if you ship it.</span><span data-code-when="public" hidden>Free for research and commercial use. If you ship it in a product, keep the NOTICE credit.</span></p></div>
+      </div></div>
+    </section>
+
+    <!-- 2. ATLAS: the street becomes one island among eight -->
+    <section class="beat beat--atlas" id="maps" data-beat="atlas" aria-labelledby="maps-h">
+      <div class="pinbox"><div class="pin">
+        <div class="wrap pin-wrap">
+          <div class="ov-panel title-panel" data-ov="off">
+            <p class="eyebrow">Maps · what xclean saw</p>
+            <h2 id="maps-h">Fly through what xclean saw.</h2>
+            <p class="lead">3-D Gaussian-splat maps reconstructed from xclean's own live camera poses, not from ground truth. Each map states its limits.</p>
+            <p class="title-hint label"><span class="when-live">Scroll to ride a stretch of three routes</span><span class="when-still">Scroll through a stretch of three routes</span><span class="when-fine">&nbsp;· drag to look around</span><span class="when-touch">&nbsp;· swipe sideways to look around</span></p>
+            <p class="island-note">Each island is a point subsample of one of our published maps (the stereo depth of xclean's keyframes, placed with xclean's live poses), with xclean's live keyframe route in blue. Island sizes and positions are an arrangement, not to scale. <span class="when-backdrop">The faint plane below is <span class="on-fig1">Fig. 1's <span data-f="sf-n">5,200</span> points</span><span class="no-fig1"><span data-f="sf-n">5,200</span> of the <span data-f="sf-of">232,817</span> points</span> of oak_161834, enlarged: not stars. </span>Rosario islands: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- the chapter rail (after #maps in the tab order; pinned over the three chapters) -->
+    <nav class="rail" aria-label="Map chapters">
+      <div class="pinbox"><div class="pin">
+        <div class="rail-in" data-ov="off">
+          <div class="rail-box">
+            <ol class="rail-list">
+              <li><a href="#ch-1" data-chapter="1"><b>01</b><span>Soybean field</span></a></li>
+              <li><a href="#ch-2" data-chapter="2"><b>02</b><span>Park walk</span></a></li>
+              <li><a href="#ch-3" data-chapter="3"><b>03</b><span>Outdoor route</span></a></li>
+              <li><a href="#atlas" data-chapter="explore"><b>All</b><span>All <span data-f="n-maps">8</span> maps</span></a></li>
+            </ol>
+            <span class="rail-track" aria-hidden="true"><i></i></span>
+          </div>
+        </div>
+      </div></div>
+    </nav>
+    <p class="sr" id="world-say" aria-live="polite"></p>
+
+    <!-- 3-6. CHAPTER 1: a farm robot's soybean field (colour); descent, ride, rise & turn -->
+    <section class="chapter" id="ch-1" data-chapter="1" data-island="rosario_01" aria-labelledby="ch1-h" tabindex="-1">
+      <div class="pinbox"><div class="pin">
+        <div class="wrap pin-wrap">
+          <article class="mcard ch-card" data-map="rosario_01" data-ov="off">
+            <p class="mcard-k"><b>01</b> / 03 · <span data-f="place">Rosario, Argentina</span> · <span data-f="id">rosario_01</span></p>
+            <h3 id="ch1-h" data-f="title">Soybean field</h3>
+            <p class="mcard-meta" data-f="platform">farm robot (Rosario Dataset)</p>
+            <p class="mcard-line">Rebuilt from xclean's own live camera poses, not from ground truth.</p>
+            <dl class="mcard-stats">
+              <div><dt>Route</dt><dd data-f="path">462 m</dd></div>
+              <div><dt>Duration</dt><dd data-f="dur">444.9 s</dd></div>
+              <div><dt>Keyframes</dt><dd data-f="kf">1,838</dd></div>
+              <div><dt>Gaussians <span class="nb">(full map)</span></dt><dd data-f="g">2.00 M</dd></div>
+            </dl>
+            <p class="mcard-credit"><a class="lic" href="credits.html#maps" data-f="lic">CC BY 4.0 · Rosario Dataset</a> <span data-f="credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses.</span></p>
+            <p class="mcard-cav">A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+            <p class="mcard-links"><a class="btn btn--ion" href="viewer.html?map=rosario_01&amp;cam=pov" data-explore>Explore in 3-D<span class="sr"> the Soybean field map (rosario_01)</span> <span class="arr" aria-hidden="true">→</span></a> <a class="mcard-lim" href="maps.html#lim-rosario_01">Known limits<span class="sr"> of rosario_01</span></a></p>
+          </article>
+          <div class="strip" data-map="rosario_01" data-ov="off" aria-hidden="true">
+            <p class="strip-id"><b>01</b> <span data-f="title">Soybean field</span> <span class="strip-code" data-f="id">rosario_01</span><a class="strip-go" href="viewer.html?map=rosario_01&amp;cam=pov" data-explore tabindex="-1">Explore in 3-D <span class="arr">→</span></a></p>
+            <p class="strip-cav"><a class="lic" href="credits.html#maps" data-f="lic" tabindex="-1">CC BY 4.0 · Rosario Dataset</a> A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+            <p class="strip-credit"><span class="when-wide" data-f="credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses.</span><span class="when-narrow">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</span></p>
+          </div>
+          <p class="ch-cap" data-ov="off"><span class="when-live">The finished map; the blue line is xclean's live trajectory.</span><span class="when-still">A 3-D reconstruction from xclean's camera poses, not camera video.</span> <span class="ch-cap-credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</span></p>
+        </div>
+      </div></div>
+      <div class="step" data-beat="glide" data-variant="arc"></div>
+      <div class="step" data-beat="dive" data-variant="descent"></div>
+      <div class="step" data-beat="ride" data-variant="colour"></div>
+      <div class="step" data-beat="pullback" data-variant="rise-turn"></div>
+    </section>
+
+    <!-- 7-10. CHAPTER 2: a walk (the look beat, then the facts in the world: four signposts beside xclean's route) -->
+    <section class="chapter" id="ch-2" data-chapter="2" data-island="oak_161206" aria-labelledby="ch2-h" tabindex="-1">
+      <div class="pinbox"><div class="pin">
+        <!-- facts in the world (FACTS_WORLD_PLAN.md, concept K2 with grafts from K3 and K4): from the end of the look beat
+             to the end of the ride, four signposts stand in the park beside xclean's route. The engine draws each one in
+             3-D (a ground ring and a post, js/world/marks.js) and hangs the current fact's card from its head by
+             transform; on phones the fact sits in the strip's cap (the dock) and a leader drops from the ring to it. A
+             mouse / touch shortcut like the strips (aria-hidden): the card above is the keyboard path. Every value is
+             filled from data/maps.json by facts.js (data-f); the Gaussians note follows what the view draws (signposts.js).
+             Route and Duration carry no line; Keyframes names its dots only where they are drawn (lead, 11-01) -->
+        <div class="sp-layer" data-world="marks" data-island="oak_161206" data-map="oak_161206" data-dock="#ch-2 .strip-fact" aria-hidden="true">
+          <div class="spost" data-mark="0"><div class="sp-at" data-face="l" data-hang="down"><i class="sp-tie"></i><div class="sp-card"><p class="sp-k"><span>Route</span><b>1 / 4</b></p><p class="sp-v" data-f="path" data-rise>227 m</p></div></div></div>
+          <div class="spost" data-mark="1"><div class="sp-at" data-face="l" data-hang="down"><i class="sp-tie"></i><div class="sp-card"><p class="sp-k"><span>Duration</span><b>2 / 4</b></p><p class="sp-v" data-f="dur" data-rise>271.5 s</p></div></div></div>
+          <div class="spost" data-mark="2"><div class="sp-at" data-face="l" data-hang="down"><i class="sp-tie"></i><div class="sp-card"><p class="sp-k"><span>Keyframes</span><b>3 / 4</b></p><p class="sp-v" data-f="kf" data-rise>2,023</p><p class="sp-n when-dots">Each dot on the path is one.</p></div></div></div>
+          <div class="spost" data-mark="3"><div class="sp-at" data-face="l" data-hang="down"><i class="sp-tie"></i><div class="sp-card"><p class="sp-k"><span>Gaussians <span class="nb">(full map)</span></span><b>4 / 4</b></p><p class="sp-v" data-f="g" data-rise>2.08 M</p><p class="sp-n"><span data-sp="g-note">This view is a still image.</span></p></div></div></div>
+          <i class="sp-lead"></i>
+        </div>
+        <div class="wrap pin-wrap">
+          <article class="mcard ch-card" data-map="oak_161206" data-ov="off">
+            <p class="mcard-k"><b>02</b> / 03 · <span data-f="place">India</span> · <span data-f="id">oak_161206</span></p>
+            <h3 id="ch2-h" data-f="title">Park walk</h3>
+            <p class="mcard-meta" data-f="platform">OAK-D-Lite, our own recording (walking)</p>
+            <p class="mcard-line">Rebuilt from xclean's own live camera poses, not from ground truth.</p>
+            <dl class="mcard-stats">
+              <div><dt>Route</dt><dd data-f="path">227 m</dd></div>
+              <div><dt>Duration</dt><dd data-f="dur">271.5 s</dd></div>
+              <div><dt>Keyframes</dt><dd data-f="kf">2,023</dd></div>
+              <div><dt>Gaussians <span class="nb">(full map)</span></dt><dd data-f="g">2.08 M</dd></div>
+            </dl>
+            <p class="mcard-credit"><a class="lic" href="credits.html#maps" data-f="lic">CC BY 4.0 · own data</a> <span data-f="credit">3-D map by Necessity Robotics (xclean).</span></p>
+            <p class="mcard-cav">A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+            <p class="mcard-links"><a class="btn btn--ion" href="viewer.html?map=oak_161206&amp;cam=pov" data-explore>Explore in 3-D<span class="sr"> the Park walk map (oak_161206)</span> <span class="arr" aria-hidden="true">→</span></a> <a class="mcard-lim" href="maps.html#lim-oak_161206">Known limits<span class="sr"> of oak_161206</span></a></p>
+          </article>
+          <div class="strip" data-map="oak_161206" data-ov="off" aria-hidden="true">
+            <div class="strip-fact" aria-hidden="true">
+              <div class="sf" data-k="0"><p class="sp-k"><span>Route</span><b>1 / 4</b></p><p class="sp-v" data-f="path" data-rise>227 m</p></div>
+              <div class="sf" data-k="1"><p class="sp-k"><span>Duration</span><b>2 / 4</b></p><p class="sp-v" data-f="dur" data-rise>271.5 s</p></div>
+              <div class="sf" data-k="2"><p class="sp-k"><span>Keyframes</span><b>3 / 4</b></p><p class="sp-v" data-f="kf" data-rise>2,023</p><p class="sp-n when-dots">Each dot on the path is one.</p></div>
+              <div class="sf" data-k="3"><p class="sp-k"><span>Gaussians <span class="nb">(full map)</span></span><b>4 / 4</b></p><p class="sp-v" data-f="g" data-rise>2.08 M</p><p class="sp-n"><span data-sp="g-note">This view is a still image.</span></p></div>
+            </div>
+            <p class="strip-id"><b>02</b> <span data-f="title">Park walk</span> <span class="strip-code" data-f="id">oak_161206</span><a class="strip-go" href="viewer.html?map=oak_161206&amp;cam=pov" data-explore tabindex="-1">Explore in 3-D <span class="arr">→</span></a></p>
+            <p class="strip-cav"><a class="lic" href="credits.html#maps" data-f="lic" tabindex="-1">CC BY 4.0 · own data</a> A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+          </div>
+          <p class="ch-cap" data-ov="off"><span class="when-live">The finished map; the blue line is xclean's live trajectory.</span><span class="when-still">A 3-D reconstruction from xclean's camera poses, not camera video.</span></p>
+        </div>
+      </div></div>
+      <div class="step" data-beat="glide" data-variant="low"></div>
+      <div class="step" data-beat="dive" data-variant="swoop"></div>
+      <div class="step" data-beat="ride" data-variant="look"></div>
+      <div class="step" data-beat="pullback" data-variant="orbit"></div>
+    </section>
+
+    <!-- 11-14. CHAPTER 3: a fast outdoor route (the map and the view side by side), surfacing into the atlas -->
+    <section class="chapter" id="ch-3" data-chapter="3" data-island="oak_164424" aria-labelledby="ch3-h" tabindex="-1">
+      <div class="pinbox"><div class="pin">
+        <div class="wrap pin-wrap">
+          <article class="mcard ch-card" data-map="oak_164424" data-ov="off">
+            <p class="mcard-k"><b>03</b> / 03 · <span data-f="place">India</span> · <span data-f="id">oak_164424</span></p>
+            <h3 id="ch3-h" data-f="title">Outdoor route</h3>
+            <p class="mcard-meta" data-f="platform">OAK-D-Lite, our own recording</p>
+            <p class="mcard-line">Rebuilt from xclean's own live camera poses, not from ground truth.</p>
+            <dl class="mcard-stats">
+              <div><dt>Route</dt><dd data-f="path">472 m</dd></div>
+              <div><dt>Duration</dt><dd data-f="dur">135.7 s</dd></div>
+              <div><dt>Keyframes</dt><dd data-f="kf">1,148</dd></div>
+              <div><dt>Gaussians <span class="nb">(full map)</span></dt><dd data-f="g">2.00 M</dd></div>
+            </dl>
+            <p class="mcard-credit"><a class="lic" href="credits.html#maps" data-f="lic">CC BY 4.0 · own data</a> <span data-f="credit">3-D map by Necessity Robotics (xclean).</span></p>
+            <p class="mcard-cav">A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+            <p class="mcard-links"><a class="btn btn--ion" href="viewer.html?map=oak_164424&amp;cam=pov" data-explore>Explore in 3-D<span class="sr"> the Outdoor route map (oak_164424)</span> <span class="arr" aria-hidden="true">→</span></a> <a class="mcard-lim" href="maps.html#lim-oak_164424">Known limits<span class="sr"> of oak_164424</span></a></p>
+          </article>
+          <div class="strip" data-map="oak_164424" data-ov="off" aria-hidden="true">
+            <p class="strip-id"><b>03</b> <span data-f="title">Outdoor route</span> <span class="strip-code" data-f="id">oak_164424</span><a class="strip-go" href="viewer.html?map=oak_164424&amp;cam=pov" data-explore tabindex="-1">Explore in 3-D <span class="arr">→</span></a></p>
+            <p class="strip-cav"><a class="lic" href="credits.html#maps" data-f="lic" tabindex="-1">CC BY 4.0 · own data</a> A 3-D reconstruction from xclean's camera poses, not camera video.</p>
+          </div>
+          <p class="split-note" data-ov="off" aria-hidden="true">Left: the view from xclean's camera pose. Right: the same moment on the top view of the whole route, the ridden stretch in blue.</p>
+        </div>
+      </div></div>
+      <div class="step" data-beat="glide" data-variant="arc"></div>
+      <div class="step" data-beat="dive" data-variant="drop"></div>
+      <div class="step" data-beat="ride" data-variant="split"></div>
+      <div class="step" data-beat="pullback" data-variant="surface"></div>
+    </section>
+
+    <!-- 15. EXPLORE: every map as an island; hover / tap for its card, select to dive in -->
+    <section class="beat beat--explore" id="atlas" data-beat="explore" aria-labelledby="ex-h" tabindex="-1">
+      <div class="pinbox"><div class="pin">
+        <div class="wrap pin-wrap ex-wrap">
+          <div class="ov-panel ex-intro" data-ov="off">
+            <p class="eyebrow">Maps · the atlas</p>
+            <h2 id="ex-h">All <span data-f="n-maps">8</span> of our published maps.</h2>
+            <p class="ex-lead">Every map's licence, credit and known limits are on the maps page.</p>
+            <p class="ex-hint label"><span class="when-still">Choose a map for its card</span><span class="when-live"><span class="when-fine">Hover an island for its card · click to dive in</span><span class="when-touch">Tap an island for its card · tap again to dive in</span></span></p>
+          </div>
+          <nav class="ex-chips" data-world="chips" data-ov="off" aria-label="All maps">
+            <a class="xchip" href="maps.html#oak_161834" data-id="oak_161834">Street ride <span>oak_161834</span></a>
+            <a class="xchip" href="maps.html#oak_160543" data-id="oak_160543">Park walk <span>oak_160543</span></a>
+            <a class="xchip" href="maps.html#oak_161206" data-id="oak_161206">Park walk <span>oak_161206</span></a>
+            <a class="xchip" href="maps.html#oak_164002" data-id="oak_164002">Outdoor route <span>oak_164002</span></a>
+            <a class="xchip" href="maps.html#oak_164424" data-id="oak_164424">Outdoor route <span>oak_164424</span></a>
+            <a class="xchip" href="maps.html#rosario_01" data-id="rosario_01">Soybean field <span>rosario_01</span></a>
+            <a class="xchip" href="maps.html#rosario_03" data-id="rosario_03">Soybean field <span>rosario_03</span></a>
+            <a class="xchip" href="maps.html#rosario_04" data-id="rosario_04">Soybean field <span>rosario_04</span></a>
+          </nav>
+          <article class="mcard explore-card" data-ov="off" aria-labelledby="explore-card-h" hidden></article>
+          <div class="ex-foot" data-ov="off">
+            <p class="ex-note">Islands: point subsamples of our maps, arranged, not to scale; blue = xclean's live route.<span class="when-backdrop"> Plane below: <span class="on-fig1">Fig. 1's points</span><span class="no-fig1">points of oak_161834</span>, enlarged, not stars.</span> Rosario: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+            <p class="ex-btns"><a class="btn" href="maps.html">All maps <span class="arr" aria-hidden="true">→</span></a> <a class="btn" href="viewer.html">Open the 3-D viewer <span class="arr" aria-hidden="true">→</span></a></p>
+          </div>
+        </div>
+        <div class="dive-bar" data-ov="off" hidden>
+          <div class="dive-txt">
+            <p class="dive-k label">Inside · along xclean's live camera poses</p>
+            <p class="dive-t"></p>
+            <p class="dive-c">A 3-D reconstruction from xclean's camera poses, not camera video.<span class="dive-credit"> Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</span></p>
+          </div>
+          <p class="dive-btns"><button class="btn dive-back" type="button">Back to the atlas <kbd>Esc</kbd></button> <a class="btn btn--ion dive-open" href="viewer.html">Open in the viewer <span class="arr" aria-hidden="true">→</span></a></p>
+        </div>
+      </div></div>
+    </section>
+  </div>
+
+  <!-- ============ THE 2-D STORY: its entry is the curtain over the world; the long form is on the sub-pages ============ -->
+  <section class="section story" id="work" data-world-end aria-labelledby="who-h">
+    <div class="wrap split">
+      <div data-reveal>
+        <p class="eyebrow">Who we are</p>
+        <h2 id="who-h">A robotics company.</h2>
       </div>
-      <p class="note robust"><b>Robustness.</b> No run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a set-aside first launch whose results were never read). It is not perfect: on 2 of them a replay attempt crashed or hung, and the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults). <a href="results.html#robustness">Details</a>.</p>
-      <a class="more" href="xclean.html">Install and run xclean</a>
+      <div data-reveal>
+        <p class="lead">Necessity Robotics is building robots for the physical world: humanoids, robots for the edge cases that are too dangerous or too hard for people, and surveillance technology for defence.</p>
+        <p class="muted">The hardest problem we are working on is the hand: picking up and handling real objects as well as a person does. The bar we hold ourselves to is the physical Turing test: a robot whose work in the physical world you cannot tell apart from a person's.</p>
+        <p class="muted">We are working towards a fully in-house stack: energy, semiconductors, hardware, software, and the robots built on them.</p>
+        <!-- the stack as a diagram of the sentence above (energy at the base, the product on top; aria-hidden: the sentence
+             says it). Labels only: no layer claims a status; xclean is marked where it is, at Software -->
+        <ol class="stack" aria-hidden="true">
+          <li>Energy</li>
+          <li>Semiconductors</li>
+          <li>Hardware</li>
+          <li class="is-x">Software <span>first step: xclean</span></li>
+          <li>Product</li>
+        </ol>
+        <p class="muted">Every robot first has to know where it is. That is where we started, and it is the first step of the stack: <a href="xclean.html">xclean</a>, our real-time SLAM. We publish our results, losses included: we measure on public benchmarks and on our own recordings, write our rules down before the runs (and disclose every later amendment), and publish every result.</p>
+      </div>
     </div>
   </section>
 
-  <!-- ============ 4. RESULTS: numbers with units ============ -->
-  <section class="section" aria-labelledby="res-h">
+  <section class="section band story" aria-labelledby="xc-h">
+    <div class="wrap">
+      <div class="xc-top">
+        <div class="xc-head" data-reveal>
+          <p class="eyebrow">xclean</p>
+          <h2 id="xc-h">Live stereo <span class="nw">visual-inertial</span> SLAM.</h2>
+          <p class="lead">xclean turns a stereo camera into a camera pose for every frame, while the robot moves, with loop closure, relocalisation and map reuse. Its GPU code is written in CuPy: no C++ build step, no ROS, no learned networks in the SLAM pipeline, native on Windows 11.</p>
+        </div>
+        <figure class="xc-fig" data-reveal>
+          <div class="xc-field frame"><canvas class="field-canvas" aria-hidden="true"></canvas></div>
+          <figcaption><b>Fig. 1</b> Not stars: <span data-f="sf-n">5,200</span> of the <span data-f="sf-of">232,817</span> points of route oak_161834, seen from above. The points come from stereo depth of xclean's keyframes, computed afterwards by our map builder and placed with xclean's live poses; the blue line is xclean's live trajectory. The only "space" on this site is our own data.</figcaption>
+        </figure>
+      </div>
+      <div class="grid g2 xc-cards">
+        <div class="card" data-reveal><span class="label">Sensors</span><h3>Stereo, plus the IMU when it checks out</h3><p>It uses the IMU while a built-in consistency check accepts it, and otherwise runs as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs; <a href="results.html#imu">per dataset</a>.</p></div>
+        <div class="card" data-reveal><span class="label">Camera</span><h3>Luxonis OAK-D-Lite</h3><p>Built for a Luxonis OAK-D-Lite: our OAK routes were recorded on it and replayed in real time, and the release runs live on it (so far tested with the camera standing still on a tripod).</p></div>
+        <div class="card" data-reveal><span class="label">Full SLAM</span><h3>Loops, relocalisation, map reuse</h3><p>Image work on the GPU, a sliding-window factor graph on the CPU, and loop corrections applied live.</p></div>
+        <div class="card" data-reveal><span class="label">Licence</span><h3>Apache-2.0</h3><p><span data-code-when="pending" hidden>Release coming soon. It will be free for research and commercial use, with a NOTICE credit if you ship it.</span><span data-code-when="public">Free for research and commercial use. If you ship it in a product, keep the NOTICE credit.</span></p></div>
+      </div>
+      <p class="note robust" data-reveal><b>Robustness.</b> No run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a set-aside first launch whose results were never read). It is not perfect: on 2 of them a replay attempt crashed or hung, and the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults). <a href="results.html#robustness">Details</a>.</p>
+      <a class="more" href="xclean.html#install">Install and run xclean</a>
+    </div>
+  </section>
+
+  <section class="section story" aria-labelledby="res-h">
     <div class="wrap">
       <div data-reveal>
-        <p class="eyebrow">03 · Results</p>
-        <h2 id="res-h">Measured live, on 72 routes.</h2>
-        <p class="lead">Indoor drones, cars, a Mars-analogue rover, a farm robot and our own camera. Three live runs per route at the sensor's real rate: 216 valid runs of record.</p>
+        <p class="eyebrow">Results</p>
+        <h2 id="res-h">Measured live, on <span data-b="routes">72</span> routes.</h2>
+        <p class="lead">Indoor drones, cars, a Mars-analogue rover, a farm robot and our own camera. Three live runs per route at the sensor's real rate: <span data-b="runs">216</span> valid runs of record.</p>
       </div>
-      <div class="specs specs--3" data-reveal>
-        <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median frame-to-pose latency</div><div class="s label">p50 · one desktop GPU</div></div>
-        <div class="spec"><div class="v"><span class="js-h" data-k="p95">26.4</span><small>ms</small></div><div class="k">95th-percentile latency</div><div class="s label">p95 · p99 <span class="js-h" data-k="p99">30.7</span> ms</div></div>
-        <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">live paced runs on <span class="js-h" data-k="routes">72</span> routes</div><div class="s label">3 per route · runs of record</div></div>
+      <div class="ntiles" data-reveal>
+        <div class="ntile"><p class="v"><span data-b="p50">20.4</span><small>ms</small></p><p class="k">median frame-to-pose latency</p><p class="s label">p50 · one desktop GPU</p></div>
+        <div class="ntile"><p class="v"><span data-b="p95">26.4</span><small>ms</small></p><p class="k">95th-percentile latency</p><p class="s label">p95 · p99 <span data-b="p99">30.7</span> ms</p></div>
+        <div class="ntile"><p class="v"><span data-b="runs">216</span><small>runs</small></p><p class="k">live paced runs on <span data-b="routes">72</span> routes</p><p class="s label">3 per route · runs of record</p></div>
       </div>
-      <p class="note">Latency is host-side, from frame arrival to the loop-corrected pose, on an RTX 5090: the median over all 216 runs of each run's own p50, p95 and p99. Source: <b>the final board of 2026-10-30</b> (<a href="data/board.json">data/board.json</a> on this site). <a href="results.html#disclosures">The engine was frozen with one of its pre-registered tests (K14) failed on two routes</a>, and passed on a third (kitti_09) only through its no-harm clause.</p>
+      <p class="note" data-reveal>Latency is host-side, from frame arrival to the loop-corrected pose, on an RTX 5090: the median over all <span data-b="runs">216</span> runs of each run's own p50, p95 and p99. Source: <b>the final board of 2026-10-30</b> (<a href="data/board.json">data/board.json</a> on this site). <a href="results.html#disclosures">The engine was frozen with one of its pre-registered tests (K14) failed on two routes</a>, and passed on a third (kitti_09) only through its no-harm clause.</p>
 
       <div class="acc" data-reveal>
         <h3>Accuracy: wins and losses, side by side.</h3>
         <p class="muted">Trajectory error on the 38 held-out routes, ours (live, paced, on a loaded desktop) against two other systems in the configurations we could run. We do not claim to be more accurate.</p>
         <div class="grid g2">
-          <div class="panel"><span class="label">vs ORB-SLAM3 · offline, untuned</span><div class="tally js-tally" data-k="unseen_vs_orb3"></div></div>
-          <div class="panel"><span class="label">vs OKVIS2-X · causal, unpaced</span><div class="tally js-tally" data-k="unseen_vs_okvis2x"></div></div>
+          <div class="panel"><span class="label">vs ORB-SLAM3 · offline, untuned</span><div class="tally" data-tally="unseen_vs_orb3"></div></div>
+          <div class="panel"><span class="label">vs OKVIS2-X · causal, unpaced</span><div class="tally" data-tally="unseen_vs_okvis2x"></div></div>
         </div>
         <p class="muted small">Some of these wins are against a baseline that failed in part: 3 of the 10 against ORB-SLAM3 (diverged runs or a partial trajectory) and 1 of the 11 against OKVIS2-X (a diverged run). Both baselines are visual-inertial systems, though ORB-SLAM3 ran stereo-only on four Rosario routes (its IMU start-up crashed). The OKVIS2-X comparison uses frame-level ATE, as pre-registered. <a href="results.html#accuracy">Configurations and details</a>.</p>
-        <a class="more" href="results.html">Every route, every loss, in one table</a>
+        <a class="more" href="results.html#routes">Every route, every loss, in one table</a>
       </div>
     </div>
   </section>
 
-  <!-- ============ 5. MAPS ============ -->
-  <section class="section band" aria-labelledby="maps-h">
+  <section class="section band story" aria-labelledby="po-h">
     <div class="wrap">
       <div data-reveal>
-        <p class="eyebrow">04 · Maps</p>
-        <h2 id="maps-h">Fly through what xclean saw.</h2>
-        <p class="lead">3-D Gaussian-splat maps reconstructed from xclean's own live camera poses, not from ground truth. Each map states its limits.</p>
+        <p class="eyebrow">Paper and code</p>
+        <h2 id="po-h"><span data-code-when="pending" hidden>Paper and code.</span><span data-code-when="public">Read it. Run it.</span></h2>
       </div>
-      <div class="grid g2 js-maps" data-reveal></div>
-      <a class="more" href="maps.html">All maps and their licences</a>
-    </div>
-  </section>
-
-  <!-- ============ 6. PAPER + CODE ============ -->
-  <section class="section" aria-labelledby="po-h">
-    <div class="wrap">
-      <div data-reveal>
-        <p class="eyebrow">05 · Paper and code</p>
-        <h2 id="po-h">Read it. Run it.</h2>
-      </div>
-      <div class="grid g2">
+      <div class="grid g2 po-cards">
         <a class="card frame" href="paper.html" data-reveal><span class="label">Technical paper · in preparation</span><h3>How xclean works, and how we score what it publishes live</h3><p>The method, the live evaluation protocol and the final board, summarised with the final numbers.</p><span class="more">Read the summary</span></a>
-        <a class="card frame" href="xclean.html" data-reveal><span class="label"><span data-code-when="pending">Open-source release · coming soon</span><span data-code-when="public" hidden>Open source · Apache-2.0</span></span><h3>xclean, Apache-2.0</h3><p>Python with GPU code written in CuPy and CPU hot paths in Numba. Install instructions will be published with the code. <span data-code-when="pending">The code goes public after its GPU checks.</span></p><span class="more">Install, quickstart, licence</span></a>
+        <a class="card frame" href="xclean.html" data-reveal><span class="label"><span data-code-when="pending" hidden>Open-source release · coming soon</span><span data-code-when="public">Open source · Apache-2.0</span></span><h3>xclean, Apache-2.0</h3><p>Python with GPU code written in CuPy and CPU hot paths in Numba. <span data-code-when="pending" hidden>Install instructions will be published with the code. The code is not public yet.</span><span data-code-when="public">Install and quickstart are in the repository's README.</span></p><span class="more">Install, quickstart, licence</span></a>
       </div>
     </div>
   </section>
 
-  <!-- ============ 7. CONTACT ============ -->
-  <section class="section section--tight band contact" aria-labelledby="ct-h">
+  <section class="section section--tight story contact" aria-labelledby="ct-h">
     <div class="wrap contact-in">
-      <div>
+      <div data-reveal>
         <p class="eyebrow">Contact</p>
-        <h2 id="ct-h">Building a robot that needs to know where it is?</h2>
+        <h2 id="ct-h">Write to us.</h2>
       </div>
-      <div>
-        <p class="lead">Write to us. We read every message.</p>
+      <div data-reveal>
+        <p class="lead">We read every message.</p>
         <a class="btn btn--ion" href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a>
       </div>
     </div>
@@ -190,5 +480,6 @@
     <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<template id="tpl-island-label"><button class="isl" type="button" tabindex="-1"><b data-f="num"></b><span data-f="title"></span><small data-f="sub"></small></button></template>
 </body>
 </html>

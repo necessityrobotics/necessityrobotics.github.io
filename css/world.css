@@ -1,0 +1,38 @@
+/* The world's stage (ENGINE; MASTER_PLAN.md 3.3): one sticky full-screen stage under the home page's beats, holding the
+   ONE WebGL canvas, the posters (the instant first paint and the still path), the loop dip and the labels layer.
+   Everything visual in the overlays (veil, fade, HUD, cards, labels' look) is HOME's css/home.css. */
+
+.world { position: relative; touch-action: pan-y pinch-zoom; }
+.stage { position: -webkit-sticky; position: sticky; top: 0; z-index: 0; height: 100vh; height: 100lvh; margin-bottom: -100vh; margin-bottom: -100lvh;
+  overflow: hidden; background: #000; }
+.stage-media { position: absolute; inset: 0; }
+.stage-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.world[data-mode="still"] .stage-canvas { visibility: hidden; }
+
+/* posters: the first (the hero's) paints before any script; the engine sets the others' opacity and the CSS fades it */
+.stage-posters { position: absolute; inset: 0; }
+.stage-posters img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 60% 50%;
+  opacity: 0; transition: opacity .45s ease; pointer-events: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none;
+  -webkit-touch-callout: none; will-change: opacity; }
+.stage-posters img:first-child { opacity: 1; }
+.stage-posters.is-flick img { transition-duration: .2s; }
+/* the chapter posters' bright sky is darkened from the top (DE-6); the hero keeps v1's look */
+.stage-posters img:not(:first-child) { -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.8) 22%, #000 42%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.8) 22%, #000 42%); }
+/* the hero keeps v2's look: its poster at half strength under the scrim while the hero beat is on */
+.world[data-beat="hero"] .stage-posters { opacity: .5; transition: opacity .45s ease; }
+/* a lost WebGL context: the current island's poster covers the canvas at once */
+.world[data-ctx="lost"] .stage-posters img[data-cur] { opacity: 1 !important; transition: none; }
+
+/* the still path's atlas (a 2-D canvas from data/atlas.json) */
+.stage-atlas2d { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .45s ease; pointer-events: none; }
+
+.stage-dip { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+.world-labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; contain: layout style; }
+.world-labels > * { position: absolute; left: 0; top: 0; will-change: transform; }
+.world[data-dragging] { -webkit-user-select: none; user-select: none; cursor: grabbing; }
+
+@media (max-width: 760px) { .stage-posters img { object-position: 70% 50%; } }
+@media (prefers-reduced-motion: reduce) {
+  .stage-posters img, .stage-atlas2d { transition: none; }
+}

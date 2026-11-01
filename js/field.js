@@ -1,9 +1,12 @@
 // The "stars": a sparse sample of a map's points (stereo depth of xclean's keyframes, placed with xclean's live poses;
 // data/starfield.json, built by tools/build_site_data.py)
 // drawn on a 2-D canvas in perspective, slowly orbiting, with xclean's live trajectory drawing in as one thin ion line.
-// Cheap on every device (a few thousand dots per frame); pauses off-screen and in hidden tabs; one still frame under
-// prefers-reduced-motion.
+// Cheap on every device (a few thousand dots per frame, at most 30 frames a second, colours from a fixed palette so a
+// frame builds no strings); pauses off-screen and in hidden tabs; one still frame under prefers-reduced-motion.
 import { REDUCED } from './site.js';
+
+const FRAME_MS = 1000 / 30;
+const ALPHAS = Array.from({ length: 16 }, (_, i) => `rgba(226,236,250,${(0.9 * i / 15).toFixed(3)})`);
 
 export class PointField {
   constructor(canvas, data, { trail = true, speed = 1, tilt = 0.55, zoom = 1, centerX = 0.5, centerY = 0.52, onFrame = null } = {}) {
@@ -14,7 +17,7 @@ export class PointField {
     this.trail = trail; this.speed = speed; this.tilt = tilt; this.zoom = zoom; this.cx = centerX; this.cy = centerY;
     this.onFrame = onFrame;
     this.t0 = performance.now(); this.yaw = -0.6; this.px = 0; this.py = 0; this.tx = 0; this.ty = 0;
-    this.visible = true; this.raf = 0;
+    this.visible = true; this.raf = 0; this.last = 0;
     this.resize = this.resize.bind(this); this.tick = this.tick.bind(this);
     new ResizeObserver(this.resize).observe(canvas);
     this.resize();
@@ -39,7 +42,7 @@ export class PointField {
   tick(now) {
     this.raf = 0;
     if (!this.visible || document.hidden) return;
-    this.draw(now);
+    if (now - this.last >= FRAME_MS - 1) { this.last = now; this.draw(now); }
     this.raf = requestAnimationFrame(this.tick);
   }
   draw(now) {
@@ -63,7 +66,9 @@ export class PointField {
       if (X < -4 || X > w + 4 || Y < -4 || Y > h + 4) continue;
       const a = Math.min(0.9, 0.18 + 0.5 * (k - 0.6));
       const r = 0.55 + 0.9 * Math.max(0, k - 0.7);
-      ctx.fillStyle = `rgba(226,236,250,${a.toFixed(3)})`;
+      const ai = Math.min(15, Math.round(a / 0.9 * 15));
+      if (ai <= 0) continue;
+      ctx.fillStyle = ALPHAS[ai];
       ctx.fillRect(X - r, Y - r, r * 2, r * 2);
     }
     // the trajectory: draws in over 14 s, then stays
