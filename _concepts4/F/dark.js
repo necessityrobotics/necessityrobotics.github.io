@@ -30,6 +30,8 @@ function profile(d) {
  */
 export function mountDark(canvas, stage, opts = {}) {
   const VP = opts.at || [0.62, 0.36];
+  const SH = opts.shape || [0.2, 0.41];               // the opening's half width and half height, as fractions of the stage
+  const LIGHT = !!opts.light;                          // phones and tablets: fewer pixels and fewer points of light
   const ctx = canvas.getContext('2d');
   const mem = document.createElement('canvas'), mctx = mem.getContext('2d', { willReadFrequently: true });
   const css = (n, fb) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || fb;
@@ -41,16 +43,16 @@ export function mountDark(canvas, stage, opts = {}) {
     const r = stage.getBoundingClientRect();
     W = r.width; H = r.height;
     if (!W || !H) return;
-    q = Math.min(window.devicePixelRatio || 1, 1.5, Math.sqrt(2.4e6 / (W * H)));       // at most 2.4 megapixels of darkness
+    q = Math.min(window.devicePixelRatio || 1, LIGHT ? 1 : 1.5, Math.sqrt((LIGHT ? 0.9e6 : 2.4e6) / (W * H)));   // at most 2.4 (touch: 0.9) megapixels
     canvas.width = Math.round(W * q); canvas.height = Math.round(H * q);
     MW = Math.max(64, Math.round(W / 6)); MH = Math.max(64, Math.round(H / 6)); mem.width = MW; mem.height = MH;
-    const rnd = rng(20261110), n = 1000; dust = [];
+    const rnd = rng(20261110), n = LIGHT ? 420 : 1000; dust = [];
     for (let i = 0; i < n; i++) dust.push({ x: rnd() * W, y: rnd() * H, s: .7 + rnd() * 1.5, ph: rnd() * 6.28, b: rnd() < .22 });
     render(0, performance.now());
   }
   function pool(e0) {
     const grow = 1 + e0 * e0 * 9;
-    return { cx: VP[0] * W, cy: VP[1] * H + .075 * H, rx: .2 * W * grow, ry: .41 * H * grow };
+    return { cx: VP[0] * W, cy: VP[1] * H + .075 * H, rx: SH[0] * W * grow, ry: SH[1] * H * grow };
   }
   function render(dt, now) {
     if (!W) return;
@@ -98,6 +100,8 @@ export function mountDark(canvas, stage, opts = {}) {
   }
   function frame(now) {
     raf = 0;
+    // phones and tablets: at most 30 draws a second (a 120 Hz screen would otherwise redraw 0.9 MP 120 times)
+    if (LIGHT && now - last < 31) { if (now < activeUntil && on) raf = requestAnimationFrame(frame); return; }
     const dt = Math.min(.05, Math.max(.001, (now - last) / 1000)); last = now;
     const k = 1 - Math.exp(-dt * 13);
     ptr.x += (ptr.tx - ptr.x) * k; ptr.y += (ptr.ty - ptr.y) * k;
@@ -109,18 +113,36 @@ export function mountDark(canvas, stage, opts = {}) {
     activeUntil = Math.max(activeUntil, performance.now() + ms);
     if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
   }
-  const move = e => {
-    if (REDUCE || e.pointerType === 'touch') return;
+  const at = (x, y) => {
     const r = stage.getBoundingClientRect();
-    ptr.tx = clamp((e.clientX - r.left) / r.width, 0, 1); ptr.ty = clamp((e.clientY - r.top) / r.height, 0, 1);
+    ptr.tx = clamp((x - r.left) / r.width, 0, 1); ptr.ty = clamp((y - r.top) / r.height, 0, 1);
     if (!ptr.on) { ptr.x = ptr.tx; ptr.y = ptr.ty; }
     ptr.on = true; kick();
   };
+  const move = e => { if (!REDUCE && e.pointerType !== 'touch') at(e.clientX, e.clientY); };
+  // a finger: touch events keep coming while the page scrolls (pointer events stop there), so the dark follows the finger
+  const touch = e => { const t = e.touches && e.touches[0]; if (!REDUCE && t) at(t.clientX, t.clientY); };
   addEventListener('pointermove', move, { passive: true });
+  addEventListener('touchstart', touch, { passive: true });
+  addEventListener('touchmove', touch, { passive: true });
+  // touch screens: one slow look across the opening when the page opens, so the visitor sees that the dark answers
+  let introT = [];
+  if (opts.intro && !REDUCE) {
+    const path = [[VP[0] + .16, VP[1] - .12], [VP[0] - .14, VP[1] + .06], [VP[0] + .06, VP[1] + .2], [VP[0], VP[1] + .04]];
+    path.forEach(([x, y], i) => introT.push(setTimeout(() => {
+      if (!on) return;
+      ptr.tx = clamp(x, 0, 1); ptr.ty = clamp(y, 0, 1);
+      if (!ptr.on) { ptr.x = ptr.tx; ptr.y = ptr.ty; }
+      ptr.on = true; kick(2400);
+    }, 700 + i * 650)));
+  }
   const ro = new ResizeObserver(layout); ro.observe(stage);
   layout();
   return {
     setP(v) { v = clamp(v, 0, 1); if (v === p) return; p = v; on = p < .99; if (on) kick(600); else render(0, performance.now()); },
-    destroy() { removeEventListener('pointermove', move); ro.disconnect(); },
+    destroy() {
+      removeEventListener('pointermove', move); removeEventListener('touchstart', touch); removeEventListener('touchmove', touch);
+      introT.forEach(clearTimeout); ro.disconnect();
+    },
   };
 }

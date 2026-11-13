@@ -28,6 +28,14 @@ const DEG = Math.PI / 180;
 const Q = new URLSearchParams(location.search);
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const PHONE = matchMedia('(max-width: 760px)').matches;
+// owner 11-14 (a real Android tablet): phones and tablets get the live place and touch. TOUCH = no mouse: the dark follows
+// a finger, a sideways drag turns the view, frames are held to 30 fps and the drawing is lighter. Phones show the live
+// place too when the phone has room for it (Save-Data off; 4 GB or more where the browser says; ?phone3d=0 = pictures).
+const TOUCH = matchMedia('(hover: none), (pointer: coarse)').matches;
+const MEM = navigator.deviceMemory, NET = navigator.connection, SAVE = NET?.saveData === true;
+const SMALL = TOUCH && Math.min(screen.width, screen.height) < 600;      // a phone, also when held sideways
+const SLOW = /(^|-)2g$|^3g$/.test(NET?.effectiveType || '');             // a slow link: about 15 MB is too much
+const LIVE_HOME = !(PHONE || SMALL) || (!SAVE && !SLOW && (MEM == null || MEM >= 4) && Q.get('phone3d') !== '0');
 const SNAP = Q.get('snap') === '1' || REDUCE;            // tests: no spring (one exact frame per scroll position)
 const STOPS = 5;
 const PLACE = 'oak_161206';
@@ -47,7 +55,8 @@ const RIDE_B = 0.04;                                      // the walk runs below
 const ATLAS_B = 0.25;                                     // the eight places load once the visitor scrolls past this beat
 const RISE0 = 1.05, RISE1 = 2.6;                          // the pull-back runs between these beats
 const OUT0 = 3.25, OUT1 = 4.15;                           // the view goes out to all eight places between these beats
-const END_SX = -0.22;                                     // the whole park sits right of the caption cards
+const END_SX = PHONE ? 0 : -0.22;                         // the whole park sits right of the caption cards (a phone: centred)
+const SX0 = PHONE ? 0 : -0.24;                            // the walk's view centre: 62 % of the width (a phone: the middle)
 const HERE = (p) => new URL(p, import.meta.url).href;      // this folder (the page may live elsewhere: the V12 mix)
 const ACC = accent();
 const OPEN = (typeof window !== 'undefined' && window.__fOpen) || HERE('open.html');   // the site build: explore.html
@@ -56,7 +65,8 @@ const stage = $('#stage'), hero = $('#hero'), box = $('#place');
 const first = $('#first'), veil = $('#veil'), hint = $('#hint'), hintT = $('#hint-t'), stateEl = $('#state');
 const still = $('#still'), stillP = $('#still-p'), atlasEl = $('#atlas-in'), darkEl = $('#dark');
 // the first screen: out of the dark (site v4.1, owner 11-13): the place shows where the visitor points; the scroll lights it
-const dark = !PHONE && darkEl ? mountDark(darkEl, stage, { at: [0.62, 0.36] }) : null;
+const dark = LIVE_HOME && darkEl ? mountDark(darkEl, stage, PHONE ? { at: [0.5, 0.6], shape: [0.38, 0.3], light: true, intro: TOUCH }
+  : { at: [0.62, 0.36], light: TOUCH, intro: TOUCH }) : null;
 const caps = [...document.querySelectorAll('.h-cap')], rail = [...document.querySelectorAll('.h-rail li')];
 // phones: pictures of the same views, cut at each stop
 const PICS = ['/img/places/oak_161206_p.jpg', '/img/places/oak_161206_p.jpg', HERE('img/a_p2.jpg'), HERE('img/a_p3.jpg'), HERE('img/atlas_p.jpg'), HERE('img/atlas_p.jpg')];
@@ -118,6 +128,18 @@ function ui(x) {
   }
   live.parkHidden = parkO < 0.01;
   if (live.E) live.E.setOffscreen(live.parkHidden);          // no frames for a park nobody sees
+  // the park went dark before the beat arrived (a fast fling, a jump, Back): its frames drove the beat, so the page
+  // carries the last stretch itself; otherwise the eight places would stop half way out, with no names
+  if (live.parkHidden && !carry && Math.abs(bt - b) > 1e-3) carry = requestAnimationFrame(carryOn);
+}
+let carry = 0;
+function carryOn() {
+  carry = 0;
+  if (!live.parkHidden || Math.abs(bt - b) < 1e-3) return;
+  b += (bt - b) * (SNAP ? 1 : 0.18);
+  if (Math.abs(bt - b) < 1e-3) b = bt;
+  ui(b);
+  if (Math.abs(bt - b) >= 1e-3 && !carry) carry = requestAnimationFrame(carryOn);
 }
 
 // ------------------------------------------------------------------ the place
@@ -138,6 +160,7 @@ window.__f = {
   walk(at) { return live.walkFrom ? live.walkFrom(at) : false; },
   get rideState() { const r = live.ride; return r ? { at: r.at, v: r.v, lock: r.lock, on: r.on } : null; },
   get E() { return live.E; },
+  get look() { return live.look; },                        // tests: the drag-to-look state (yaw, pitch)
 };
 
 function setState(d) {
@@ -155,9 +178,8 @@ function setState(d) {
   }
   // while the picture walks in (desktop), the first screen says nothing about loading: it is already moving
   stateEl.textContent = d.state === 'loading' ? (dark ? '' : 'Getting the 3-D place ready.') : d.state === 'live' ? '' : d.text || '';
-  // a touch screen has no mouse: the dark does not follow a finger (dark.js) and a drag scrolls, so no mouse words there
-  const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
-  hintT.textContent = liveish ? (touch ? 'The dark hides a real place. Scroll to light it.' : 'Move your mouse. The dark hides a real place. Scroll to light it.') : 'Scroll: move along the path, then rise above it.';
+  // a touch screen: the dark follows a finger (dark.js); a sideways drag turns the view once the place is live
+  hintT.textContent = liveish ? (TOUCH ? (d.state === 'live' ? 'Touch the dark: it hides a real place. Drag sideways to look. Scroll to light it.' : 'Touch the dark: it hides a real place. Scroll to light it.') : 'Move your mouse. The dark hides a real place. Scroll to light it.') : 'Scroll: move along the path, then rise above it.';
 }
 
 async function startLive(handle) {
@@ -186,10 +208,11 @@ async function startLive(handle) {
   const P = (at, side, h) => G(at, new THREE.Vector3()).addScaledVector(left(wrap(at)), side).addScaledVector(UP, h);
   const loopX = k => ({ len: LOOP, seam: [SEAM.x, SEAM.y, SEAM.z], seamLen: SEAM_M, k });
   // the eye 1.35 m up, a little left of the path, looking 24 m ahead
-  const eyeAt = at => { const p = P(at, 0.3, 1.35); return { p, q: look(p, P(at + LOOK_M, 0, 1.05)), sx: -0.24 }; };
+  const eyeAt = at => { const p = P(at, 0.3, 1.35); return { p, q: look(p, P(at + LOOK_M, 0, 1.05)), sx: SX0 }; };
+  if (TOUCH) E.stage.setMinFrame(33);                    // phones and tablets: 30 fps keeps the GPU and the page in step
   const at00 = wrap(E.photos[E.photos.length > 40 ? 40 : 0].at - 10.4);          // where img/first.jpg was made
   // how far the picture has walked: its push-in scale s (f.css) = LOOK_M (1 - 1 / s) metres toward the point ahead
-  const pushed = RIDE && still.src.includes('first.jpg');
+  const pushed = RIDE && (still.currentSrc || still.src).includes('first.jpg');   // a phone shows its own portrait picture
   const went = () => {
     if (!pushed) return 0;
     const tf = getComputedStyle(still).transform, s = tf && tf !== 'none' ? parseFloat(tf.slice(tf.indexOf('(') + 1)) : 1;
@@ -264,6 +287,8 @@ async function startLive(handle) {
     }
     rp.y += REDUCE ? 0 : -par.y * 4 * sm(0.55, 1, p);
     const q = new THREE.Quaternion().slerpQuaternions(R.cap.q, look(rp, T), ss(ramp(p, 0, 0.3)));
+    const L1 = live.look, lf = 1 - ss(ramp(x, RISE0, RISE0 + 0.3));      // a turned look fades out as the view rises (no jump)
+    if (lf > 0 && (L1.yaw || L1.pitch)) q.premultiply(rot.setFromAxisAngle(UP, L1.yaw * lf));
     const alt = rp.y - R.cap.p.y, kr = easeOutCubic(ramp(p, 0.35, 0.85));
     E.S.at = R.capAt;
     E.setDirect({
@@ -310,7 +335,7 @@ async function startLive(handle) {
       R0.at = R0.at0; R0.at0 = null;                        // back on the first screen: the walk goes on from here
     }
     const lk = live.look, kl = REDUCE ? 1 : 1 - Math.exp(-dt * 6);
-    if (b > 0.85 && !lk.drag) { lk.tyaw = 0; lk.tpitch = 0; }                // back to the path before the pull-back
+    if (b > RISE0 - 0.01 && !lk.drag) { lk.tyaw = 0; lk.tpitch = 0; }        // back to the path as the pull-back starts
     lk.yaw += (lk.tyaw - lk.yaw) * kl; lk.pitch += (lk.tpitch - lk.pitch) * kl;
     if (Math.abs(lk.tyaw - lk.yaw) + Math.abs(lk.tpitch - lk.pitch) < 1e-4) { lk.yaw = lk.tyaw; lk.pitch = lk.tpitch; } else more = true;
     pose(b); ui(b);
@@ -350,13 +375,14 @@ async function startLive(handle) {
   }
   live.loadAtlas = loadAtlas;
   if (bt > ATLAS_B) loadAtlas();
-  else setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(loadAtlas, { timeout: 2000 }), 4000);
+  else setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(loadAtlas, { timeout: 2000 }), TOUCH ? 9000 : 4000);
+  // (touch: later, so its download and shader compile land while the walk plays, not in the first scroll)
   onScroll();
   E.stage.invalidate();
 }
 
 let handle = null;
-if (!PHONE) {
+if (LIVE_HOME) {
   mountPlace(box, {
     id: PLACE, mode: 'lift', kf: 40, allowReduced: true, tierPref: 'lite',
     ribbon: { color: ACC.path || ACC.hex, rim: ACC.pathRim || ACC.rim },          // the camera's path
@@ -373,22 +399,34 @@ if (!PHONE) {
 
 // the pointer: parallax (mouse); a drag looks around at eye level (owner 11-13: "make it interactive with mouse so user can
 // explore / get glimpse of map in background"). A click never leaves the page.
-box.addEventListener('pointerdown', e => {
-  if (e.button !== 0 || e.pointerType !== 'mouse' || !live.E || b > 0.9) return;
-  live.look.drag = { x: e.clientX, y: e.clientY, yaw: live.look.tyaw, pitch: live.look.tpitch };
+// touch: a sideways drag turns the view; an up or down swipe still scrolls the page (touch-action pan-y)
+// (pinch-zoom stays: low-vision visitors zoom the words). On touch the words take the drag too, but not their links/buttons.
+const hId = $('.h-id');
+const dragEls = TOUCH && hId ? [box, hId] : [box];
+if (TOUCH) for (const el of dragEls) el.style.touchAction = 'pan-y pinch-zoom';
+const onDown = e => {
+  const mouse = e.pointerType !== 'touch';                // a pen drags like the mouse
+  if ((mouse && e.button !== 0) || !live.E || b > RISE0 - 0.01 || live.look.drag) return;
+  if (e.target instanceof Element && e.target.closest('a, button')) return;
+  live.look.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, yaw: live.look.tyaw, pitch: live.look.tpitch, touch: !mouse };
   stage.dataset.drag = '1';
-  try { box.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
-});
-box.addEventListener('pointermove', e => {
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+};
+const onMove = e => {
   const d = live.look.drag;
-  if (!d) return;
-  live.look.tyaw = clamp(d.yaw - (e.clientX - d.x) * 0.0024, -0.75, 0.75);           // a 300 px drag turns about 40 degrees; at most +-43
-  live.look.tpitch = clamp(d.pitch - (e.clientY - d.y) * 0.0024, -0.28, 0.22);
+  if (!d || e.pointerId !== d.id) return;
+  const k = d.touch ? 0.0034 : 0.0024;                    // a finger moves less far than a mouse for the same turn
+  live.look.tyaw = clamp(d.yaw - (e.clientX - d.x) * k, -0.75, 0.75);           // a 300 px drag turns about 40 degrees; at most +-43
+  if (!d.touch) live.look.tpitch = clamp(d.pitch - (e.clientY - d.y) * 0.0024, -0.28, 0.22);   // a finger's up/down is the scroll
   live.E?.stage.invalidate();
-}, { passive: true });
-const endDrag = () => { live.look.drag = null; delete stage.dataset.drag; };
-box.addEventListener('pointerup', endDrag);
-box.addEventListener('pointercancel', endDrag);
+};
+const endDrag = e => { if (live.look.drag && e.pointerId === live.look.drag.id) { live.look.drag = null; delete stage.dataset.drag; } };
+for (const el of dragEls) {
+  el.addEventListener('pointerdown', onDown);
+  el.addEventListener('pointermove', onMove, { passive: true });
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+}
 addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse' || !live.E || REDUCE) return;
   live.par.tx = clamp(e.clientX / innerWidth * 2 - 1, -1, 1);

@@ -52,7 +52,11 @@
 
 /* the first screen: the dark over the place (dark.js). Desktop only (phones get pictures). */
 .f-dark { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; }
-@media (max-width: 760px) { .f-dark { display: none; } }
+/* phones: the dark too (owner 11-14); home.js mounts it where the live place may come. Before it draws, the veil has
+   the same opening (centre, low), so the first screen does not jump when the dark takes over. */
+@media (max-width: 760px) {
+  .h-veil { background: radial-gradient(38% 30% at 50% 67.5%, #0000 0, rgba(0,0,0,.14) 42%, rgba(0,0,0,.64) 72%, rgba(0,0,0,.92) 90%, #000 100%); }
+}
 
 /* the last two stops: the words at the top centre, the eight places in the middle under them */
 .h-cap.h-cap--top { top: calc(var(--head-h, 68px) + 22px); bottom: auto; left: 0; right: 0; margin-inline: auto; text-align: center;
