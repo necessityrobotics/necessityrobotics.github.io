@@ -45,10 +45,11 @@ export async function mountAtlas(root, links, opts = {}) {
   const EMB = !!opts.embedded;
   const canvas = root.querySelector('.f-atlas-canvas'), layer = root.querySelector('.f-atlas-labels'), pick = root.querySelector('.f-atlas-pick');
   // transparent: during the hand-off the park shows through until it fades (the stage behind is black)
-  const gl = canvas.getContext('webgl2', { antialias: true, alpha: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
+  const AA = !matchMedia('(hover: none), (pointer: coarse)').matches;   // touch screens: no MSAA (lighter)
+  const gl = canvas.getContext('webgl2', { antialias: AA, alpha: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
   if (!gl) return null;
   const [A, P] = await Promise.all([getJSON('data/atlas.json'), loadPlaces()]);
-  const renderer = new THREE.WebGLRenderer({ canvas, context: gl, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, context: gl, antialias: AA });
   renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(40, 1, 1, 20000);
   const ids = A.order.filter(id => A.islands[id] && P.byId[id]);
@@ -118,7 +119,7 @@ export async function mountAtlas(root, links, opts = {}) {
     const w = root.clientWidth, h = root.clientHeight;
     if (!w || !h) return;
     S.W = w; S.H = h;
-    renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+    renderer.setPixelRatio(Math.min(matchMedia('(hover: none), (pointer: coarse)').matches ? (w <= 760 ? 1.25 : 1.5) : 2, devicePixelRatio || 1));   // touch: lighter
     renderer.setSize(w, h, false);
     cam.aspect = w / h;
     S.fov = w / h >= 1 ? 40 : 58;

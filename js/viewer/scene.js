@@ -110,6 +110,16 @@ export class Stage {
     canvas.addEventListener('webglcontextrestored', () => onContext?.('restored'));
   }
 
+  /** A frame cap in ms (0 = none). The adaptive resolution starts its judgement afresh, and with a GPU timer its budget
+   *  follows the cap (12.5 ms is a 60 fps budget; at 30 fps a frame may cost twice that). */
+  setMinFrame(ms) {
+    this.minFrameMs = ms > 0 ? ms : 0;
+    const f = this.minFrameMs ? this.minFrameMs / 16.7 : 1;
+    this.budgetHi = BUDGET_HI * f; this.budgetLo = BUDGET_LO * f;
+    this._vs = null; this._vsAt = -1e9; this._judgeFrom = performance.now(); this._lastDraw = null;
+    this._slow = 0; this._fast = 0;
+  }
+
   // ------------------------------------------------------------------ scheduling
   /** Ask for (at least) one more frame. Safe to call from anywhere, including from inside render(). */
   invalidate() {
@@ -136,6 +146,10 @@ export class Stage {
   _tick(now) {
     this._raf = 0;
     if (this.paused || this.lost) return;
+    // an optional frame cap (minFrameMs, 0 = none): a page may hold a phone or tablet to 30 fps so that its GPU and the
+    // page's own work keep up; a skipped vsync only asks for the next one (dt then spans both)
+    if (this.minFrameMs > 0 && this._lastDraw != null && now - this._lastDraw < this.minFrameMs - 2) { this._schedule(); return; }
+    this._lastDraw = now;
     this._inTick = true;
     let more = false;
     try {
@@ -224,9 +238,11 @@ export class Stage {
       // stepped a calm 165 Hz viewer to its floor during loading when this was first tried.
       const f = this.frames, t0 = Math.max(now - 750, this._judgeFrom || 0);
       if (this.renderCount - (this._vsAt || -1e9) >= 30) { this._vsAt = this.renderCount; this._vs = vsyncOf(f) || this._vs; }
-      const vs = this._vs;
+      // under a frame cap (minFrameMs) every drawn gap is at least the cap: judge against the cap (a missed slot is a gap
+      // over 1.5 caps), not against the display's vsync
+      const cap = this.minFrameMs > 0 ? this.minFrameMs : 0, vs = cap ? Math.max(this._vs || 0, cap) : this._vs;
       let sum = 0, n = 0, long = 0;
-      for (let i = f.length - 1, k = 0; i >= 0 && k < this._streak && f[i][0] >= t0; i--, k++) { sum += f[i][1]; n++; if (vs && f[i][1] > 2.5 * vs) long++; }
+      for (let i = f.length - 1, k = 0; i >= 0 && k < this._streak && f[i][0] >= t0; i--, k++) { sum += f[i][1]; n++; if (vs && f[i][1] > (cap ? 1.5 : 2.5) * vs) long++; }
       if (sum >= 600 && n >= 6 && vs) cost = ((this.budgetHi + this.budgetLo) / 2) * (long >= 3 ? Math.max(1, (sum / n) / vs) : 1);
     }
     if (cost == null) return;
