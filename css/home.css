@@ -98,12 +98,12 @@ html:not(.ov) .world-hud { display: none; }
 
 /* the look beat's invitation (chapter 2) */
 .hud-hint { left: 50%; bottom: 30%; margin: 0; padding: 9px 16px 9px 34px; transform: translate3d(-50%, 8px, 0); border-radius: 999px; background: rgba(0,0,0,.84);
-  border: 1px solid rgba(108,201,255,.55); font: 500 14px/1.2 var(--mono); letter-spacing: .03em; color: var(--fg); white-space: nowrap; }
+  border: 1px solid rgba(255,106,43,.55); font: 500 14px/1.2 var(--mono); letter-spacing: .03em; color: var(--fg); white-space: nowrap; }
 .hud-hint::before { content: ""; position: absolute; left: 14px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--ion); }
 /* review PH (H-PH1): the pulse is a compositor-only ring (transform / opacity) and runs only while the hint shows; the old
    box-shadow pulse repainted every frame for the whole visit at opacity 0 (about 12 % of a phone's main thread) */
 .hud-hint::after { content: ""; position: absolute; left: 14px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%;
-  border: 1px solid rgba(108,201,255,.55); opacity: 0; box-sizing: border-box; }
+  border: 1px solid rgba(255,106,43,.55); opacity: 0; box-sizing: border-box; }
 .world-hud[data-hint="1"] .hud-hint::after { animation: ring 1.6s var(--ease) infinite; }
 .world-hud[data-hint="1"] .hud-hint { opacity: 1; transform: translate3d(-50%, 0, 0); }
 @keyframes ring { 0% { transform: scale(1); opacity: 1; } 70%, 100% { transform: scale(3.5); opacity: 0; } }
@@ -161,7 +161,7 @@ html:not(.ov) .world-hud { display: none; }
 /* the state chip has a fixed box, so its label changes never re-wrap the caption (RA-1, PH-4) */
 .hero-state { display: inline-block; width: 21ch; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: 1px; margin-right: 6px;
   font: 600 13px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 8px; }
-.hero-state[data-s="live"], .hero-state[data-s="points"] { color: var(--ion); border-color: rgba(108,201,255,.5); }
+.hero-state[data-s="live"], .hero-state[data-s="points"] { color: var(--ion); border-color: rgba(255,106,43,.5); }
 .hero-scroll { flex: none; width: 28px; height: 46px; border: 1.5px solid var(--line-3); border-radius: 14px; position: relative; transition: opacity .25s var(--ease); }
 .hero-scroll span { position: absolute; left: 50%; top: 9px; width: 3px; height: 9px; margin-left: -1.5px; border-radius: 2px; background: var(--fg); animation: cue 2.2s var(--ease) infinite; }
 .head:not(.is-top) ~ main .hero-scroll { opacity: 0; }                            /* DE-7: the cue leaves at the first scroll */
@@ -302,7 +302,7 @@ html:not(.ov) .rail { display: none; }
   transition: opacity .3s var(--ease), transform .3s var(--ease); background: rgba(0,0,0,.86); border: 1px solid var(--line); padding: 7px 10px; border-radius: 999px; color: var(--fg); letter-spacing: .04em; }
 .rail-list a:hover > span, .rail-list a:focus-visible > span, .rail-list a[aria-current="true"] > span { opacity: 1; transform: translate(0, -50%); }
 .rail-list a[aria-current="true"] { color: var(--ion); }
-.rail-list a[aria-current="true"] b { border-color: rgba(108,201,255,.6); }
+.rail-list a[aria-current="true"] b { border-color: rgba(255,106,43,.6); }
 .rail-list a:hover { color: var(--fg); }
 .rail-track { position: absolute; right: 0; top: 12px; bottom: 12px; width: 2px; background: var(--line-2); border-radius: 2px; overflow: hidden; }
 .rail-track i { position: absolute; inset: 0; background: var(--ion); transform-origin: 50% 0; transform: scaleY(var(--rp, 0)); }
@@ -331,14 +331,14 @@ html:not(.ov) .rail { display: none; }
 #world[data-marks="live"] .spost[data-s="cur"] .sp-at[data-vis] { will-change: transform; }
 /* the post's head: a node of light where the card hangs (on phones, at the stub's head) */
 .sp-at::before { content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: #e6f6ff;
-  box-shadow: 0 0 0 3px rgba(108,201,255,.35), 0 0 16px 4px rgba(108,201,255,.7); opacity: 0; transition: opacity .18s var(--ease); }
+  box-shadow: 0 0 0 3px rgba(255,106,43,.35), 0 0 16px 4px rgba(255,106,43,.7); opacity: 0; transition: opacity .18s var(--ease); }
 #world[data-marks="live"] .sp-layer:not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis]::before { opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
 /* the card hangs from the head (marks.js cardAt; face l: outward, to the left of the post; r: to its right): up, its bottom
    corner on the head, where that fits under the header; else beside the post (side), joined to the head by a level tie,
    clear of its ring and post; down from the head's height last. The engine sets every place as the card's offset (up too)
    and the tie's length, and moves a card that shows to a new place (round its ring), never a jump (verifier, 11-01) */
 .sp-card { position: absolute; top: 0; width: max-content; max-width: 360px; padding: 14px 18px 15px; border-radius: 12px;
-  background: rgba(0,0,0,.88); border: 1px solid rgba(108,201,255,.42); color: var(--fg);
+  background: rgba(0,0,0,.88); border: 1px solid rgba(255,106,43,.42); color: var(--fg);
   opacity: 0; transition: opacity .18s var(--ease); }
 /* no blurred shadow on the card: its first raster cost the GPU 37-41 ms (any blur radius), one frame of 24-25 ms as the
    first fact opened (tools/qa/engine/pl_matrix.py P01); the .88 black and the ion edge carry the card */
@@ -349,9 +349,9 @@ html:not(.ov) .rail { display: none; }
 .sp-at[data-hang="side"] .sp-card { border-radius: 12px; }
 /* the tie: a level line from the head to a card hung beside the post (scaleX: its length / 100 px, set by the engine) */
 .sp-tie { position: absolute; top: -1px; width: 100px; height: 2px; opacity: 0; transition: opacity .18s var(--ease);
-  background: linear-gradient(90deg, rgba(108,201,255,.45), var(--ion)); }
+  background: linear-gradient(90deg, rgba(255,106,43,.45), var(--ion)); }
 .sp-at[data-face="l"] .sp-tie { right: 0; transform-origin: 100% 50%; }
-.sp-at[data-face="r"] .sp-tie { left: 0; transform-origin: 0 50%; background: linear-gradient(90deg, var(--ion), rgba(108,201,255,.45)); }
+.sp-at[data-face="r"] .sp-tie { left: 0; transform-origin: 0 50%; background: linear-gradient(90deg, var(--ion), rgba(255,106,43,.45)); }
 #world[data-marks="live"] .sp-layer:is([data-layout="cards"], [data-layout="slim"]):not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis]:is([data-hang="side"], [data-hang="down"]) .sp-tie {
   opacity: .9; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
 #world[data-marks="live"] .sp-layer:is([data-layout="cards"], [data-layout="slim"]):not([data-kbd]) .spost[data-s="cur"] .sp-at[data-vis] .sp-card {
@@ -366,7 +366,7 @@ html:not(.ov) .rail { display: none; }
 .sp-layer[data-layout^="dock"] .sp-card { display: none; }                       /* phones: the fact is in the dock */
 /* on opening, a line of light runs once along the card's top edge, from the post */
 .sp-card::after { content: ""; position: absolute; top: -1px; left: 12px; right: 12px; height: 1px; opacity: 0; transform: scaleX(0);
-  background: linear-gradient(90deg, rgba(108,201,255,0), #d7f0ff 50%, rgba(108,201,255,0)); }
+  background: linear-gradient(90deg, rgba(255,106,43,0), #d7f0ff 50%, rgba(255,106,43,0)); }
 .sp-at[data-face="l"] .sp-card::after { transform-origin: 100% 50%; }
 .sp-at[data-face="r"] .sp-card::after { transform-origin: 0 50%; }
 .sp-layer:not([data-enter="back"]) .spost[data-s="cur"] .sp-card::after { animation: sp-scan .9s var(--ov-ease) .3s both; }
@@ -388,14 +388,14 @@ html:not(.ov) .rail { display: none; }
 #world:not([data-marks="live"]) .when-dots { display: none; }
 /* phones: a leader drops from the current ring to the dock (the engine stretches it by scaleY) */
 .sp-lead { width: 2px; height: 100px; margin-left: -1px; transform-origin: 50% 0; opacity: 0; transition: opacity .18s var(--ease);
-  background: linear-gradient(180deg, var(--ion), rgba(108,201,255,.4)); }
+  background: linear-gradient(180deg, var(--ion), rgba(255,106,43,.4)); }
 #world[data-marks="live"] .sp-layer[data-layout^="dock"]:not([data-kbd]) .sp-lead[data-vis] { opacity: .9; will-change: transform; transition: opacity var(--sp-dur) var(--ease); }   /* marks.js times its way in */
 
 /* the dock's fact cap: on chapter 2's strip, always laid out (only its opacity changes, so nothing shifts at 0.55); it
    shows on phones, and on every size while no signpost stands (still mode, the 3-D not up yet). Its rows share one grid
    cell, so a new fact never changes its height */
 .strip-fact { position: absolute; left: -1px; right: -1px; bottom: calc(100% + 1px); display: grid; padding: var(--cap-pt, 12px) 14px var(--cap-pb, 10px); pointer-events: none;
-  background: rgba(0,0,0,.9); border: 1px solid var(--line); border-top-color: rgba(108,201,255,.45); border-bottom: 0; border-radius: var(--r) var(--r) 0 0;
+  background: rgba(0,0,0,.9); border: 1px solid var(--line); border-top-color: rgba(255,106,43,.45); border-bottom: 0; border-radius: var(--r) var(--r) 0 0;
   opacity: 0; transition: opacity .18s var(--ease);
   --sp-in: .3s; --sp-dur: .3s; --sp-rd: .32s; --sp-rise: .55s; --sp-step: 40ms; }
 /* review A: the cap opens with its first fact (the same delay and fade), not 0.3 s ahead of it as an empty black box */
@@ -404,7 +404,7 @@ html:not(.ov) .rail { display: none; }
 .sf { position: relative; grid-area: 1 / 1; min-width: 0; opacity: 0; transition: opacity .18s var(--ease); }
 .sf[data-s="cur"] { opacity: 1; transition: opacity var(--sp-dur) var(--ease) var(--sp-in); }
 .sf::before { content: ""; position: absolute; top: calc(-1px - var(--cap-pt, 12px)); left: 0; right: 0; height: 1px; opacity: 0; transform: scaleX(0); transform-origin: 0 50%;
-  background: linear-gradient(90deg, rgba(108,201,255,0), #d7f0ff 50%, rgba(108,201,255,0)); }
+  background: linear-gradient(90deg, rgba(255,106,43,0), #d7f0ff 50%, rgba(255,106,43,0)); }
 .strip-fact:not([data-enter="back"]) .sf[data-s="cur"]::before { animation: sp-scan .9s var(--ov-ease) .3s both; }
 .strip-fact .sp-k { font-size: 13px; }
 .strip .strip-fact .sp-v { margin: 2px 0 0; font-size: 44px; }

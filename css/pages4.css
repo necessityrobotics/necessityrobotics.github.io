@@ -1,0 +1,149 @@
+/* Necessity Robotics v4: page rules of lane PAGES (maps.html = "3-D places", the engineer pages, 404.html).
+   Load order: css/site.css, (css/pages.css on the engineer pages), css/v4.css, then this file.
+   Every colour is a token of site.css. Nothing here animates by itself. Tap targets are 44 px or more. */
+
+/* ============================================================ 0. the row of links between the engineer pages
+   (xclean, results, paper, credits). It sits between the shared header and <main>; its class v4-top gives the room
+   for the fixed header. One row; on a narrow phone it scrolls sideways inside itself, never the page. */
+.pg-eng { border-bottom: 1px solid var(--line); background: var(--bg-1); }
+.pg-eng-in { display: flex; align-items: center; gap: 0 clamp(8px, 1.4vw, 18px); min-height: 46px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.pg-eng-in::-webkit-scrollbar { display: none; }
+.pg-eng-l { margin-right: 6px; font: 500 13px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-3); }
+.pg-eng a { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; color: var(--fg-2); text-decoration: none; font: 600 15.5px/1 var(--sans); }
+.pg-eng a:hover { color: var(--fg); }
+.pg-eng a:focus-visible { outline-offset: -3px; }
+.pg-eng a[aria-current] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--ion); }
+@media (max-width: 600px) {
+  .pg-eng-l { display: none; }
+  .pg-eng-in { gap: 0 6px; }
+  .pg-eng a { padding: 0 5px; font-size: 15px; }
+}
+@media (max-width: 374px) {
+  .pg-eng-in { gap: 0 3px; }
+  .pg-eng a { padding: 0 4px; font-size: 14px; }
+}
+
+/* ============================================================ 1. the "In plain words" box at the top of an engineer page
+   The row above gives the room for the fixed header, so the page head below the box needs none. */
+.pg-plain { padding-top: clamp(16px, 2.4vw, 28px); }
+.pg-plain .v4-plain { margin-bottom: 0; max-width: 880px; padding: 14px 16px 12px; }
+/* the label (p.v4-plain-h) and the credit line (p.v4-credit) keep their own type: the rules below name the text only */
+.pg-plain .v4-plain p.v4-plain-h { margin-bottom: 6px; }
+.pg-plain .v4-plain p:not(.v4-plain-h):not(.v4-credit) { max-width: 66ch; font-size: 16.5px; line-height: 1.5; }
+.pg-plain .v4-plain p + p:not(.v4-credit) { margin-top: 6px; }
+.pg-plain .v4-plain p.v4-plain-h + p { margin-top: 0; }
+.pg-plain .v4-plain .more { margin-top: 4px; font-size: 16.5px; }
+.pg-plain .v4-plain p.v4-credit { margin-top: 8px; max-width: none; font-size: 13.5px; line-height: 1.4; color: var(--fg-2); }
+/* wide screens: the short paragraphs stand side by side, so the box stays low and the page title stays high */
+@media (min-width: 900px) {
+  .pg-plain .v4-plain { max-width: none; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px clamp(22px, 2.6vw, 36px); padding: 16px 22px 12px; }
+  .pg-plain .v4-plain > p.v4-plain-h, .pg-plain .v4-plain > .more, .pg-plain .v4-plain > p.v4-credit { flex: 0 0 100%; max-width: none; }   /* max-width would cap the 100 % row */
+  .pg-plain .v4-plain > p:not(.v4-plain-h):not(.v4-credit) { flex: 1 1 0; min-width: 0; max-width: none; margin-top: 0; font-size: 17px; }
+  .pg-plain .v4-plain > p.v4-credit { margin-top: 4px; }
+}
+.pg-plain + .phead { padding-top: clamp(30px, 4.4vw, 60px); }
+/* a page head with a picture behind it (paper, credits): shorter, and its top edge fades into the black above it */
+.pg-plain + .phead--poster { min-height: min(52svh, 480px); }
+.pg-plain + .phead--poster .phead-bg::after {
+  background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, .88) 34%, rgba(0, 0, 0, .3) 72%, rgba(0, 0, 0, .5) 100%),
+    linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0) 42%), linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0) 34%); }
+@media (max-width: 760px) {
+  .pg-plain + .phead--poster .phead-bg::after {
+    background: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, .86) 52%, rgba(0, 0, 0, .55) 100%), linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0) 30%); }
+}
+
+/* ============================================================ 2. results.html: the door in a route's row */
+.walk3d { position: relative; display: inline-flex; align-items: center; gap: 7px; margin-top: 7px; padding: 5px 11px 5px 9px; border-radius: 999px;
+  border: 1px solid rgba(255, 106, 43, .65); background: #000; color: var(--ion); font: 700 13.5px/16px var(--sans); letter-spacing: 0;
+  text-decoration: none; white-space: nowrap; transition: background .2s, color .2s, border-color .2s; }
+.walk3d::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.walk3d::after { content: ""; position: absolute; inset: -9px -4px; }             /* the tap target: 44 px high */
+.walk3d:hover, .walk3d:focus-visible { background: var(--ion); border-color: var(--ion); color: var(--ink); }
+.walk-note { margin: 0 0 12px; max-width: var(--measure); font-size: 16px; line-height: 1.5; color: var(--fg-2); }
+.walk-note b { color: var(--ion); font-weight: 700; }
+
+/* ============================================================ 3. maps.html = "3-D places" */
+.pl-top { padding: clamp(24px, 3.6vw, 48px) 0 clamp(18px, 2.4vw, 30px); }
+.pl-top .eyebrow { margin-bottom: 12px; }
+.pl-top h1 { margin: 0; font-size: clamp(31px, 4.1vw, 52px); line-height: 1.08; font-weight: 700; }
+.pl-top h1 span { display: inline-block; }                                          /* each sentence stays on one line when it fits */
+.pl-lead { margin: 14px 0 0; max-width: 46ch; font-size: clamp(18px, 1.55vw, 21px); line-height: 1.5; color: var(--fg); }
+.pl-what { margin: 10px 0 0; max-width: 54ch; font-size: 16.5px; line-height: 1.5; color: var(--fg-2); }
+.pl-what b { color: var(--fg); }
+@media (min-width: 900px) {
+  .pl-top .wrap { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 10fr); column-gap: clamp(28px, 5vw, 72px); align-items: end; }
+  .pl-lead { margin-top: 0; }
+}
+.pl-pick { padding: 4px 0 clamp(34px, 5vw, 60px); }
+.pl-notes { padding: 0 0 clamp(44px, 6vw, 84px); }
+
+/* ---- "Where it is not perfect": one sheet per place */
+.pl-limits { padding: clamp(44px, 6vw, 84px) 0 clamp(48px, 6vw, 88px); }
+.pl-limits h2 { margin: 0 0 12px; font-size: clamp(27px, 3.2vw, 40px); }
+.pl-lim-intro { margin: 0; max-width: 64ch; font-size: clamp(17.5px, 1.5vw, 20px); line-height: 1.55; color: var(--fg); }
+.pl-list { display: grid; gap: 16px; margin: clamp(22px, 3vw, 34px) 0 0; max-width: 1080px; }
+.pl-item { display: grid; grid-template-columns: 116px minmax(0, 1fr); grid-template-areas: "pic head" "body body"; gap: 12px 14px; align-items: center;
+  padding: 14px; background: #000; border: 1px solid var(--line-2); border-radius: 12px; }
+.pl-pic { grid-area: pic; display: block; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden; background: #050505; border: 1px solid var(--line); }
+.pl-pic img { width: 100%; height: 100%; object-fit: cover; }
+.pl-head { grid-area: head; min-width: 0; }
+.pl-body { grid-area: body; min-width: 0; }
+.pl-name { margin: 0 0 3px; font: 700 clamp(19px, 2vw, 24px)/1.2 var(--display); letter-spacing: -0.005em; color: var(--fg); text-wrap: balance; }
+.pl-kind { margin: 0; max-width: none; font-size: 15px; line-height: 1.4; color: var(--fg-2); }
+.pl-lim { margin: 0; max-width: 66ch; padding: 3px 0 3px 14px; border-left: 3px solid var(--warn); font-size: 17px; line-height: 1.55; color: var(--fg); }
+/* a deep link to the limits of one place (#lim-<id>) keeps the name of the place on screen above them */
+.pl-lim { scroll-margin-top: 124px; }
+@media (min-width: 760px) { .pl-lim { scroll-margin-top: 92px; } }
+.pl-lim-h { display: block; margin: 0 0 2px; font: 700 13.5px/1.4 var(--sans); letter-spacing: .04em; color: var(--warn); }
+.pl-item .v4-credit { margin: 10px 0 0; font-size: 13.5px; }
+.pl-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 14px 0 0; }
+.pl-acts .btn { min-height: 46px; }
+@media (min-width: 760px) {
+  .pl-item { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); grid-template-areas: "pic head" "pic body"; grid-template-rows: auto 1fr;
+    gap: 10px 26px; align-items: start; padding: 18px; }
+  .pl-pic { align-self: start; }
+  .pl-kind { font-size: 16px; }
+}
+/* a deep link (maps.html#rosario_01, maps.html#lim-rosario_01) marks its place; no animation */
+.pl-item:target, .pl-item:has(.pl-lim:target) { border-color: var(--ion); box-shadow: 0 0 0 1px var(--ion); }
+.pl-lim:target { background: rgba(255, 210, 122, .09); box-shadow: 0 0 0 6px rgba(255, 210, 122, .09); border-radius: 0 6px 6px 0; }
+
+/* ---- the closed "For engineers" block: the technical facts live here and nowhere else on this page */
+.pl-eng { margin: 14px 0 0; border-top: 1px solid var(--line); }
+.pl-eng > summary { display: flex; align-items: center; gap: 10px; min-height: 48px; cursor: pointer; list-style: none; color: var(--fg-2);
+  font: 650 15.5px/1.25 var(--sans); -webkit-tap-highlight-color: transparent; }
+.pl-eng > summary::-webkit-details-marker { display: none; }
+.pl-eng > summary::before { content: "+"; flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--line-3); color: var(--ion); font: 600 16px/1 var(--mono); }
+.pl-eng[open] > summary::before { content: "\2212"; }
+.pl-eng > summary:hover { color: var(--fg); }
+.pl-eng > summary:focus-visible { outline-offset: -2px; }
+.pl-eng-in { padding: 2px 0 6px; font-size: 16px; line-height: 1.55; color: var(--fg-2); }
+.pl-eng-in p { margin: 0 0 12px; max-width: 72ch; }
+.pl-eng-id { font: 500 14.5px/1.5 var(--mono); letter-spacing: .02em; color: var(--fg); overflow-wrap: anywhere; }
+.pl-eng-in dl.kv { gap: 9px 20px; margin: 0 0 16px; }
+.pl-eng-in dl.kv dd { max-width: 72ch; color: var(--fg); }
+.pl-eng-h { margin: 0 0 8px; font: 500 13px/1.6 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); }
+.pl-eng-in table.t { font-size: 15.5px; }
+.pl-eng-in table.t th, .pl-eng-in table.t td { padding: 9px 12px; }
+.pl-eng-in table.t a { display: inline-block; padding: 6px 0; }
+.pl-eng-in table.t td.wrapcell { min-width: 11ch; }
+.pl-eng-in .rng { color: var(--fg-2); }
+@media (max-width: 600px) {
+  .pl-eng-in dl.kv { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .pl-eng-in dl.kv dt { margin-top: 10px; }
+}
+.pl-eng--all { margin-top: clamp(26px, 3.4vw, 40px); max-width: 1080px; border-top: 1px solid var(--line-2); }
+.pl-eng--all .btns { margin: 4px 0 8px; }
+
+/* ============================================================ 4. 404.html: a short page; the footer sits at the foot of the screen */
+.nf-page { min-height: 100svh; display: flex; flex-direction: column; }
+.nf-page > main { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; }
+.nf { padding: clamp(34px, 6vw, 80px) 0 clamp(40px, 6vw, 72px); }
+.nf h1 { margin: 0; max-width: 18ch; font-size: clamp(34px, 5vw, 60px); }
+.nf .lead { margin: 16px 0 0; }
+.nf .btns { margin-top: 26px; align-items: center; }
+.nf-row { margin-top: clamp(34px, 5vw, 60px); }
+.nf-row-h { margin: 0 0 12px; font: 700 clamp(18px, 1.7vw, 21px)/1.3 var(--display); letter-spacing: 0; color: var(--fg); }
+
+@media (prefers-reduced-motion: reduce) { .walk3d { transition: none; } }

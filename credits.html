@@ -22,36 +22,83 @@
   <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
   <script type="module" src="js/site.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body>
+<body class="v12">
 <a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="xclean.html">xclean</a>
-      <a href="results.html">Results</a>
-      <a href="maps.html">Maps</a>
-      <a href="paper.html">Paper</a>
-      <a href="credits.html" aria-current="page">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research">Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
+
+<!-- v4: the engineer pages keep one-click links to each other (the shared header has one link, "For engineers") -->
+<nav class="pg-eng v4-top" aria-label="Pages for engineers">
+  <div class="wrap pg-eng-in">
+    <span class="pg-eng-l">For engineers</span>
+    <a href="xclean.html">xclean</a>
+    <a href="results.html">Results</a>
+    <a href="paper.html">Paper</a>
+    <a href="credits.html" aria-current="page">Data credits</a>
+    <a href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+  </div>
+</nav>
 
 <main id="main" tabindex="-1">
+  <!-- v4: plain words for a visitor who is not an engineer; the page below it is unchanged -->
+  <div class="wrap pg-plain">
+    <aside class="v4-plain" aria-label="In plain words">
+      <p class="v4-plain-h">In plain words</p>
+      <p>This page says whose camera recordings we used for our 3-D places and for our tests, and under which terms.</p>
+      <p>We show <!-- gen:val:places.count -->8<!-- /gen:val:places.count --> places in 3-D. Our own camera recorded <!-- gen:val:places.own_count -->5<!-- /gen:val:places.own_count --> of them, in India. A farm robot recorded the other <!-- gen:val:places.rosario_count -->3<!-- /gen:val:places.rosario_count --> in a soybean field in Rosario, Argentina.</p>
+      <p class="v4-credit">The <!-- gen:val:places.rosario_count -->3<!-- /gen:val:places.rosario_count --> field places. <!-- gen:val:places.rosario_credit -->Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.<!-- /gen:val:places.rosario_credit --></p>
+      <a class="more" href="maps.html">See the 3-D places</a>
+    </aside>
+  </div>
   <header class="phead phead--poster" data-head-over>
     <div class="phead-bg" aria-hidden="true"><img src="img/maps/rosario_04.webp" alt="" width="1280" height="716" decoding="async" fetchpriority="high"></div>
     <div class="wrap">
       <p class="eyebrow">Data credits and licences</p>
       <h1>Whose data, under which terms.</h1>
       <p class="lead">Our results stand on public datasets made by other people. This page credits them, says what we publish from each, and lists the software this site uses.</p>
-      <p class="phead-cap"><b>Behind this text</b> Soybean field (rosario_04), rendered from the map. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+      <p class="phead-cap"><b>Behind this text</b> Long green soybean rows (rosario_04), rendered from the map. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
     </div>
   </header>
 
@@ -64,18 +111,18 @@
       <div class="prose">
         <h2 id="maps">Maps on this site</h2>
         <p>The 3-D maps are published under <strong><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></strong>. We publish maps only from data we may share.</p>
-        <p>The map files are hosted on Hugging Face (<a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Pyassahu/xclean-maps</a>), except the landing page's four ride cuts, which this site serves itself (<code>data/cuts/</code>): each is a subset of one map's splats, the ones a visitor can see from xclean's camera path, with xclean's camera track for that stretch. They are cut from the maps oak_161834, oak_161206 and oak_164424 (our recordings) and rosario_01 (the Rosario Dataset), under the same licence and credit as their maps.</p>
+        <p>The map files are hosted on Hugging Face (<a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Pyassahu/xclean-maps</a>), except four smaller cuts that this site serves itself (<code>data/cuts/</code>): on a phone, the 3-D view opens a cut first. Each cut is a subset of one map's splats, the ones a visitor can see from xclean's camera path, with xclean's camera track for that stretch. They are cut from the maps oak_161834, oak_161206 and oak_164424 (our recordings) and rosario_01 (the Rosario Dataset), under the same licence and credit as their maps.</p>
         <div class="panel cred-row">
           <div>
             <h3>The Rosario Dataset</h3>
             <p>CIFASIS-CONICET, Argentina. <a href="https://robot.cifasis-conicet.gov.ar/">robot.cifasis-conicet.gov.ar</a>. Licence: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
             <p>Pire, T., Mujica, M., Civera, J. and Kofman, E. "The Rosario dataset: Multisensor data for localization and mapping in agricultural environments." <em>The International Journal of Robotics Research</em>, 2019.</p>
             <p><strong>Credit on every Rosario map:</strong> "Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0 (Pire et al., IJRR 2019). Changes: 3-D Gaussian-splat map reconstructed by Necessity Robotics (xclean) from the images and xclean's own live camera poses." The dataset's authors do not endorse our maps.</p>
-            <p>The landing page's Rosario ride plays a cut of the rosario_01 map that this site serves (<code>data/cuts/rosario_01.spz</code>, with xclean's camera track for it): a subset of that map's splats, under the same licence, shown with the same credit.</p>
+            <p>This site also serves a cut of the rosario_01 map (<code>data/cuts/rosario_01.spz</code>, with xclean's camera track for it): a subset of that map's splats, under the same licence and with the same credit.</p>
           </div>
           <figure class="cred-fig">
-            <a class="plate frame" href="maps.html#rosario_01"><img src="img/maps/rosario_01.webp" alt="Soybean field (rosario_01): a frame rendered from our map" width="1280" height="716" loading="lazy" decoding="async"></a>
-            <figcaption>Soybean field (rosario_01), rendered from our map. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</figcaption>
+            <a class="plate frame" href="maps.html#rosario_01"><img src="img/maps/rosario_01.webp" alt="A soybean field in Argentina (rosario_01): a frame rendered from our map" width="1280" height="716" loading="lazy" decoding="async"></a>
+            <figcaption>A soybean field in Argentina (rosario_01), rendered from our map. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</figcaption>
           </figure>
         </div>
         <div class="panel cred-row">
@@ -84,8 +131,8 @@
             <p>Recorded by Necessity Robotics with its own OAK-D-Lite camera (five routes, all mapped here). Maps released under CC BY 4.0: "3-D map by Necessity Robotics (xclean)."</p>
           </div>
           <figure class="cred-fig">
-            <a class="plate frame" href="maps.html#oak_161834"><img src="img/maps/oak_161834.webp" alt="Street ride (oak_161834): a frame rendered from our map" width="1280" height="800" loading="lazy" decoding="async"></a>
-            <figcaption>Street ride (oak_161834), rendered from our map. Our own recording.</figcaption>
+            <a class="plate frame" href="maps.html#oak_161834"><img src="img/maps/oak_161834.webp" alt="A street in India (oak_161834): a frame rendered from our map" width="1280" height="800" loading="lazy" decoding="async"></a>
+            <figcaption>A street in India (oak_161834), rendered from our map. Our own recording.</figcaption>
           </figure>
         </div>
 
@@ -100,6 +147,18 @@
             <tr><td>MADMAX</td><td class="wrapcell">Meyer, L. et al. "The MADMAX data set for visual-inertial rover navigation on Mars." Journal of Field Robotics, 2021. DLR.</td><td class="wrapcell">No licence named by its authors.</td></tr>
             <tr><td>Rosario</td><td class="wrapcell">Pire, T. et al., IJRR 2019 (above).</td><td class="wrapcell">CC BY 4.0</td></tr>
             <tr><td>Rosario v2</td><td class="wrapcell">CIFASIS-CONICET (one route on the board).</td><td class="wrapcell">See the dataset's official page.</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 id="model">Our depth model (nrs-large)</h2>
+        <p>Our weights, trained from random initialisation. We used the authors' open code for the network design and no other team's trained weights.</p>
+        <div class="table-wrap"><table class="t">
+          <thead><tr><th>Work</th><th>Used for</th><th>Reference</th><th>Licence</th></tr></thead>
+          <tbody>
+            <tr><td class="wrapcell">DLNR (High-frequency Stereo Matching Network), code commit c10475f</td><td class="wrapcell">the network design</td><td class="wrapcell">Zhao et al., "High-Frequency Stereo Matching Network", CVPR 2023; built on Lipson, Teed and Deng, "RAFT-Stereo", 3DV 2021.</td><td class="wrapcell">MIT, (c) 2021 Princeton Vision &amp; Learning Lab</td></tr>
+            <tr><td class="wrapcell">WMGStereo-150k</td><td class="wrapcell">the only training data</td><td class="wrapcell">Yan, Raistrick and Deng, "What Makes Good Synthetic Training Data for Zero-Shot Stereo Matching?", CVPR 2026, arXiv 2504.16930.</td><td class="wrapcell">BSD-3-Clause (the tag on the dataset card), (c) 2025 Princeton Vision &amp; Learning Lab</td></tr>
+            <tr><td class="wrapcell">TartanAir V1 (3 hold-out environments, 200 pairs)</td><td class="wrapcell">a progress monitor only; never trained on</td><td class="wrapcell">Wang et al., "TartanAir", IROS 2020. CMU AirLab.</td><td>CC BY 4.0</td></tr>
+            <tr><td class="wrapcell">Middlebury, ETH3D, KITTI 2012 and 2015, Booster</td><td class="wrapcell">test scores only; never trained on</td><td class="wrapcell">The public benchmark sets named on the <a href="depth.html#how">depth page</a>.</td><td class="wrapcell">Their own terms. We publish numbers only, no images.</td></tr>
           </tbody>
         </table></div>
 
@@ -127,19 +186,23 @@
             <tr><td>fflate (bundled in Spark)</td><td class="num">0.8</td><td>MIT, © Arjun Barrett</td><td>decompression</td></tr>
           </tbody>
         </table></div>
-        <p class="muted" style="margin-top:14px">The libraries are served from this site, unmodified, with their licence files in <code>vendor/</code>. Text uses your device's system fonts; no font is downloaded. The map files are hosted on Hugging Face, apart from the landing page's ride cuts (<a href="#maps">above</a>).</p>
+        <h3>How the 3-D places are made</h3>
+        <p>Our map builder, <a href="https://github.com/necessityrobotics/xclean-maps">xclean-maps</a> (ours, Apache-2.0), makes the 3-D places. Its released version 0.1.0 uses classic (SGM) depth; the version with nrs-large depth, which made the places on this site, is not released yet. It uses <a href="https://github.com/nerfstudio-project/gsplat">gsplat</a> 1.4.0 (nerfstudio-project, Apache-2.0) to draw and train the Gaussian splats, with its MCMC densification: Kheradmand, S. et al. "3D Gaussian Splatting as Markov Chain Monte Carlo." <em>NeurIPS</em>, 2024. The method is 3-D Gaussian Splatting: Kerbl, B., Kopanas, G., Leimk&uuml;hler, T. and Drettakis, G. "3D Gaussian Splatting for Real-Time Radiance Field Rendering." <em>ACM Transactions on Graphics</em>, 2023.</p>
+        <p class="muted" style="margin-top:14px">The libraries in the table above are served from this site, unmodified, with their licence files in <code>vendor/</code>. Text uses your device's system fonts; no font is downloaded. The map files are hosted on Hugging Face, apart from the cuts (<a href="#maps">above</a>).</p>
 
         <h2 id="privacy">Privacy</h2>
-        <p>This site sets no cookies, runs no analytics and loads no third-party trackers. Your browser contacts two hosts: this site (necessityrobotics.github.io, served by GitHub Pages) and Hugging Face (huggingface.co, and its download servers under hf.co), where the map files are hosted. Each sees the usual request data, such as your IP address, under its own privacy policy. The landing page's ride cuts and their camera tracks come from this site. The other map files (the 3-D renders, films and point clouds) are fetched from Hugging Face: by the landing page once it is idle and as you scroll through its maps, by the maps page when you play a film or rest the pointer on a map's picture, and by the 3-D viewer when you open a map. Map files you have downloaded are kept in your browser's own cache on your device, so a map you have seen recently is usually not downloaded again (nothing is kept with Save-Data on); nothing is sent anywhere. "Tilt to look" (phones, off until you tap it) reads your device's motion sensor inside the page only; nothing is sent.</p>
+        <p>This site sets no cookies, runs no analytics and loads no third-party trackers. Your browser contacts two hosts: this site (necessityrobotics.github.io, served by GitHub Pages) and Hugging Face (huggingface.co, and its download servers under hf.co), where the map files are hosted. Each sees the usual request data, such as your IP address, under its own privacy policy. The cuts and their camera tracks come from this site. The other map files are fetched from Hugging Face: by the home page when its 3-D place starts on a computer, by the 3-D view when you open a place, and by the depth page when you open its two versions of a place. Map files you have downloaded are kept in your browser's own cache on your device, so a map you have seen recently is usually not downloaded again (nothing is kept with Save-Data on); nothing is sent anywhere.</p>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

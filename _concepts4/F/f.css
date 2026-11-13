@@ -1,0 +1,92 @@
+/* V12 concept F (owner pick 2026-11-13): C's first screen and look, ONE photo flat on the screen, then A's lift-off.
+   Only what F adds to c.css + home.css. */
+.h-hero { height: 800vh; }                                     /* six stops (0..5) */
+
+/* the metre labels and the "camera stood here" mark of the lift live in the engine's layer (C hid it: no doors here) */
+.h-place .pl-layer { display: block !important; }
+.h-place .pl-step { display: none !important; }              /* no stepping lights on the home page */
+
+/* stops 1 and 2: the camera's photo, flat ON the screen. It covers the 3-D view exactly (same box as the canvas,
+   "cover", the engine uses the photo's own lens). --wx = how much of the width the photo covers (the line). */
+.f-photo { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--op, 0);
+  clip-path: inset(0 calc(100% - var(--wx, 100%)) 0 0); }
+.f-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.f-photo img:not([src]), .f-photo img[src=""] { visibility: hidden; }
+
+/* a phone or a device without the live place: the photo as a print over the picture (stops 1 and 2) */
+.h-stage:not([data-live="1"]) .f-photo { inset: auto; left: 50%; top: 40%; width: min(86vw, 560px); height: auto; aspect-ratio: 16 / 10;
+  transform: translate(-50%, -50%); clip-path: none; border: 6px solid #eef0f1; transition: opacity .25s; }
+.h-stage:not([data-live="1"]) .f-photo img { object-fit: cover; }
+
+/* the last stop */
+.h-cap--go { width: min(460px, calc(100% - 2 * var(--gutter))); }
+.f-go-h { font-style: italic; font-weight: 400; font-size: clamp(34px, 3.2vw, 48px) !important; }
+.f-doors { margin: 20px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule); list-style: none; display: grid; gap: 8px; }
+.f-doors a { font: italic 400 17px/1.3 var(--serif); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule-2); }
+.f-doors a:hover { border-bottom-color: var(--ink); }
+.f-doors span { margin-left: 8px; font: 500 10.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+
+@media (max-width: 760px) {
+  .h-hero { height: 680vh; }
+}
+@media (prefers-reduced-motion: reduce) { .f-photo { transition: none; } }
+
+/* stops 4 and 5: the eight places (atlas.js) over the park. The page sets the layer's opacity; the names and islands
+   are doors only when the layer is "on" (data-on, set by atlas.js). */
+.f-atlas-in { position: absolute; inset: 0; z-index: 2; opacity: 0; visibility: hidden; }   /* transparent: the park shows through in the hand-off */
+.f-atlas-in .f-atlas-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.f-atlas-in .f-atlas-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.f-atlas-in[data-on="0"] .f-atlas-canvas, .f-atlas-in[data-on="0"] .f-isl { pointer-events: none; }
+.f-isl { position: absolute; left: 0; top: 0; pointer-events: auto; margin: -46px 0 0 -12px; padding: 5px 9px 6px;
+  background: rgba(0, 0, 0, .74); border: 1px solid rgba(255, 255, 255, .22); border-radius: 0; color: #f3f5f6; text-align: left;
+  font: italic 400 15.5px/1.2 var(--serif); white-space: nowrap; cursor: pointer; }
+.f-isl small { display: block; margin-top: 3px; font: 500 10px/1.2 var(--mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: #9aa1a7; }
+.f-isl:hover, .f-isl:focus-visible { border-color: var(--path, var(--acc)); outline: none; }
+.f-atlas-pick { position: absolute; left: 0; top: 0; z-index: 6; display: grid; gap: 10px; width: 280px; padding: 16px;
+  background: #0b0c0e; border: 1px solid rgba(255, 255, 255, .3); }
+.f-atlas-pick[hidden] { display: none; }
+.f-pick-n { margin: 0 24px 4px 0; font: 500 20px/1.2 var(--serif); color: #f3f5f6; }
+.f-pick-x { position: absolute; right: 6px; top: 4px; padding: 4px 8px; background: none; border: 0; color: #c4c9cd; font-size: 22px; line-height: 1; cursor: pointer; }
+.f-pick-depth { --acc: var(--ai, var(--acc)); }
+.f-cap-credit { margin: 14px 0 0; font-size: 12.5px; color: var(--ink-3); }
+
+/* the first screen: the dark over the place (dark.js). Desktop only (phones get pictures). */
+.f-dark { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; }
+@media (max-width: 760px) { .f-dark { display: none; } }
+
+/* the last two stops: the words at the top centre, the eight places in the middle under them */
+.h-cap.h-cap--top { top: calc(var(--head-h, 68px) + 22px); bottom: auto; left: 0; right: 0; margin-inline: auto; text-align: center;
+  width: min(620px, calc(100% - 2 * var(--gutter, 16px))); }
+.h-cap--top .h-cap-cta { justify-content: center; }
+/* the first screen: drag to look around (no click ever leaves the page) */
+.h-stage[data-stop="0"] .h-place .pl-canvas, .h-stage[data-stop="1"] .h-place .pl-canvas { cursor: grab; }
+.h-stage[data-drag="1"] .h-place .pl-canvas { cursor: grabbing; }
+.h-stage:not([data-stop="0"]):not([data-stop="1"]) .h-place .pl-canvas { cursor: default; }
+/* the map moves from the first moment (owner 11-13). The picture is a frame of the live view (img/first.jpg, 16:10; its
+   centre of view sits 62 % across, as the live view's): cropped about that point, it lies on the live view at any screen
+   shape (the engine's vfovFor keeps the scale). Until the live place is ready it pushes in toward the point the eye looks
+   at (24 m ahead): scale 1 + 0.5 (1 - e^(-t / 8.6 s)), a walk at about 1.4 m/s at first that slows smoothly and never
+   stops short (a first visit may wait for 16 MB). home.js walks the live place on from where the picture is (24 (1 - 1 /
+   scale) m), at the picture's speed, then eases to 1.4 m/s. f-drift comes from the page head (no wait for any script);
+   f-hidden (a tab in the background) and f-still (no live place will come) hold the picture where it is. */
+@media not all and (max-width: 760px) { .h-place .pl-still[src*="first.jpg"] { object-position: 62% 50%; transform-origin: 62% 50%; } }   /* phones show their own portrait picture */
+html.f-drift .h-place .pl-still[src*="first.jpg"] { animation: f-drift 30s linear both; }
+html.f-hidden .h-place .pl-still[src*="first.jpg"], html.f-still .h-place .pl-still[src*="first.jpg"] { animation-play-state: paused; }   /* after the animation rule, same weight */
+@keyframes f-drift { 0% { transform: scale(1.0000); } 1.667% { transform: scale(1.0282); } 3.333% { transform: scale(1.0549); } 5% { transform: scale(1.0800); } 6.667% { transform: scale(1.1037); } 10% { transform: scale(1.1472); } 13.33% { transform: scale(1.1860); } 16.67% { transform: scale(1.2204); } 20% { transform: scale(1.2511); } 26.67% { transform: scale(1.3028); } 33.33% { transform: scale(1.3437); } 40% { transform: scale(1.3761); } 50% { transform: scale(1.4126); } 60% { transform: scale(1.4383); } 73.33% { transform: scale(1.4613); } 86.67% { transform: scale(1.4757); } 100% { transform: scale(1.4847); } }
+@media (prefers-reduced-motion: reduce) { html.f-drift .h-place .pl-still[src*="first.jpg"] { animation: none; } }
+/* the hand-over: the picture stays until the live place shows the page's own view (home.js sets data-posed on the first
+   such frame), then the two cross for 0.6 s while the live walk follows the picture */
+.h-place .pl-still { transition: opacity .6s linear; }
+.h-place[data-state="live"]:not([data-posed="1"]) .pl-still { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .h-place .pl-still { transition: none; } }
+/* before any script: the veil is the dark's own first picture (dark.js: a soft opening 20 % x 41 % at 62 % / 43.5 %), so
+   the dark takes over with no change (desktop; phones keep the veil) */
+html.f-desk .h-veil { background: radial-gradient(20% 41% at 62% 43.5%, #0000 0, rgba(0, 0, 0, .14) 42%, rgba(0, 0, 0, .64) 72%, rgba(0, 0, 0, .92) 90%, #000 100%); }
+.h-place .pl-still[src*="first.jpg"] { filter: none !important; }   /* already in the final colours: no tint, no contrast change */
+
+/* the last stop, with the eight places live: short words at the top, the shapes are the choices; the credit at the foot */
+.h-stage[data-atlas="1"] .h-cap--go.h-cap--top { width: min(720px, calc(100% - 2 * var(--gutter, 16px))); padding-block: 16px 18px; }
+.h-stage[data-atlas="1"] .h-cap--go .f-go-h { font-size: clamp(30px, 2.6vw, 40px) !important; margin-bottom: 6px; }
+.h-stage[data-atlas="1"] .h-cap--go .h-cap-cta { display: none; }
+.h-stage[data-atlas="1"] .h-cap--go .f-cap-credit { position: fixed; left: 0; right: 0; bottom: 18px; width: auto; max-width: none; margin: 0; padding-inline: 16px; text-align: center; }
+@media (max-width: 760px) { .h-stage[data-atlas="1"] .h-cap--go .h-cap-cta { display: flex; } .h-stage[data-atlas="1"] .h-cap--go .f-cap-credit { position: static; } }

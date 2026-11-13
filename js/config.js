@@ -17,10 +17,17 @@ const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\]|192\.168\.\d+\.\d+|10\.\d+\.\d+\
 const FORCE = new URLSearchParams(location.search).get('assets');
 export const ASSET_BASE = FORCE === 'prod' ? ASSET_BASE_PROD : FORCE === 'dev' ? ASSET_BASE_DEV : (LOCAL ? ASSET_BASE_DEV : ASSET_BASE_PROD);
 
+// The folders on the production host (launch 2026-11-13): the current maps (depth from nrs-large) are in maps_nrs/<id>;
+// the earlier maps (32-path SGM depth) stay in maps/<id>, where the depth page reads its classic twin. The local mount
+// keeps the names maps/ (current) and maps_sgm32/ (classic). New folder = new URLs: no browser cache holds old bytes.
+const PROD_FOLDER = { maps: 'maps_nrs', maps_sgm32: 'maps' };
+
 /** Absolute URL of one file of one map (Spark and fetch never depend on <base>). */
-export function asset(mapId, file) {
-  const base = ASSET_BASE.startsWith('http') ? ASSET_BASE : new URL(ASSET_BASE, location.origin).href;
-  return `${base.replace(/\/$/, '')}/maps/${encodeURIComponent(mapId)}/${file}`;
+export function asset(mapId, file, folder = 'maps') {
+  const prod = ASSET_BASE.startsWith('http');
+  const base = prod ? ASSET_BASE : new URL(ASSET_BASE, location.origin).href;
+  const dir = prod ? (PROD_FOLDER[folder] || folder) : folder;
+  return `${base.replace(/\/$/, '')}/${dir}/${encodeURIComponent(mapId)}/${file}`;
 }
 
 export const LINKS = {

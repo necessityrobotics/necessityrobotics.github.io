@@ -6,112 +6,320 @@
   <!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (site.css repeats it): without it the
        incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
   <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
-  <title>Maps · Necessity Robotics</title>
-  <meta name="description" content="3-D Gaussian-splat maps reconstructed with xclean's own camera poses: our OAK-D-Lite recordings and the Rosario Dataset. Licences, credits and known limits.">
+  <title>3-D places · Necessity Robotics</title>
+  <meta name="description" content="Real places, rebuilt in 3-D from camera photos by our robot software. Pick one and walk in. Not a video: you move in it yourself.">
   <!-- sharing: absolute URLs (GitHub Pages); the card image is the home page's poster (our recording, CC BY 4.0) -->
   <link rel="canonical" href="https://necessityrobotics.github.io/maps.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Necessity Robotics">
-  <meta property="og:title" content="Maps · Necessity Robotics">
-  <meta property="og:description" content="3-D Gaussian-splat maps reconstructed with xclean's own camera poses: our OAK-D-Lite recordings and the Rosario Dataset. Licences, credits and known limits.">
+  <meta property="og:title" content="3-D places · Necessity Robotics">
+  <meta property="og:description" content="Real places, rebuilt in 3-D from camera photos by our robot software. Pick one and walk in. Not a video: you move in it yourself.">
   <meta property="og:url" content="https://necessityrobotics.github.io/maps.html">
   <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
+  <meta property="og:image:alt" content="A street in India as a 3-D place, built from camera photos by our software. Not a video.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
-  <!-- integrator: the page's first data, fetched at once and handed to getJSON() (js/site.js). WebKit (Safari and every
-       iOS browser) never reused a <link rel=preload as=fetch> answer for fetch(): it downloaded each file twice -->
-  <script>window.__nrPre = Object.fromEntries(['data/maps.json'].map(u => [u, fetch(u).catch(() => null)]));</script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <!-- v4: the first paint is static HTML (headline, the 8 cards, the place sheets). Scripts only add: the phone menu,
+       the route doors (js/v4/route-door.js) and the closed "For engineers" facts (js/maps4.js). -->
   <link rel="stylesheet" href="css/site.css">
-  <link rel="stylesheet" href="css/pages.css">
-  <script type="importmap">
-  {"imports":{
-    "three":"./vendor/three/three.module.js",
-    "three/addons/":"./vendor/three/addons/",
-    "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
-  }}
-  </script>
-  <script type="module" src="js/site.js"></script>
-  <script type="module" src="js/maps.js"></script>
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <link rel="stylesheet" href="css/ml.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
+  <script type="module" src="js/v4/route-door.js"></script>
+  <script type="module" src="js/maps4.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="xclean.html">xclean</a>
-      <a href="results.html">Results</a>
-      <a href="maps.html" aria-current="page">Maps</a>
-      <a href="paper.html">Paper</a>
-      <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<body class="v12">
+<a class="skip" href="#main">Skip to the content</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html" aria-current="page">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research">Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
 
-<main id="main" tabindex="-1">
-  <!-- the atlas: every published map as an island (js/world atlas-mount via mountAtlas); before it is up, and wherever
-       it cannot run, the maps' posters stand in (hover a name to see that map) -->
-  <header class="mx-head" data-head-over data-atlas="poster">
-    <div class="mx-stage" aria-hidden="true">
-      <div class="mx-posters"><img class="on" src="img/maps/oak_161834.webp" alt="" width="1280" height="800" decoding="async" fetchpriority="high" data-id="oak_161834"></div>
-      <div class="mx-atlas"></div>
-      <p class="mx-credit js-credit"></p>
-    </div>
-    <div class="wrap mx-copy">
-      <div class="mx-copy-in">
-        <p class="eyebrow">Maps · 3-D Gaussian splats</p>
-        <h1>What xclean saw, in 3-D.</h1>
-        <p class="lead">Each map is reconstructed from a route's images and xclean's own live camera poses, not ground truth. Where the poses are wrong, the map shows it. Each map says where.</p>
-        <div class="btns"><a class="btn btn--ion" href="viewer.html">Open the 3-D viewer <span class="arr" aria-hidden="true">→</span></a><a class="btn" href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Download the maps</a></div>
-      </div>
-      <nav class="mx-chips" aria-label="Fly a map in xclean's camera view">
-        <a class="mx-chip" data-id="oak_161834" href="viewer.html?map=oak_161834&amp;cam=pov"><b>01</b> Street ride · oak_161834</a>
-        <a class="mx-chip" data-id="oak_160543" href="viewer.html?map=oak_160543&amp;cam=pov"><b>02</b> Park walk · oak_160543</a>
-        <a class="mx-chip" data-id="oak_164002" href="viewer.html?map=oak_164002&amp;cam=pov"><b>03</b> Outdoor route · oak_164002</a>
-        <a class="mx-chip" data-id="oak_164424" href="viewer.html?map=oak_164424&amp;cam=pov"><b>04</b> Outdoor route · oak_164424</a>
-        <a class="mx-chip" data-id="oak_161206" href="viewer.html?map=oak_161206&amp;cam=pov"><b>05</b> Park walk · oak_161206</a>
-        <a class="mx-chip" data-id="rosario_01" href="viewer.html?map=rosario_01&amp;cam=pov"><b>06</b> Soybean field · rosario_01</a>
-        <a class="mx-chip" data-id="rosario_03" href="viewer.html?map=rosario_03&amp;cam=pov"><b>07</b> Soybean field · rosario_03</a>
-        <a class="mx-chip" data-id="rosario_04" href="viewer.html?map=rosario_04&amp;cam=pov"><b>08</b> Soybean field · rosario_04</a>
-      </nav>
-      <div class="mx-legend">
-        <p class="mx-cap"><b>Behind this text</b> <span class="js-cap-t">Street ride (oak_161834), rendered from the map. Our own recording.</span></p>
-        <p class="mx-note">Each island is a point subsample of one of our published maps (the stereo depth of xclean's keyframes, placed with xclean's live poses), with xclean's live keyframe route in blue. Island sizes and positions are an arrangement, not to scale. Rosario islands: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0. Hover or tap an island to lift it; choose it, or a name, to ride its route in xclean's camera view.</p>
-      </div>
-    </div>
-    <aside class="mx-card js-card" aria-live="polite" hidden></aside>
-  </header>
-
-  <section class="section section--tight mx-gallery" aria-labelledby="gallery-h">
+<main id="main" class="v4-top" tabindex="-1">
+  <section class="pl-top" aria-labelledby="pl-h1">
     <div class="wrap">
-      <h2 class="sr" id="gallery-h">Every map, with its credit and its known limits</h2>
-      <div class="mx-grid">
-        <div class="mx-list js-plates"><p>Loading the maps…</p></div>
-        <figure class="mx-view js-view" hidden>
-          <a class="mx-view-pic js-view-a" href="viewer.html">
-            <span class="mx-view-imgs js-view-imgs"></span>
-            <video class="mx-view-film js-view-film" muted loop playsinline preload="none" disablepictureinpicture></video>
-            <span class="sr js-view-name"></span>
-          </a>
-          <figcaption class="mx-view-cap js-view-cap"></figcaption>
-        </figure>
+      <div>
+        <p class="eyebrow">3-D places</p>
+        <h1 id="pl-h1"><span><!-- gen:val:places.count_word -->Eight<!-- /gen:val:places.count_word --> real places.</span> <span>Pick one and walk in.</span></h1>
       </div>
-      <p class="note">Only maps from data we may share are published here: our own OAK-D-Lite recordings and the Rosario Dataset (CC BY 4.0). Routes from datasets with non-commercial or unstated licences appear on the <a href="results.html">results</a> page as numbers only. The poses of each map are the median run of the three final-board runs (by ATE on routes with ground truth; on our OAK routes, the run whose end position is closest to the other two). Map facts are read from each map's own files (attribution, manifest, trajectory, point cloud); path length is the sum of xclean's keyframe-to-keyframe distances. The board numbers shown come from an engine frozen with its last pre-registered kill test (K14) failed on two routes; <a href="results.html#disclosures">details</a>.</p>
+      <div>
+        <p class="pl-lead"><span class="when-touch">Tap</span><span class="when-fine">Click</span> a picture, or a point on its path to start there.</p>
+        <p class="pl-what">Each is a real place, rebuilt in 3-D from camera photos. <b>Not a video:</b> you look around and walk in it yourself.</p>
+        <p class="pl-what pl-ai">Our <dfn class="ml" tabindex="0" data-def="An ML (machine learning) model, a kind of AI: a neural network that learned from examples instead of fixed rules.">depth model</dfn> gave each place its starting shape. <a class="v4-quiet" href="depth.html">See the old and the new depth</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pl-pick" aria-label="The places">
+    <div class="wrap">
+      <!-- gen:cards large=1 h=2 eager=2 -->
+      <ul class="v4-cards v4-cards--large">
+        <li class="v4-card" data-place="oak_161206">
+          <a class="v4-card-main" href="explore.html?map=oak_161206">
+            <div class="v4-card-pic"><img src="img/places/oak_161206.jpg" alt="Picture of the 3-D place: A park path under trees" width="1280" height="800" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A park path under trees</h2><p class="v4-card-kind">227 m walk · our own camera · India</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=oak_161206" data-route="oak_161206" data-total="227.1" data-start="117.2" title="Open this place in 3-D"><span class="v4-sr">A park path under trees: the camera&#x27;s path, 227 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 150 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="1.0237 105.38 51.567"><path class="v4-route-line" d="M105.4 51.6L42.1 55.8L41.1 54.4L40.7 52.1L38.6 14.5L39.7 13.8L42.3 13.2L83.1 10.2L102.4 8.2L107.0 8.2L108.0 9.5L108.9 15.2L109.0 21.5L111.3 40.8L111.5 47.8L110.6 48.8L108.5 49.4L95.2 50.9" data-m="0 62.2 64 66.3 103.4 104.7 107.3 147.4 166.5 171.1 172.8 178.4 184.6 203.6 210.5 211.8 214.1 227.2"/><circle class="v4-route-dot" cx="52.4" cy="12.5" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+        </li>
+        <li class="v4-card" data-place="oak_161834">
+          <a class="v4-card-main" href="explore.html?map=oak_161834">
+            <div class="v4-card-pic"><img src="img/places/oak_161834.jpg" alt="Picture of the 3-D place: A street in India" width="1280" height="800" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A street in India</h2><p class="v4-card-kind">1.02 km ride · our own camera · India</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=oak_161834" data-route="oak_161834" data-total="1020.7" data-start="188.2" title="Open this place in 3-D"><span class="v4-sr">A street in India: the camera&#x27;s path, 1.02 km long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 213 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="0.35357 19.383 47.256"><path class="v4-route-line" d="M19.4 47.3L23.6 51.6L25.6 51.6L34.3 43.8L45.4 32.5L45.4 31.2L44.3 29.4L34.3 18.9L32.4 17.9L13.3 36.1L12.3 37.7L13.1 40.2L23.4 50.7L24.8 51.4L27.2 50.5L44.9 33.1L45.4 31.7L45.2 30.3L40.0 24.9L39.5 23.0L41.1 20.7L49.4 13.2L50.6 13.1L52.5 14.1L74.5 36.1L82.4 43.1L84.1 43.9L86.5 42.9L103.7 31.2L126.0 17.4L141.1 9.2L144.9 8.0L146.8 8.9L148.6 11.1L166.5 39.1L172.0 46.7L173.3 47.3L174.8 47.2L184.3 42.5L186.9 42.2L189.0 44.1L196.0 55.3L197.9 55.9L200.8 54.4" data-m="0 17.1 23.2 56.3 101.1 104.9 110.9 152.1 158.4 233.4 238.8 246.6 288.1 292.7 300.1 370.4 374.6 378.8 400 405.7 413.9 445.6 449.1 454.9 543.1 573 578.5 585.9 644.8 718.8 767.6 779 785.1 793 887.1 913.7 917.8 922 952.3 959.9 968 1005.5 1011.6 1020.7"/><circle class="v4-route-dot" cx="25.0" cy="25.2" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+        </li>
+        <li class="v4-card" data-place="oak_164424">
+          <a class="v4-card-main" href="explore.html?map=oak_164424">
+            <div class="v4-card-pic"><img src="img/places/oak_164424.jpg" alt="Picture of the 3-D place: A lane under trees" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A lane under trees</h2><p class="v4-card-kind">472 m ride · our own camera · India</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=oak_164424" data-route="oak_164424" data-total="472" data-start="271" title="Open this place in 3-D"><span class="v4-sr">A lane under trees: the camera&#x27;s path, 472 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 150 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="0.42568 126.52 14.258"><path class="v4-route-line" d="M126.5 14.3L119.7 18.1L72.4 53.3L69.2 55.4L67.0 56.0L65.5 55.5L64.1 54.0L56.4 42.6L57.0 40.4L61.3 36.0L61.5 34.8L60.9 33.1L53.1 23.2L43.0 9.0L41.6 8.1L40.2 8.2L24.7 19.9L23.7 21.2L23.6 23.0L32.6 35.2L43.2 48.0L44.4 48.5L45.9 48.2L52.3 43.6" data-m="0 18.7 157.2 166.1 171.7 175.3 180.1 212.5 218.3 232.6 235.6 239.9 269.7 310.6 314.5 317.9 363.5 367.5 371.8 407.5 446.6 449.7 453.4 472"/><circle class="v4-route-dot" cx="52.8" cy="22.7" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+        </li>
+        <li class="v4-card" data-place="oak_164002">
+          <a class="v4-card-main" href="explore.html?map=oak_164002">
+            <div class="v4-card-pic"><img src="img/places/oak_164002.jpg" alt="Picture of the 3-D place: A long straight road" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A long straight road</h2><p class="v4-card-kind">654 m ride · our own camera · India</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=oak_164002" data-route="oak_164002" data-total="654.4" data-start="292" title="Open this place in 3-D"><span class="v4-sr">A long straight road: the camera&#x27;s path, 654 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 320 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="1.1037 287.21 27.563"><path class="v4-route-line" d="M287.2 27.6L279.9 26.5L254.9 25.8L181.9 28.3L127.8 29.1L20.7 34.9L15.1 34.4L12.0 32.0L13.9 30.2L19.5 29.5L69.0 31.5L160.4 32.6L212.5 31.0L233.9 31.4L296.0 30.6L305.0 31.1L307.4 32.1L308.0 33.5L307.6 36.5L306.9 37.5L304.4 38.2L286.1 36.6L228.8 35.8L164.0 35.6" data-m="0 6.8 29.4 95.6 144.7 241.8 246.9 250.6 253.1 258.2 303.1 385.9 433.2 452.6 508.9 517 519.4 520.8 523.6 524.7 527.1 543.8 595.7 654.4"/><circle class="v4-route-dot" cx="56.7" cy="31.2" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+        </li>
+        <li class="v4-card" data-place="oak_160543">
+          <a class="v4-card-main" href="explore.html?map=oak_160543">
+            <div class="v4-card-pic"><img src="img/places/oak_160543.jpg" alt="Picture of the 3-D place: A shaded park walk" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A shaded park walk</h2><p class="v4-card-kind">232 m walk · our own camera · India</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=oak_160543" data-route="oak_160543" data-total="231.6" data-start="155.5" title="Open this place in 3-D"><span class="v4-sr">A shaded park walk: the camera&#x27;s path, 232 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 150 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="1.0182 111.63 41.256"><path class="v4-route-line" d="M111.6 41.3L112.1 48.1L111.4 49.6L109.5 50.4L53.5 55.3L41.7 55.8L40.4 54.7L39.9 51.7L38.1 28.1L37.9 14.9L39.2 13.9L43.0 13.2L100.9 8.1L107.4 8.3L108.6 10.1L109.2 13.1L112.1 46.0L111.4 48.2L108.7 49.7" data-m="0 6.9 8.5 10.6 66.1 77.8 79.5 82.5 105.9 119 120.6 124.5 181.9 188.3 190.4 193.5 226.1 228.4 231.6"/><circle class="v4-route-dot" cx="74.3" cy="10.6" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+        </li>
+        <li class="v4-card" data-place="rosario_01">
+          <a class="v4-card-main" href="explore.html?map=rosario_01">
+            <div class="v4-card-pic"><img src="img/places/rosario_01.jpg" alt="Picture of the 3-D place: A soybean field in Argentina" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">A soybean field in Argentina</h2><p class="v4-card-kind">462 m drive · a farm robot&#x27;s camera · Argentina</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=rosario_01" data-route="rosario_01" data-total="462.2" data-start="27.4" title="Open this place in 3-D"><span class="v4-sr">A soybean field in Argentina: the camera&#x27;s path, 462 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 320 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="1.8413 295.65 23.806"><path class="v4-route-line" d="M295.6 24.0L265.1 26.3L206.2 29.7L188.9 31.4L76.4 34.9L73.1 34.5L71.8 33.6L69.7 30.9L67.6 26.6L70.2 30.7L73.4 33.7L74.8 37.3L76.9 34.4L81.4 32.8L91.4 34.4L167.3 32.8L197.2 32.9L209.5 32.0L283.9 31.8L287.0 31.5L290.2 30.5L294.7 24.6L297.4 22.7L298.8 22.4L302.3 22.9L305.7 25.1L307.5 28.1L308.0 30.3L307.6 33.8L305.5 37.1L301.3 39.5L287.1 41.0L258.5 41.0L239.0 40.2L218.7 40.5L164.5 39.3L134.4 38.1L58.0 33.5L49.5 33.8L34.6 32.2L32.6 32.4L29.7 34.3L26.2 39.5L24.7 40.6L20.0 41.6L18.0 41.2L15.3 39.6L13.0 36.8L12.0 33.8L12.3 30.3L13.9 27.3L16.7 24.9L19.9 23.9L23.5 24.2L31.5 27.6L47.7 28.2" data-m="0 16.7 49 58.6 120.2 122 122.8 124.8 127.4 130.9 133.3 135.9 138.5 141.2 146.8 188.3 204.6 211.3 252 253.7 255.6 259.6 261.4 262.2 264.1 266.4 268.3 269.6 271.4 273.6 276.2 284 299.7 310.3 321.5 351.1 367.6 409.4 414.1 422.3 423.4 425.3 428.7 429.7 432.3 433.4 435.2 437.2 438.9 440.8 442.7 444.7 446.6 448.5 453.3 462.2"/><circle class="v4-route-dot" cx="245.7" cy="27.4" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+          <p class="v4-credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+        </li>
+        <li class="v4-card" data-place="rosario_03">
+          <a class="v4-card-main" href="explore.html?map=rosario_03">
+            <div class="v4-card-pic"><img src="img/places/rosario_03.jpg" alt="Picture of the 3-D place: Soybean rows beside a dry field" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">Soybean rows beside a dry field</h2><p class="v4-card-kind">163 m drive · a farm robot&#x27;s camera · Argentina</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=rosario_03" data-route="rosario_03" data-total="162.6" data-start="27.5" title="Open this place in 3-D"><span class="v4-sr">Soybean rows beside a dry field: the camera&#x27;s path, 163 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 320 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="2.1879 307.26 29.44"><path class="v4-route-line" d="M307.2 29.6L308.0 29.6L279.2 31.1L275.9 31.9L265.0 31.8L261.9 32.4L237.2 33.4L220.9 34.8L207.1 34.6L186.3 35.7L129.2 36.2L119.2 36.5L115.2 37.3L112.6 36.9L107.4 33.6L109.8 34.8L103.3 35.7L53.0 35.6L26.2 34.8L16.7 33.2L13.8 30.6L12.0 26.7L13.5 28.8L17.3 32.3L19.1 35.8L19.9 34.2L21.7 32.3L25.9 30.4L50.0 31.1" data-m="0 0.4 13.7 15.2 20.3 21.7 33.1 40.6 46.9 56.5 82.7 87.3 89.1 90.4 93.3 94.6 97.6 120.6 133 137.4 139.2 141.3 142.5 145.1 147.2 148 149.2 151.3 162.6"/><circle class="v4-route-dot" cx="249.3" cy="33.0" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+          <p class="v4-credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+        </li>
+        <li class="v4-card" data-place="rosario_04">
+          <a class="v4-card-main" href="explore.html?map=rosario_04">
+            <div class="v4-card-pic"><img src="img/places/rosario_04.jpg" alt="Picture of the 3-D place: Long green soybean rows" width="1280" height="800" loading="lazy" decoding="async"><span class="v4-chip v4-chip--go">Walk in <span aria-hidden="true">&rarr;</span></span></div>
+            <div class="v4-card-txt"><h2 class="v4-card-name">Long green soybean rows</h2><p class="v4-card-kind">143 m drive · a farm robot&#x27;s camera · Argentina</p></div>
+          </a>
+          <a class="v4-route" href="explore.html?map=rosario_04" data-route="rosario_04" data-total="142.9" data-start="15.7" title="Open this place in 3-D"><span class="v4-sr">Long green soybean rows: the camera&#x27;s path, 143 m long. Open this place in 3-D at a point of the path. </span><svg class="v4-route-svg" viewBox="0 0 320 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-tf="2.0904 308.08 30.704"><path class="v4-route-line" d="M308.0 30.9L305.2 30.9L301.2 30.0L285.1 31.6L260.8 32.3L255.6 33.1L246.8 32.8L166.3 34.7L121.5 33.9L112.8 34.2L75.2 32.6L70.6 33.0L55.4 31.3L40.9 31.1L19.0 29.3L12.0 29.7" data-m="0 1.4 3.4 11.2 22.8 25.3 29.6 68.2 89.8 94 112.1 114.3 121.9 128.9 139.5 142.9"/><circle class="v4-route-dot" cx="275.6" cy="31.9" r="4.5"/></svg><span class="v4-route-label"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span></span></a>
+          <p class="v4-credit">Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+        </li>
+      </ul>
+      <!-- /gen:cards -->
+    </div>
+  </section>
+
+  <section class="pl-notes" aria-labelledby="pl-notes-h">
+    <div class="wrap">
+      <h2 class="v4-sr" id="pl-notes-h">Good to know</h2>
+      <div class="v4-notes">
+        <div class="v4-note"><h3 class="v4-note-q">Why black and white?</h3><p>The <!-- gen:val:places.own_count -->5<!-- /gen:val:places.own_count --> places from India are black and white, because our camera's two eyes see no colour. The <!-- gen:val:places.rosario_count -->3<!-- /gen:val:places.rosario_count --> field places from Argentina are in colour.</p></div>
+        <div class="v4-note"><h3 class="v4-note-q">Why does it look soft?</h3><p>A computer built it from the photos. No person touched it up.</p><p><a class="v4-quiet" href="#limits">Where it is not perfect</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pl-limits band" id="limits" aria-labelledby="limits-h">
+    <div class="wrap">
+      <h2 id="limits-h">Where it is not perfect</h2>
+      <p class="pl-lim-intro">No place here is perfect. <!-- gen:val:places.limits_intro -->For every place, the camera positions come from our software alone, in a replay of the recording at real speed. No outside measurement corrected them.<!-- /gen:val:places.limits_intro --> Where a position was a little off, a surface can look soft or doubled. Each place says where.</p>
+      <!-- the place sheets: static, in the order of data/places.json (js/maps4.js keeps the order and adds a missing place).
+           The anchors #<id> and #lim-<id> are used by other pages. -->
+      <div class="pl-list js-places">
+        <article class="pl-item" id="oak_161206" aria-labelledby="pl-h-oak_161206">
+          <a class="pl-pic" href="explore.html?map=oak_161206" tabindex="-1" aria-hidden="true"><img src="img/places/oak_161206.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-oak_161206"><!-- gen:val:place.oak_161206.name -->A park path under trees<!-- /gen:val:place.oak_161206.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.oak_161206.kind -->227 m walk · our own camera · India<!-- /gen:val:place.oak_161206.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-oak_161206"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.oak_161206.limits_plain -->The camera passed 3 spots twice, and no outside measurement exists to check that the two passes line up, so some surfaces may look doubled or soft.<!-- /gen:val:place.oak_161206.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.oak_161206.credit_plain -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:place.oak_161206.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=oak_161206"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.oak_161206.name -->A park path under trees<!-- /gen:val:place.oak_161206.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="oak_161206">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.oak_161206.name -->A park path under trees<!-- /gen:val:place.oak_161206.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="oak_161834" aria-labelledby="pl-h-oak_161834">
+          <a class="pl-pic" href="explore.html?map=oak_161834" tabindex="-1" aria-hidden="true"><img src="img/places/oak_161834.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-oak_161834"><!-- gen:val:place.oak_161834.name -->A street in India<!-- /gen:val:place.oak_161834.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.oak_161834.kind -->1.02 km ride · our own camera · India<!-- /gen:val:place.oak_161834.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-oak_161834"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.oak_161834.limits_plain -->The camera rode along some roads twice, no outside measurement exists to check that the two passes line up, and our software moved the second pass by up to 9.3 m when it recognised the same roads, so some surfaces may look doubled or soft.<!-- /gen:val:place.oak_161834.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.oak_161834.credit_plain -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:place.oak_161834.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=oak_161834"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.oak_161834.name -->A street in India<!-- /gen:val:place.oak_161834.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="oak_161834">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.oak_161834.name -->A street in India<!-- /gen:val:place.oak_161834.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="oak_164424" aria-labelledby="pl-h-oak_164424">
+          <a class="pl-pic" href="explore.html?map=oak_164424" tabindex="-1" aria-hidden="true"><img src="img/places/oak_164424.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-oak_164424"><!-- gen:val:place.oak_164424.name -->A lane under trees<!-- /gen:val:place.oak_164424.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.oak_164424.kind -->472 m ride · our own camera · India<!-- /gen:val:place.oak_164424.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-oak_164424"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.oak_164424.limits_plain -->While it ran, our software gave no position for 8 of the 4,068 camera images, so this place is built from the other 4,060; no outside measurement exists to check the path, and some surfaces may look soft.<!-- /gen:val:place.oak_164424.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.oak_164424.credit_plain -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:place.oak_164424.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=oak_164424"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.oak_164424.name -->A lane under trees<!-- /gen:val:place.oak_164424.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="oak_164424">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.oak_164424.name -->A lane under trees<!-- /gen:val:place.oak_164424.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="oak_164002" aria-labelledby="pl-h-oak_164002">
+          <a class="pl-pic" href="explore.html?map=oak_164002" tabindex="-1" aria-hidden="true"><img src="img/places/oak_164002.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-oak_164002"><!-- gen:val:place.oak_164002.name -->A long straight road<!-- /gen:val:place.oak_164002.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.oak_164002.kind -->654 m ride · our own camera · India<!-- /gen:val:place.oak_164002.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-oak_164002"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.oak_164002.limits_plain -->The camera passed 4 spots twice, and no outside measurement exists to check that the two passes line up, so some surfaces may look doubled or soft.<!-- /gen:val:place.oak_164002.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.oak_164002.credit_plain -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:place.oak_164002.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=oak_164002"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.oak_164002.name -->A long straight road<!-- /gen:val:place.oak_164002.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="oak_164002">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.oak_164002.name -->A long straight road<!-- /gen:val:place.oak_164002.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="oak_160543" aria-labelledby="pl-h-oak_160543">
+          <a class="pl-pic" href="explore.html?map=oak_160543" tabindex="-1" aria-hidden="true"><img src="img/places/oak_160543.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-oak_160543"><!-- gen:val:place.oak_160543.name -->A shaded park walk<!-- /gen:val:place.oak_160543.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.oak_160543.kind -->232 m walk · our own camera · India<!-- /gen:val:place.oak_160543.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-oak_160543"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.oak_160543.limits_plain -->The camera passed 3 spots twice, and no outside measurement exists to check that the two passes line up, so some surfaces may look doubled or soft.<!-- /gen:val:place.oak_160543.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.oak_160543.credit_plain -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:place.oak_160543.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=oak_160543"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.oak_160543.name -->A shaded park walk<!-- /gen:val:place.oak_160543.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="oak_160543">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.oak_160543.name -->A shaded park walk<!-- /gen:val:place.oak_160543.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="rosario_01" aria-labelledby="pl-h-rosario_01">
+          <a class="pl-pic" href="explore.html?map=rosario_01" tabindex="-1" aria-hidden="true"><img src="img/places/rosario_01.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-rosario_01"><!-- gen:val:place.rosario_01.name -->A soybean field in Argentina<!-- /gen:val:place.rosario_01.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.rosario_01.kind -->462 m drive · a farm robot&#x27;s camera · Argentina<!-- /gen:val:place.rosario_01.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-rosario_01"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.rosario_01.limits_plain -->The robot passed 3 spots twice; compared with an outside measurement, the direction between our two passes is off by up to 1.7 degrees, and the passes lie up to 3.73 m apart sideways, so some surfaces may look doubled or soft.<!-- /gen:val:place.rosario_01.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.rosario_01.credit_plain -->Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.<!-- /gen:val:place.rosario_01.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=rosario_01"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.rosario_01.name -->A soybean field in Argentina<!-- /gen:val:place.rosario_01.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="rosario_01">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.rosario_01.name -->A soybean field in Argentina<!-- /gen:val:place.rosario_01.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="rosario_03" aria-labelledby="pl-h-rosario_03">
+          <a class="pl-pic" href="explore.html?map=rosario_03" tabindex="-1" aria-hidden="true"><img src="img/places/rosario_03.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-rosario_03"><!-- gen:val:place.rosario_03.name -->Soybean rows beside a dry field<!-- /gen:val:place.rosario_03.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.rosario_03.kind -->163 m drive · a farm robot&#x27;s camera · Argentina<!-- /gen:val:place.rosario_03.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-rosario_03"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.rosario_03.limits_plain -->The robot passed 1 spot twice; compared with an outside measurement, the direction between our two passes is off by up to 1.1 degrees, and the passes lie up to 0.18 m apart sideways, so some surfaces may look doubled or soft.<!-- /gen:val:place.rosario_03.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.rosario_03.credit_plain -->Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.<!-- /gen:val:place.rosario_03.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=rosario_03"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.rosario_03.name -->Soybean rows beside a dry field<!-- /gen:val:place.rosario_03.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="rosario_03">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.rosario_03.name -->Soybean rows beside a dry field<!-- /gen:val:place.rosario_03.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+        <article class="pl-item" id="rosario_04" aria-labelledby="pl-h-rosario_04">
+          <a class="pl-pic" href="explore.html?map=rosario_04" tabindex="-1" aria-hidden="true"><img src="img/places/rosario_04.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
+          <div class="pl-head">
+            <h3 class="pl-name" id="pl-h-rosario_04"><!-- gen:val:place.rosario_04.name -->Long green soybean rows<!-- /gen:val:place.rosario_04.name --></h3>
+            <p class="pl-kind"><!-- gen:val:place.rosario_04.kind -->143 m drive · a farm robot&#x27;s camera · Argentina<!-- /gen:val:place.rosario_04.kind --></p>
+          </div>
+          <div class="pl-body">
+            <p class="pl-lim" id="lim-rosario_04"><b class="pl-lim-h">Where it is not perfect</b> <!-- gen:val:place.rosario_04.limits_plain -->The robot passed no spot twice, so there was no second pass to compare; our check of the camera positions passed, and some surfaces may still look soft.<!-- /gen:val:place.rosario_04.limits_plain --></p>
+            <p class="v4-credit"><!-- gen:val:place.rosario_04.credit_plain -->Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.<!-- /gen:val:place.rosario_04.credit_plain --></p>
+            <div class="pl-acts"><a class="btn btn--ion" href="explore.html?map=rosario_04"><span>Walk in<span class="v4-sr">: <!-- gen:val:place.rosario_04.name -->Long green soybean rows<!-- /gen:val:place.rosario_04.name --></span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+            <details class="pl-eng" data-eng="rosario_04">
+              <summary>For engineers<span class="v4-sr">: the technical facts of this place (<!-- gen:val:place.rosario_04.name -->Long green soybean rows<!-- /gen:val:place.rosario_04.name -->)</span></summary>
+              <div class="pl-eng-in"><p>The technical facts of this place need scripts. They are also in <a href="data/maps.json">data/maps.json</a>.</p></div>
+            </details>
+          </div>
+        </article>
+      </div>
+
+      <details class="pl-eng pl-eng--all">
+        <summary>For engineers: how these places are made, and the files to download</summary>
+        <div class="pl-eng-in">
+          <p>Each 3-D place is a 3-D Gaussian-splat map. Each map is reconstructed from a route's images and xclean's own live camera poses, not ground truth. Where the poses are wrong, the map shows it. Each map says where.</p>
+          <p>Only maps from data we may share are published here: our own OAK-D-Lite recordings and the Rosario Dataset (CC BY 4.0). Routes from datasets with non-commercial or unstated licences appear on the <a href="results.html">results</a> page as numbers only. The poses of each map are the median run of the three final-board runs (by ATE on routes with ground truth; on our OAK routes, the run whose end position is closest to the other two). Map facts are read from each map's own files (attribution, manifest, trajectory, point cloud); path length is the sum of xclean's keyframe-to-keyframe distances. The board numbers shown come from an engine frozen with its last pre-registered kill test (K14) failed on two routes; <a href="results.html#disclosures">details</a>.</p>
+          <div class="btns"><a class="btn js-hf" href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Download the maps</a><a class="btn" href="results.html">Results</a><a class="btn" href="credits.html">Data credits</a></div>
+        </div>
+      </details>
     </div>
   </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

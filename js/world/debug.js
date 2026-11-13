@@ -25,7 +25,7 @@ if (typeof PerformanceObserver !== 'undefined' && PerformanceObserver.supportedE
       if (DEBUG) {
         if (!overlay) {
           overlay = document.createElement('pre');
-          overlay.style.cssText = 'position:fixed;right:8px;bottom:8px;z-index:99;margin:0;padding:6px 8px;max-height:40vh;overflow:auto;font:11px/1.3 monospace;background:rgba(0,0,0,.85);color:#6cc9ff;pointer-events:none';
+          overlay.style.cssText = 'position:fixed;right:8px;bottom:8px;z-index:99;margin:0;padding:6px 8px;max-height:40vh;overflow:auto;font:11px/1.3 monospace;background:rgba(0,0,0,.85);color:#ff6a2b;pointer-events:none';
           document.body.appendChild(overlay);
         }
         overlay.textContent = `long task ${Math.round(e.duration)} ms @ ${(e.startTime / 1000).toFixed(2)} s\n${overlay.textContent}`.slice(0, 2000);

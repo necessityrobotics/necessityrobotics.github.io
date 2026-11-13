@@ -1,8 +1,12 @@
+// site v12: ember literals read the accent token (tools/make_site_v12.py)
+const __acc = () => (getComputedStyle(document.documentElement).getPropertyValue('--path').trim() || '#6fc7b0');
+const __accRgb = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rgb').trim() || '111, 199, 176');
+const __accRim = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rim').trim() || '#e3f4ee');
 // The atlas from above, in 2-D (MASTER_PLAN.md 2.5): every island's footprint cells and xclean's route in ion, from
 // atlas.json alone (about 85 KB; no three.js). Used by the explore minimap, the still (T0) path's atlas, and the Maps
 // page when it cannot go live. The static layer (footprints, routes) is baked per view; a frame draws it plus the focus
 // ring and the camera with its heading fan.
-const ION = '#6cc9ff';
+const ION = __acc();
 
 export class AtlasMap {
   /** canvas: a 2-D canvas; atlas: atlas.json; opts: {labels (draw names), titles: {id: title}, pad} */
@@ -56,7 +60,7 @@ export class AtlasMap {
       const G = this.geo[id], cs = Math.max(1, G.cell * this.s * 0.9);
       g.fillStyle = G.rosario ? 'rgba(214,226,200,.42)' : 'rgba(220,230,240,.36)';
       for (const [x, z] of G.foot) { const [px, py] = this.T(x, z); g.fillRect(px - cs / 2, py - cs / 2, cs, cs); }
-      g.strokeStyle = 'rgba(108,201,255,.85)'; g.lineWidth = 1.4; g.lineJoin = g.lineCap = 'round';
+      g.strokeStyle = `rgba(${__accRgb()}, .85)`; g.lineWidth = 1.4; g.lineJoin = g.lineCap = 'round';
       g.beginPath();
       G.route.forEach(([x, z], i) => { const [px, py] = this.T(x, z); if (i) g.lineTo(px, py); else g.moveTo(px, py); });
       g.stroke();
@@ -89,7 +93,7 @@ export class AtlasMap {
     if (cam) {
       const [x, y] = this.T(cam.x, cam.z);
       const a = -Math.PI / 2 - cam.heading;      // heading 0 looks down -z (up on the map)
-      g.fillStyle = 'rgba(108,201,255,.24)';
+      g.fillStyle = `rgba(${__accRgb()}, .24)`;
       g.beginPath(); g.moveTo(x, y); g.arc(x, y, 22, a - 0.42, a + 0.42); g.closePath(); g.fill();
       g.fillStyle = '#000'; g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill();
       g.fillStyle = '#f4f4f4'; g.beginPath(); g.arc(x, y, 3.2, 0, 7); g.fill();

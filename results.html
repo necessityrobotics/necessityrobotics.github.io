@@ -7,13 +7,13 @@
        incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
   <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>Results · Necessity Robotics</title>
-  <meta name="description" content="xclean's final board: 72 routes, 216 live paced runs, latency, robustness and accuracy against ORB-SLAM3 and OKVIS2-X, wins and losses, every route.">
+  <meta name="description" content="xclean's final board: 72 routes, 216 real-time replays, latency, robustness and accuracy against ORB-SLAM3 and OKVIS2-X, wins and losses, every route.">
   <!-- sharing: absolute URLs (GitHub Pages); the card image is the home page's poster (our recording, CC BY 4.0) -->
   <link rel="canonical" href="https://necessityrobotics.github.io/results.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Necessity Robotics">
   <meta property="og:title" content="Results · Necessity Robotics">
-  <meta property="og:description" content="xclean's final board: 72 routes, 216 live paced runs, latency, robustness and accuracy against ORB-SLAM3 and OKVIS2-X, wins and losses, every route.">
+  <meta property="og:description" content="xclean's final board: 72 routes, 216 real-time replays, latency, robustness and accuracy against ORB-SLAM3 and OKVIS2-X, wins and losses, every route.">
   <meta property="og:url" content="https://necessityrobotics.github.io/results.html">
   <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
   <meta property="og:image:type" content="image/jpeg">
@@ -22,39 +22,86 @@
   <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
   <!-- integrator: the page's first data, fetched at once and handed to getJSON() (js/site.js). WebKit (Safari and every
        iOS browser) never reused a <link rel=preload as=fetch> answer for fetch(): it downloaded each file twice -->
   <script>window.__nrPre = Object.fromEntries(['data/board.json'].map(u => [u, fetch(u).catch(() => null)]));</script>
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/results.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body>
+<body class="v12">
 <a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="xclean.html">xclean</a>
-      <a href="results.html" aria-current="page">Results</a>
-      <a href="maps.html">Maps</a>
-      <a href="paper.html">Paper</a>
-      <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research" data-current>Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html" aria-current="page"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
+
+<!-- v4: the engineer pages keep one-click links to each other (the shared header has one link, "For engineers") -->
+<nav class="pg-eng v4-top" aria-label="Pages for engineers">
+  <div class="wrap pg-eng-in">
+    <span class="pg-eng-l">For engineers</span>
+    <a href="xclean.html">xclean</a>
+    <a href="results.html" aria-current="page">Results</a>
+    <a href="paper.html">Paper</a>
+    <a href="credits.html">Data credits</a>
+    <a href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+  </div>
+</nav>
 
 <main id="main" tabindex="-1">
+  <!-- v4: plain words for a visitor who is not an engineer; the page below it is unchanged -->
+  <div class="wrap pg-plain">
+    <aside class="v4-plain" aria-label="In plain words">
+      <p class="v4-plain-h">In plain words</p>
+      <p>This page is for engineers. It lists every run of record of our robot software: <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> routes and <!-- gen:val:board.runs -->216<!-- /gen:val:board.runs --> test runs, with indoor drones, cars, a rover, a farm robot and our own camera.</p>
+      <p>Every run of record is here, also where another system did better. We do not claim to be more accurate.</p>
+      <p>You can walk through <!-- gen:val:places.count -->8<!-- /gen:val:places.count --> of the tested routes in 3-D.</p>
+      <a class="more" href="maps.html">See the 3-D places</a>
+    </aside>
+  </div>
   <header class="phead phead--media" data-head-over>
     <div class="wrap">
       <div>
         <p class="eyebrow">Results · final board, 2026-10-30</p>
         <h1>216 runs of record. Losses included.</h1>
-        <p class="lead"><span class="js-h" data-k="routes">72</span> routes, three live runs each at the sensor's real rate: <span class="js-h" data-k="runs">216</span> valid runs of record, scored on what xclean published live: latency over every frame, accuracy (ATE) at keyframe level on its map stream (LIVE-MAP). The rules were written down before the runs; the amendments made during the board are <a href="#prereg">listed below</a>.</p>
+        <p class="lead"><span class="js-h" data-k="routes">72</span> routes, three real-time replays each at the sensor's real rate: <span class="js-h" data-k="runs">216</span> valid runs of record, scored on what xclean published live: latency over every frame, accuracy (ATE) at keyframe level on its map stream (LIVE-MAP). The rules were written down before the runs; the amendments made during the board are <a href="#prereg">listed below</a>.</p>
       </div>
       <div class="vpanel" data-reveal>
         <span class="label">38 unseen routes · vs ORB-SLAM3 · offline, untuned</span>
@@ -86,7 +133,7 @@
             <li><strong>The protocol was amended during the board.</strong> No accuracy number of any board run was read before an amendment, but validity outcomes (void and incomplete runs, feeder timing) were read and drove 8.36 and 8.40-8.44. They are <a href="#prereg">listed below</a>.</li>
             <li><strong>Robustness is not perfect.</strong> No run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung, and the unsupported-frames check passed on <span class="js-c3b-p">9</span>, failed on <span class="js-c3b-f">4</span> and is pending on <span class="js-c3b-n">25</span> (all MADMAX, whose ground truth has known faults).</li>
             <li><strong>Some wins are against a failed baseline.</strong> <span class="js-flagged"></span> <a href="#forfeit">How forfeits are counted</a>.</li>
-            <li><strong>Our runs were live, on a loaded desktop.</strong> <span class="js-load"></span> The other systems ran in other configurations, named beside each comparison.</li>
+            <li><strong>Our runs were real-time replays, on a loaded desktop.</strong> <span class="js-load"></span> The other systems ran in other configurations, named beside each comparison.</li>
           </ul>
         </div>
 
@@ -150,6 +197,7 @@
           <button type="button" data-set="unseen" aria-pressed="true">Unseen 38</button>
           <button type="button" data-set="seen" aria-pressed="false">Seen 29</button>
           <button type="button" data-set="oak" aria-pressed="false">Own camera 5</button>
+          <button type="button" data-set="walk" aria-pressed="false" hidden>3-D places</button>
         </div>
         <label class="sr" for="fam">Family</label>
         <select id="fam" class="sel js-fam"><option value="">Every dataset</option></select>
@@ -159,6 +207,7 @@
         <input id="q" class="search js-q" type="search" placeholder="Search a route" autocomplete="off">
       </div>
       <p class="count js-count" aria-live="polite"></p>
+      <p class="walk-note js-walk-note" hidden>A route that has a public 3-D place carries the link <b>Walk in (3-D)</b> in its row. Choose <b>3-D places</b> above to see only those routes.</p>
       <div class="table-wrap" tabindex="0" aria-label="Every route (scrolls sideways on small screens)">
         <table class="t routes">
           <thead><tr>
@@ -174,10 +223,10 @@
       <h2 id="definitions">Definitions</h2>
       <dl class="kv defs">
         <dt id="def-sets">Seen routes</dt><dd>The other 29 routes with ground truth: <em>design</em> routes, used while building xclean, and routes <em>seen once</em> by one of the earlier pre-registered kill tests (K12-e, the IMU-safety test; K13, the loop-closure test) or by the last one (K14), each run once before the board.</dd>
-          <dt id="def-unseen">Unseen (held-out) route</dt><dd>A route held out from xclean's development: 22 "unsealed" and 16 "sealed" (held out under an earlier charter). None was used to build xclean; 10 of the 22 unsealed routes were run in the set-aside first launch (see Disclosures), whose results were never read. Our previous system had run on 36 of the 38; claim C5 compares against it. About these routes we looked only at file metadata before the final runs (paths, frame and IMU counts, durations, flag codes); no ground-truth trajectory and no xclean result was read. Two accidental exposures to other systems' numbers are disclosed in the pre-registration: the paper 1 v3 board record (another system's and ORB-SLAM3's ATE ranges) of the sealed route 4s_20201222_115, and an older system's usability values on v2_01_easy; no rule depends on them. Seen routes were used while building xclean or by earlier kill tests.</dd>
+          <dt id="def-unseen">Unseen (held-out) route</dt><dd>A route held out from xclean's development: 22 "unsealed" and 16 "sealed" (held out under an earlier charter). None was used to build xclean; 10 of the 22 unsealed routes were run in the set-aside first launch (see Disclosures); we read no accuracy number from it. Our previous system had run on 36 of the 38; claim C5 compares against it. About these routes we looked only at file metadata before the final runs (paths, frame and IMU counts, durations, flag codes); no ground-truth trajectory and no xclean result was read. Two accidental exposures to other systems' numbers are disclosed in the pre-registration: the paper 1 v3 board record (another system's and ORB-SLAM3's ATE ranges) of the sealed route 4s_20201222_115, and an older system's usability values on v2_01_easy; no rule depends on them. Seen routes were used while building xclean or by earlier kill tests.</dd>
         <dt id="def-lost">Lost run</dt><dd>A run in which more than 10 % of the frames have no published map-stream pose, or a state other than tracking, relocalised or initialising, or are degraded; or which ends in an unrecovered loss (pre-registration 2.6). The board's accuracy rule uses the same definition through its export: such a run is marked as more than 10 % coasted.</dd>
         <dt id="def-continuity">Continuity</dt><dd>xclean publishes two streams: the odometry stream (LIVE-ODOM), which loop closure never corrects, and the map stream (LIVE-MAP), which carries the loop corrections. Claim C2 passes on a route when, in every run, every jump of the map stream is flagged or also appears in the odometry stream; it passed on <span class="js-c2">37 of 38</span> unseen routes. The odometry stream itself had no jump at all in every run on <span class="js-c2-odom">6</span> of the 38.</dd>
-        <dt id="def-unsupported">Unsupported frames</dt><dd>Frames with no published pose, a state other than tracking, or a two-second motion that disagrees with ground truth, as a share of the run. The bar is 2 % per route.</dd>
+        <dt id="def-unsupported">Unsupported frames</dt><dd>Frames with no published pose, a state other than tracking, relocalised or initialising, a degraded pose, or a two-second motion that disagrees with ground truth, as a share of the run. The bar is 2 % per route (10 % on v2_03_difficult).</dd>
         <dt id="def-ate">ATE</dt><dd>Absolute trajectory error in metres, at keyframe level on xclean's live map stream (LIVE-MAP at the keyframe stamps), on the time window both systems cover, after rigid alignment to ground truth. This is the ATE in the table and in the ORB-SLAM3 comparison. The OKVIS2-X comparison (claim C6) uses frame-level ATE instead, as pre-registered: each system's per-frame poses, each held until the next frame, scored by the same live scorer.</dd>
         <dt id="def-latency">Latency</dt><dd>Recorder receipt of the loop-corrected pose minus the release of its frame, over every frame; a dropped frame counts as infinitely late.</dd>
       </dl>
@@ -188,10 +237,12 @@
   </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

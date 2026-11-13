@@ -1,0 +1,97 @@
+/* Site v4.1, one finish for every page (lead). Law: LIGHT = it works today, DARK / DASHED = not built yet.
+   Black page, one blue (--ion). Light answers the visitor: it follows the pointer, it lifts what they come near,
+   it runs along every blue path (the path is what our software works out). Loads after the page's own styles. */
+
+/* ------------------------------------------------------------------ a soft light follows the pointer */
+.x-light { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .6s;
+  background: radial-gradient(560px circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 106, 43, .075), rgba(255, 106, 43, .02) 45%, #0000 70%); }
+.x-light.on { opacity: 1; }
+@media (hover: none) { .x-light { display: none; } }
+
+/* ------------------------------------------------------------------ things rise into place as they come on screen */
+.js-x .x-r { opacity: 0; transform: translate3d(0, 28px, 0); transition: opacity .7s cubic-bezier(.2, .7, 0, 1), transform .9s cubic-bezier(.2, .7, 0, 1); transition-delay: calc(var(--xi, 0) * 70ms); }
+.js-x .x-r.x-in { opacity: 1; transform: none; }
+
+/* ------------------------------------------------------------------ headings and buttons */
+.h4-h2 { font-size: clamp(31px, 4.6vw, 62px); font-weight: 800; letter-spacing: -.03em; line-height: 1.03; }
+.h4-h2--big { font-size: clamp(37px, 6.2vw, 88px); }
+.h4-goal-t { font-weight: 800; letter-spacing: -.03em; }
+.btn--ion { transition: box-shadow .25s, background .2s, transform .2s; }
+.btn--ion:hover, .btn--ion:focus-visible { box-shadow: 0 0 0 1px var(--ion), 0 0 34px rgba(255, 106, 43, .55); }
+.btn:active { transform: scale(.98); }
+
+/* ------------------------------------------------------------------ place cards: the work exists, so it is lit */
+.v4-card { border-radius: 16px; border-color: rgba(255, 106, 43, .34); background: #050505; isolation: isolate;
+  transition: transform .4s cubic-bezier(.2, .7, 0, 1), border-color .3s, box-shadow .4s; }
+.v4-card::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 106, 43, .20), #0000 62%); }
+.v4-card:hover, .v4-card:focus-within { transform: translate3d(0, -6px, 0); border-color: var(--ion);
+  box-shadow: 0 0 0 1px var(--ion), 0 18px 60px rgba(0, 0, 0, .7), 0 0 60px rgba(255, 106, 43, .30); }
+.v4-card:hover::after, .v4-card:focus-within::after { opacity: 1; }
+.v4-card-pic { border-radius: 15px 15px 0 0; }
+.v4-card-pic img { transition: transform 1.1s cubic-bezier(.2, .7, 0, 1), filter .5s; filter: brightness(.86) contrast(1.06); }
+.v4-card:hover .v4-card-pic img, .v4-card:focus-within .v4-card-pic img { transform: scale(1.06); filter: none; }
+.v4-card-pic::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(#0000 55%, rgba(0, 0, 0, .55)); }
+.v4-card-pic .v4-chip { z-index: 1; }
+.v4-card-name { font-weight: 800; letter-spacing: -.015em; }
+.v4-route { background: #000; }
+/* the light that runs along the blue path */
+.x-run { fill: none; stroke: #fff6f0; stroke-width: 4.5; stroke-linecap: round; vector-effect: non-scaling-stroke; pointer-events: none;
+  stroke-dasharray: .07 .93; stroke-dashoffset: 1; opacity: .55; animation: x-run 3.6s linear infinite; filter: drop-shadow(0 0 5px rgba(255, 106, 43, .95)); }
+.v4-card:hover .x-run, .v4-route:hover .x-run, .v4-route:focus-visible .x-run { opacity: 1; animation-duration: 2.2s; }
+@keyframes x-run { to { stroke-dashoffset: 0; } }
+
+/* the home page shows the work large: two big places, then six */
+@media (min-width: 1000px) {
+  .h4-places .v4-cards { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; }
+  .h4-places .v4-card { grid-column: span 2; }
+  .h4-places .v4-card:nth-child(-n+2) { grid-column: span 3; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-pic { aspect-ratio: 16 / 9; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-name { font-size: 27px; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-kind { font-size: 16.5px; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-route-svg { height: 74px; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-txt { padding: 16px 20px 16px; }
+}
+
+/* ------------------------------------------------------------------ facts, notes, panels */
+.v4-fact-h { font-weight: 800; letter-spacing: -.02em; }
+.h4-ready { box-shadow: 0 0 0 1px var(--ion), 0 0 60px rgba(255, 106, 43, .22), inset 0 0 40px rgba(255, 106, 43, .08); }
+.h4-beat-pic { border-radius: 16px; transition: border-color .3s, box-shadow .4s; }
+.h4-beat-door:hover, .h4-beat-door:focus-visible { box-shadow: 0 0 0 1px var(--ion), 0 0 50px rgba(255, 106, 43, .3); }
+
+/* engineer pages: rows answer the pointer */
+main table tbody tr { transition: background .2s; }
+main table tbody tr:hover { background: rgba(255, 106, 43, .06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .js-x .x-r { opacity: 1; transform: none; transition: none; }
+  .x-run { animation: none; opacity: 0; }
+  .v4-card, .v4-card-pic img { transition: none; }
+}
+
+/* ================================================================== fixes after the checks (2026-11-11) */
+@media (min-width: 1000px) {
+  /* the two large cards: the path sits beside its label and fills the strip */
+  .h4-places .v4-card:nth-child(-n+2) .v4-route { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 22px; padding: 12px 20px; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-route-label { grid-column: 1; grid-row: 1; margin: 0; font-size: 14.5px; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-route-svg { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 999px) {
+  .h4-places .v4-card:nth-child(-n+2) { grid-column: 1 / -1; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-pic { aspect-ratio: 16 / 9; }
+  .h4-places .v4-card:nth-child(-n+2) .v4-card-name { font-size: 22px; }
+}
+/* the first field picture shows a patch of failed sky: show the field */
+.v4-card[data-place="rosario_01"] .v4-card-pic img { object-position: 50% 100%; transform: scale(1.22); transform-origin: 50% 100%; }
+.v4-card[data-place="rosario_01"]:hover .v4-card-pic img, .v4-card[data-place="rosario_01"]:focus-within .v4-card-pic img { transform: scale(1.28); }
+.h4-status-t { max-width: 24ch; }
+.h4-ready .h4-status-t { font-size: clamp(26px, 2.8vw, 36px); }
+.h4-beat-t b { font-weight: 650; }
+.v4-plain-h { font: 600 12.5px/1.3 var(--mono); letter-spacing: .2em; }
+
+/* 2026-11-12, after the checks: a revealed card still lifts under the pointer; the pointer light moves without a repaint */
+.js-x .v4-card.x-r { transition: opacity .7s cubic-bezier(.2, .7, 0, 1), transform .9s cubic-bezier(.2, .7, 0, 1), border-color .3s, box-shadow .4s; }
+.js-x .v4-card.x-r.x-in:hover, .js-x .v4-card.x-r.x-in:focus-within { transform: translate3d(0, -6px, 0); transition-delay: 0s; }
+.x-light { inset: auto; left: 0; top: 0; width: 1120px; height: 1120px; will-change: transform;
+  background: radial-gradient(closest-side, rgba(255, 106, 43, .075), rgba(255, 106, 43, .02) 64%, #0000);
+  transform: translate3d(calc(var(--gx, 50vw) - 560px), calc(var(--gy, 30vh) - 560px), 0); }

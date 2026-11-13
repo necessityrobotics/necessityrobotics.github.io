@@ -1,0 +1,8 @@
+/* AI / ML terms (site v5, lead 2026-11-12). A term has an "AI" tag and a dotted underline.
+   Hover, focus or a tap shows its plain meaning. The tip is not in the layout until it shows (no sideways scroll);
+   js/x.js moves it left when the right edge of the window is near (--ml-x). */
+.ml { position: relative; font-style: normal; color: var(--fg); border-bottom: 1px dashed rgba(255, 106, 43, .7); cursor: help; outline: none; white-space: nowrap; }
+.ml::before { content: "AI"; display: inline-block; margin-right: 5px; padding: 0 4px; border-radius: 4px; font: 700 10px/16px var(--mono); letter-spacing: .06em; color: var(--ink); background: var(--ion); vertical-align: 2px; }
+.ml::after { content: attr(data-def); display: none; position: absolute; left: var(--ml-x, 0px); top: calc(100% + 8px); z-index: 30; width: max-content; max-width: min(320px, calc(100vw - 32px)); padding: 10px 12px; border: 1px solid rgba(255, 106, 43, .5); border-radius: 10px; background: #050a10; color: var(--fg-2); font: 400 15px/1.45 var(--sans); letter-spacing: 0; text-transform: none; text-align: left; white-space: normal; box-shadow: 0 0 30px rgba(255, 106, 43, .18); pointer-events: none; }
+.ml:hover::after, .ml:focus::after, .ml:focus-visible::after { display: block; }
+.ml:focus-visible { box-shadow: 0 0 0 2px var(--ion); border-radius: 3px; }

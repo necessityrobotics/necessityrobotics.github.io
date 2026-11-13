@@ -1,0 +1,69 @@
+/* Necessity Robotics v4, lane ENGINE: the styles of one mounted 3-D place (js/place/mount.js). Load it on every page
+   that mounts a place:  <link rel="stylesheet" href="js/place/place.css">  (after css/site.css and css/v4.css).
+   The box is .pl; the page gives it a size. It holds the still picture (static HTML), the canvas (made by the script)
+   and the layer of stepping circles. Colours are the tokens of css/site.css; nothing here animates by itself, except
+   three pulses of the nearest circle when the place becomes live (none with reduced motion). */
+
+.pl { position: relative; overflow: hidden; background: #000; isolation: isolate; }
+.pl-still { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none;
+  user-select: none; -webkit-user-select: none; opacity: 1; transition: opacity .2s linear; }
+.pl[data-state="live"] .pl-still { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .pl-still { transition: none; } }      /* the live place replaces the picture at once */
+.pl-canvas { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; max-width: none; display: block; outline-offset: -3px;
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+/* the 3-D view takes every gesture on the canvas; the home frame leaves vertical swipes to the page */
+.pl[data-mode="full"] .pl-canvas { touch-action: none; }
+.pl[data-mode="frame"] .pl-canvas { touch-action: pan-y pinch-zoom; }
+.pl[data-state="live"] .pl-canvas { cursor: grab; }
+.pl[data-state="live"][data-dragging] .pl-canvas { cursor: grabbing; }
+.pl[data-state="live"] .pl-canvas[data-over="path"], .pl[data-mode="frame"] .pl-canvas { cursor: pointer; }
+.pl[data-mode="frame"][data-dragging] .pl-canvas { cursor: grabbing; }
+
+/* ------------------------------------------------------------ the layer over the picture: stepping circles, labels */
+.pl-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+.pl-layer[data-live="0"], .pl[data-bare] .pl-layer, .pl:not([data-state="live"]) .pl-layer { display: none; }
+.pl-step { position: absolute; left: 0; top: 0; width: 48px; height: 48px; margin: -24px 0 0 -24px; padding: 0; border: 0; background: none;
+  pointer-events: auto; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; border-radius: 50%; }
+.pl-step[hidden] { display: none; }
+/* GROUND LIGHTS (owner 11-12: no big circle on the path). A 100 px box that the script's matrix lays flat on the
+   ground: far steps = a small glowing bead (runway light); the nearest step = a double arrow painted on the ground. */
+.pl-ring { position: absolute; left: 50%; top: 50%; width: 100px; height: 100px; margin: -50px 0 0 -50px; border-radius: 50%; box-sizing: border-box;
+  background: radial-gradient(circle, #fff 0 10%, rgba(166, 222, 255, .95) 13%, rgba(255, 106, 43, .55) 24%, rgba(255, 106, 43, .16) 40%, rgba(255, 106, 43, 0) 62%);
+  transition: opacity .15s, filter .15s; will-change: transform; }
+.pl-step:hover .pl-ring, .pl-step:focus-visible .pl-ring { filter: brightness(1.35) saturate(1.2); }
+.pl-step.is-near .pl-ring { background: radial-gradient(ellipse 60% 70% at 50% 46%, rgba(255, 106, 43, .38), rgba(255, 106, 43, 0) 72%); }
+.pl-step:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.pl-chev { display: none; position: absolute; inset: 0; }
+.pl-step.is-near .pl-chev { display: block; }
+.pl-chev::before, .pl-chev::after { content: ""; position: absolute; left: 50%; width: 40px; height: 40px; margin-left: -20px; box-sizing: border-box;
+  border: solid #fff; border-width: 9px 0 0 9px; border-radius: 3px; transform: rotate(45deg); filter: drop-shadow(0 0 6px rgba(255, 106, 43, 1)) drop-shadow(0 0 2px rgba(0, 10, 20, .9)); }
+.pl-chev::before { top: 18px; }
+.pl-chev::after { top: 46px; opacity: .5; }
+.pl-step:hover .pl-chev::after, .pl-step:focus-visible .pl-chev::after { opacity: .9; }
+.pl-step-label { position: absolute; left: 0; top: 0; padding: 7px 13px; border-radius: 999px; background: rgba(0, 0, 0, .9); border: 1px solid var(--line-3);
+  color: var(--fg); font: 700 15px/18px var(--sans); white-space: nowrap; pointer-events: none; }
+.pl-step-label::after { content: " \2192"; color: var(--ion); }
+.pl-step-label.is-rhs::after { content: none; }
+.pl-step-label.is-rhs::before { content: "\2190  "; color: var(--ion); }
+.pl-step-label.is-top::after { content: " \2193"; }
+.pl-step-label[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .pl-layer[data-live="1"] .pl-step.is-near .pl-chev::after { animation: pl-pulse 1.1s ease-out 3; }       /* three pulses, then still (R1) */
+}
+@keyframes pl-pulse { 0% { opacity: .15; transform: rotate(45deg) translate(6px, 6px); } 60% { opacity: .9; } 100% { opacity: .45; transform: rotate(45deg); } }
+
+/* a mouse over the blue path: a ring on the point + one plain line */
+.pl-pick { position: absolute; left: 0; top: 0; pointer-events: none; }
+.pl-pick[hidden] { display: none; }
+.pl-pick i { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; background: rgba(255, 106, 43, .35); }
+.pl-pick span { position: absolute; left: 18px; top: -40px; padding: 6px 11px; border-radius: 8px; background: #000; border: 1px solid var(--line-3);
+  color: var(--fg); font: 700 14px/1.2 var(--sans); white-space: nowrap; }
+.pl-pick span::after { content: " \2192"; color: var(--ion); }
+
+/* the view from above: the visitor's own spot */
+.pl-you { position: absolute; left: 0; top: 0; pointer-events: none; }
+.pl-you[hidden] { display: none; }
+.pl-you i { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: var(--ion); border: 3px solid #fff; box-shadow: 0 0 0 5px rgba(255, 106, 43, .3); }
+.pl-you span { position: absolute; left: 16px; top: -12px; padding: 4px 9px; border-radius: 999px; background: rgba(0, 0, 0, .9); border: 1px solid var(--line-3);
+  color: var(--fg); font: 700 13px/16px var(--sans); white-space: nowrap; }
+@media (max-width: 600px) { .pl[data-mode="frame"] .pl-step-label { padding: 5px 10px; font-size: 13px; line-height: 16px; } }      /* a small frame on a phone */

@@ -14,6 +14,6 @@ document.querySelectorAll('.js-tally').forEach(el => { el.innerHTML = tallyHTML(
 document.querySelectorAll('.js-runs').forEach(el => countUp(el, b.headline.runs));
 // the summary paragraph is written out in full in the HTML; check it still matches the data and say so in the console
 const h = b.headline, txt = document.querySelector('.js-abstract').textContent;
-const want = [`${h.routes} routes`, `${h.runs} live runs`, `${h.latency_ms.p50} ms`, `p95 ${h.latency_ms.p95} ms`, `${h.unseen_routes} routes`, `wins ${o.win}, ties ${o.tie} and loses ${o.loss}`];
+const want = [`${h.routes} routes`, `${h.runs} real-time replays`, `${h.latency_ms.p50} ms`, `p95 ${h.latency_ms.p95} ms`, `${h.unseen_routes} routes`, `wins ${o.win}, ties ${o.tie} and loses ${o.loss}`];
 const miss = want.filter(w => !txt.includes(w));
 if (miss.length) console.warn('[paper] the summary no longer matches data/board.json:', miss);

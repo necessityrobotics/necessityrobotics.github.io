@@ -22,30 +22,76 @@
   <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/paper.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body>
+<body class="v12">
 <a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="xclean.html">xclean</a>
-      <a href="results.html">Results</a>
-      <a href="maps.html">Maps</a>
-      <a href="paper.html" aria-current="page">Paper</a>
-      <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research" data-current>Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html" aria-current="page"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
+
+<!-- v4: the engineer pages keep one-click links to each other (the shared header has one link, "For engineers") -->
+<nav class="pg-eng v4-top" aria-label="Pages for engineers">
+  <div class="wrap pg-eng-in">
+    <span class="pg-eng-l">For engineers</span>
+    <a href="xclean.html">xclean</a>
+    <a href="results.html">Results</a>
+    <a href="paper.html" aria-current="page">Paper</a>
+    <a href="credits.html">Data credits</a>
+    <a href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+  </div>
+</nav>
 
 <main id="main" tabindex="-1">
+  <!-- v4: plain words for a visitor who is not an engineer; the page below it is unchanged -->
+  <div class="wrap pg-plain">
+    <aside class="v4-plain" aria-label="In plain words">
+      <p class="v4-plain-h">In plain words</p>
+      <p>This page is for engineers. It is the summary of a technical paper about xclean, our robot software. The paper is not released yet.</p>
+      <p>The software tells a robot where it is while it moves. We tested it on <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> recorded routes, played back at real speed. Every run of record is published, also where another system did better.</p>
+      <a class="more" href="maps.html">See the 3-D places</a>
+    </aside>
+  </div>
   <header class="phead phead--poster" data-head-over>
     <div class="phead-bg" aria-hidden="true"><img src="img/maps/oak_161206.webp" alt="" width="1280" height="800" decoding="async" fetchpriority="high"></div>
     <div class="wrap">
@@ -53,7 +99,7 @@
       <h1>xclean, scored on what it publishes live.</h1>
       <p class="lead">A stereo visual-inertial SLAM system, and an evaluation that scores what it published live: latency at every frame, accuracy at its keyframes, never a trajectory refined after the run.</p>
       <div class="status-line"><span class="chip chip--warn">Not yet released</span><span class="chip">Authors: to be announced</span><span class="chip">Final numbers: board of 2026-10-30</span></div>
-      <p class="phead-cap"><b>Behind this text</b> Park walk (oak_161206), rendered from the map. Our own recording.</p>
+      <p class="phead-cap"><b>Behind this text</b> A park path under trees (oak_161206), rendered from the map. Our own recording.</p>
     </div>
   </header>
 
@@ -65,7 +111,7 @@
       </aside>
       <div class="prose">
         <h2 id="summary">Summary</h2>
-        <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline. It uses the IMU while a built-in consistency check accepts it and otherwise runs as stereo visual odometry with loop closure (the IMU stayed in use to the end on 50 of 216 board runs). We score it on exactly what it publishes live: runs paced at the sensors' real rate and the poses it published live, with rules written down before the runs (amendments made during the board are disclosed). On a final board of 72 routes and 216 live runs, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop GPU, and no run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a set-aside first launch whose results were never read) (robustness was not perfect: see the limitations). It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
+        <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline. It uses the IMU while a built-in consistency check accepts it and otherwise runs as stereo visual odometry with loop closure (the IMU stayed in use to the end on 50 of 216 board runs). We score it on exactly what it publishes live: runs paced at the sensors' real rate and the poses it published live, with rules written down before the runs (amendments made during the board are disclosed). On a final board of 72 routes and 216 real-time replays, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop computer (AMD Ryzen 9 9950X, NVIDIA RTX 5090), and no run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a first launch that we set aside; we read no accuracy number from it) (robustness was not perfect: see the limitations). It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
         <p class="muted">This page is a summary. The full paper is being revised to the final board; until it is released, the numbers here and on the <a href="results.html">results</a> page are the reference.</p>
 
         <h2 id="why">Why score the live output</h2>
@@ -75,8 +121,8 @@
         <ul class="ticks">
           <li><strong>Front end.</strong> Feature detection, ORB descriptors, sparse stereo matching for depth and the first feature-matching step of each frame on the GPU; matching against the local map on the CPU.</li>
           <li><strong>Association by map matching.</strong> Features are matched against the local map, not only the previous frame.</li>
-          <li><strong>Estimator.</strong> A tightly coupled visual-inertial sliding-window solve on the CPU (compiled with Numba); each frame's pose comes from a solve that contains that frame.</li>
-          <li><strong>IMU.</strong> Initialisation, an online consistency check (the watchdog that can drop or refuse the IMU) and an online camera-IMU clock-offset estimate. xclean is a stereo visual-inertial SLAM system: it uses the IMU while a built-in consistency check accepts it, and otherwise continues as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs (mostly EuRoC and 4Seasons). On MADMAX, Rosario and our own OAK-D-Lite recordings the check dropped or refused it. KITTI has no IMU. <a href="results.html#imu">Per dataset</a>.</li>
+          <li><strong>Estimator.</strong> A tightly coupled visual-inertial sliding-window solve on the CPU (compiled with Numba). When tracking works, each published pose comes from a solve that contains that frame. When tracking fails, xclean publishes a predicted pose, marked coasting.</li>
+          <li><strong>IMU.</strong> Initialisation and an online consistency check (the watchdog that can drop or refuse the IMU). xclean does not estimate the camera-IMU time offset: the offset is a declared input. xclean is a stereo visual-inertial SLAM system: it uses the IMU while a built-in consistency check accepts it, and otherwise continues as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs (mostly EuRoC and 4Seasons). On MADMAX, Rosario and our own OAK-D-Lite recordings the check dropped or refused it. KITTI has no IMU. <a href="results.html#imu">Per dataset</a>.</li>
           <li><strong>Full SLAM.</strong> Loop closure with a global correction applied live, relocalisation, and map reuse.</li>
           <li><strong>One configuration.</strong> One frozen build ran every route on the board.</li>
           <li><strong>Maps.</strong> 3-D Gaussian-splat maps are built afterwards from the images and xclean's live poses (<a href="maps.html">maps</a>).</li>
@@ -85,9 +131,9 @@
         <h2 id="protocol">Live evaluation protocol</h2>
         <ul class="ticks">
           <li><strong>Harness.</strong> Frames and IMU samples are released at their recorded timestamps; the system never sees data newer than what was released; every published pose is recorded by a separate process.</li>
-          <li><strong>Live scorer.</strong> It scores the poses as published live: latency over every frame, accuracy (ATE) at keyframe level on the map stream (LIVE-MAP). Each route has three valid runs of record; 8 void attempts were re-run (a first launch on a pre-fix build was set aside entirely; see the results page), and the rules for what voids a run and for incomplete attempts were amended during the board. Every attempt is in the board ledger.</li>
+          <li><strong>Live scorer.</strong> It scores the poses as published live: latency and ATE at every frame (frame level). <strong>Board rule.</strong> The table and the ORB-SLAM3 comparison use ATE at the keyframes, on the map stream (LIVE-MAP). Each route has three valid runs of record; 8 void attempts were re-run (a first launch on a pre-fix build was set aside entirely; see the results page), and the rules for what voids a run and for incomplete attempts were amended during the board. Every attempt is in the board ledger.</li>
           <li><strong>Bars written down in advance.</strong> Latency, drops, continuity, robustness, accuracy and resources, each with a written pass rule. The protocol was amended during the board: no accuracy number was read before any amendment, but validity outcomes (void and incomplete runs) were, and they drove 8.36 and 8.40-8.44. The amendments are listed on the <a href="results.html#prereg">results page</a>.</li>
-          <li><strong>Held-out routes.</strong> The final board's headline uses 38 routes held out from xclean's development. Ten of them were run in a first launch that was set aside with its results never read (see the results page), and our previous system had run on 36 of them (claim C5 compares against it).</li>
+          <li><strong>Held-out routes.</strong> The final board's headline uses 38 routes held out from xclean's development. Ten of them were run in a first launch that we set aside; we read no accuracy number from it (see the results page), and our previous system had run on 36 of them (claim C5 compares against it).</li>
           <li><strong>Baselines.</strong> ORB-SLAM3 offline and untuned (5 runs per route) and OKVIS2-X causal and unpaced (1 run per route), each built on Windows with portability-only patches and run separately; none of their code is part of xclean. ORB-SLAM3 ran stereo-inertial where the dataset has an IMU, except on rosario_01, 02, 03 and 06, where its IMU start-up crashed on every run and it ran stereo-only, and on 1 of its 5 madmax_B0 runs; on KITTI, which has no IMU, it ran stereo. OKVIS2-X ran visual-inertial, with the IMU off on KITTI. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level.</li>
         </ul>
 
@@ -108,7 +154,7 @@
           <li>Not more accurate than ORB-SLAM3 or OKVIS2-X on our board.</li>
           <li>The engine was frozen with its last pre-registered kill test (K14: no unflagged map jumps, and loop closure paying where routes revisit) failed on two routes (madmax_E0, kitti_02); on a third, kitti_09, no loop was fused and it passed only through the no-harm clause. The board ran on a twin build with identical engine code.</li>
           <li>Robustness: no run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung; the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults).</li>
-          <li>One machine: all timings come from one desktop with an RTX 5090. The embedded port is not done.</li>
+          <li>One machine: all timings come from one desktop with an RTX 5090. Version 0.2.0 installs on NVIDIA Jetson Orin and Thor, but we have not run it on a Jetson; its speed and accuracy there are not measured.</li>
           <li>Some datasets have known faults: MADMAX's ground-truth heading departs from its own antenna track for long stretches, and Rosario v1's ground truth is position-only; these affect every system scored. On 4Seasons, the stereo images' metric scale disagrees with the RTK-GNSS ground truth per recording (by -11 to +5 %), for both stereo systems; the cause is open; it is not the ground truth (the camera calibration is suspected). (An earlier 2-11 % scale error was our own converter's bug, fixed on 2026-10-04 before any final score.)</li>
           <li>Our own OAK-D-Lite routes were recorded on the camera and replayed in real time; they have no ground truth (latency, drops and visual inspection only). The release has since run live on the camera, so far only with the camera standing still on a tripod.</li>
         </ul>
@@ -134,10 +180,12 @@
   </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

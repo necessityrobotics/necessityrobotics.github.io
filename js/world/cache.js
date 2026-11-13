@@ -4,7 +4,8 @@
 // At most `maxMaps` maps are kept (oldest first out); nothing is stored under Save-Data; quota errors are ignored.
 // Frozen API: CACHE_NAME, stableUrl, cachedBytes, putBytes.
 
-export const CACHE_NAME = 'nr-maps-v1';
+export const CACHE_NAME = 'nr-maps-v2';   // v2 (launch 11-13): the cuts on this site changed under the same names
+try { if (typeof caches !== 'undefined') caches.delete('nr-maps-v1').catch(() => {}); } catch (e) { /* no cache: nothing to drop */ }
 const ok = () => typeof caches !== 'undefined' && window.isSecureContext !== false && navigator.connection?.saveData !== true;
 
 /** The cache key for a file URL: absolute, without a fragment. A `part` (e.g. a byte range) makes a separate entry. */
@@ -15,7 +16,7 @@ export function stableUrl(url, part = '') {
   return u.href;
 }
 // the map a key belongs to: an asset-host file (/maps/<id>/...) or a ride cut and its track on the site (/cuts/<id>.*)
-const mapOf = key => (/\/maps\/([^/]+)\//.exec(key) || /\/cuts\/([^/.]+)\.[^/]*$/.exec(new URL(key).pathname) || [])[1] || key;
+const mapOf = key => (/\/maps(?:_[a-z0-9]+)?\/([^/]+)\//.exec(key) || /\/cuts\/([^/.]+)\.[^/]*$/.exec(new URL(key).pathname) || [])[1] || key;
 
 /** The cached bytes of a file, or null (no cache, a miss, or an error). */
 export async function cachedBytes(url, part = '') {

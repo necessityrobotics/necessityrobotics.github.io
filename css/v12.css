@@ -1,0 +1,233 @@
+/* V12 mix skin (lead, 2026-11-13). Owner: "combine both [8894 = v4, 8810 = live v3] to get best from each, make it
+   black color theme, see which color pairs well with black, provide options".
+   The v4 sections keep their structure and scripts; this file gives them the V11 finish on black:
+   serif headlines, square corners, 1 px hairlines, no glows, no pointer light, ONE accent from accent.css.
+   Loaded last. Every former ember / blue literal of the v4 CSS is replaced here by the accent token. */
+
+/* ------------------------------------------------------------ tokens: v4 names -> V11 black + the accent */
+:root {
+  --bg: #000; --bg-1: #070708; --bg-2: #0b0c0e; --bg-3: #141518;
+  --ion: var(--acc); --ion-dim: rgba(var(--acc-rgb), .14); --v4-ion-hi: var(--acc-rim);
+  --display: "Sitka Display", "Sitka Heading", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --r: 0px;
+}
+body.v12 { background: #000; }
+body.v12::after { opacity: .035; }                 /* the V11 grain, very faint (ember.css is not loaded) */
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 12px; z-index: 100; padding: 8px 12px; background: #fff; color: #000; }
+
+/* ------------------------------------------------------------ type: V11 serif headlines, spaced mono labels */
+.v12 .h4-h2, .v12 .h4-sec h2, .v12 .h4-sec h3 { font-family: var(--display); font-weight: 500; letter-spacing: -.012em; }
+.v12 .h4-h2 i, .v12 .h4-h2 em { font-weight: 400; }
+.v12 .eyebrow, .v12 .v4-eyebrow, .v12 .h4-k { font-family: var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--fg-3); }
+.v12 .eyebrow::before { background: var(--fg-3); }
+
+/* ------------------------------------------------------------ square, hairline, no glow */
+.v12 .h4-sec .btn, .v12 .v4-door, .v12 .v4-card, .v12 .v4-card-pic, .v12 .v4-chip, .v12 .h4-beat-pic, .v12 .h4-ready,
+.v12 .h4-building, .v12 .h4-engdoor, .v12 .v4-note, .v12 .x-stack-row li, .v12 .x-stack-row li span, .v12 .h4-sec pre,
+.v12 .h4-sec :not(pre) > code, .v12 .dm-tablewrap, .v12 [class^="dm-"] { border-radius: 0 !important; }
+.v12 .x-light, .v12 .v4-card::after { display: none !important; }
+.v12 .v4-card { border-color: rgba(255, 255, 255, .18); box-shadow: none; }
+.v12 .v4-card:hover, .v12 .v4-card:focus-within { border-color: #fff; box-shadow: none; }
+.v12 .h4-beat-door:hover, .v12 .h4-beat-door:focus-visible { border-color: #fff; box-shadow: none; }
+.v12 .v4-card-main:hover .v4-chip--go, .v12 .v4-card-main:focus-visible .v4-chip--go { background: #fff; border-color: #fff; color: #000; }
+.v12 .v4-route-label { color: var(--fg-2); }
+.v12 .v4-route:hover .v4-route-label, .v12 .v4-route:focus-visible .v4-route-label { color: #fff; }
+.v12 a.more, .v12 .h4-status-go { color: #fff; }
+
+/* the one main action per section: the accent, flat */
+.v12 .btn--ion { background: var(--acc); border-color: var(--acc); color: var(--on-acc); box-shadow: none; }
+.v12 .btn--ion:hover, .v12 .btn--ion:focus-visible { background: #fff; border-color: #fff; color: #000; box-shadow: none; }
+.v12 .d-row--lit, .v12 .d-tile--lit { box-shadow: 0 0 0 1px var(--acc); }
+
+/* place pictures: the house grade, no colour cast */
+.v12 .v4-card-pic img { filter: brightness(.88) contrast(1.08) saturate(.9); }
+.v12 .v4-card:hover .v4-card-pic img, .v12 .v4-card:focus-within .v4-card-pic img { filter: contrast(1.06); }
+
+/* ------------------------------------------------------------ former ember literals -> the accent (v4.css, x.css,
+   site.css, depth.css, ml.css). The selectors below are the ones that carried rgba(255, 106, 43, a). */
+.v12 .ml { border-bottom-color: rgba(var(--acc-rgb), .7); }
+.v12 .ml::before { background: var(--acc); color: var(--on-acc); }
+.v12 .ml::before { content: "ML"; }                       /* the term badge: ML, not AI (owner 11-13: ML about 80 %, AI about 20 %) */
+.v12 ::selection { background: rgba(var(--acc-rgb), .35); color: #fff; }
+.v12 .x-stack-row li.is-lit { border-color: var(--acc); box-shadow: none; }
+.v12 .x-stack-row li.is-lit span { background: var(--acc); color: var(--on-acc); }
+
+
+/* ------------------------------------------------------------ rhythm: the sections sit on plain black, hairline rules */
+.v12 .h4-sec { border-top: 1px solid rgba(255, 255, 255, .1); }
+.v12 .h4-sec.h4-places { border-top: 0; }
+
+/* ------------------------------------------------------------ pictures
+   The place pictures still hold the old ember line. Our own camera is grey (OAK), so a hue turn moves only the line to
+   the accent; the colour Rosario pictures keep it until the stills are re-rendered with the chosen accent. */
+.v12 img[src*="img/places/oak_"] { filter: hue-rotate(var(--still-rot)) saturate(var(--still-sat)) brightness(.9) contrast(1.08) !important; }
+/* the AI depth pictures in grey: bright = near, dark = far (as the legend says); no blue, no orange */
+.v12 .dm-img { filter: grayscale(1) contrast(1.06); }
+.v12 .dm-key { background: linear-gradient(90deg, #f4f4f4, #9a9a9a 45%, #111) !important; border-radius: 0; }
+.v12 .dm-handle::before { box-shadow: 0 0 2px rgba(0, 0, 0, .8); }
+
+/* ------------------------------------------------------------ colour roles (the owner's trio: bone, sage, lilac)
+   One job per colour. The page accent (--acc, --ion) is the main action and "works today". Inside AI areas the accent
+   is the AI colour; inside path drawings it is the path colour. With a single accent all three are the same colour.
+   --ion and --acc are set again here (custom properties inherit their computed value, so a scope must name them). */
+.v12 .h4-ai, .v12.dm main, .v12 .ml {
+  --ion: var(--ai); --acc: var(--ai); --acc-rgb: var(--ai-rgb); --on-acc: var(--on-ai); --acc-text: var(--ai); }
+.v12 .v4-route, .v12 .h4-beat-pic--route, .v12 .pl-layer, .v12 .xp-map, .v12 .h-wipe {
+  --ion: var(--path); --acc: var(--path); --acc-rgb: var(--path-rgb); --acc-rim: var(--path-rim); }
+
+/* ------------------------------------------------------------ Check 11-13: no glows, no pills, no extra hues, no loops
+   (the owner's taste: calm, rare accent, no glows, classic square finish; nothing loops by itself) */
+.v12 .dm-hero { background: none !important; }
+.v12 .xp-back, .v12 .xp-pill, .v12 .xp-pill-pic, .v12 .xp-help, .v12 .xp-keep, .v12 .xp-photo-s, .v12 .xp-pad-cap,
+.v12 .xp-info, .v12 .xp-card, .v12 .xp-map, .v12 .xp-photo { border-radius: 0 !important; }
+:root { --loss: #8a8f94; --warn: #c4c9cd; }
+.v12 .x-run { display: none !important; }
+
+/* ------------------------------------------------------------ the floating trajectories (owner 11-13; F/atlas.js)
+   The 8 places as point islands with their paths. Names are doors with two choices. Phones / no WebGL: the list. */
+.v12 .f-atlas { border-top: 1px solid rgba(255, 255, 255, .1); }
+.v12 .f-atlas-stage { position: relative; height: min(76vh, 760px); margin-top: 26px; background: #000; overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, .1); border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.v12 .f-atlas-stage:not([data-live="1"]) { display: none; }
+.v12 .f-atlas-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.v12 .f-atlas-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.v12 .f-isl { position: absolute; left: 0; top: 0; pointer-events: auto; margin: -46px 0 0 -12px; padding: 5px 9px 6px;
+  background: rgba(0, 0, 0, .74); border: 1px solid rgba(255, 255, 255, .22); border-radius: 0; color: #f3f5f6; text-align: left;
+  font: italic 400 15.5px/1.2 var(--display); white-space: nowrap; cursor: pointer; }
+.v12 .f-isl small { display: block; margin-top: 3px; font: 500 10px/1.2 var(--mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: #9aa1a7; }
+.v12 .f-isl:hover, .v12 .f-isl:focus-visible { border-color: var(--path); outline: none; }
+.v12 .f-atlas-pick { position: absolute; left: 0; top: 0; z-index: 6; display: grid; gap: 10px; width: 280px; padding: 16px 16px 16px;
+  background: #0b0c0e; border: 1px solid rgba(255, 255, 255, .3); }
+.v12 .f-atlas-pick[hidden] { display: none; }
+.v12 .f-pick-n { margin: 0 24px 4px 0; font: 500 20px/1.2 var(--display); color: #f3f5f6; }
+.v12 .f-pick-x { position: absolute; right: 6px; top: 4px; padding: 4px 8px; background: none; border: 0; color: #c4c9cd; font-size: 22px; line-height: 1; cursor: pointer; }
+.v12 .f-pick-depth { --acc: var(--ai); }
+.v12 .f-atlas-list { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.v12 .f-atlas-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 12px 0; border-top: 1px solid rgba(255, 255, 255, .12); }
+.v12 .f-al-n { font: italic 400 18px/1.3 var(--display); color: #f3f5f6; }
+.v12 .f-al-l { font: 500 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #9aa1a7; margin-right: auto; }
+.v12 .f-atlas-list a { font-size: 14.5px; color: #f3f5f6; }
+.v12 .f-atlas-stage[data-live="1"] + .wrap .f-atlas-list { display: none; }
+.v12 .f-atlas-note { margin: 14px 0 0; font-size: 13px; color: #9aa1a7; }
+@media (max-width: 760px) { .v12 .f-atlas-list { grid-template-columns: 1fr; } }
+/* the eight places now live in the home stage (stops 4-5); the separate section is the list for phones only */
+@media (min-width: 761px) { .v12 .f-atlas { display: none; } html.f-noatlas .v12 .f-atlas { display: block; } }   /* no 3-D on this desktop: the list */
+
+/* ------------------------------------------------------------ the company top bar (owner 11-13)
+   One bar on every page, the home included (tools/build_static.py frag_header): the wordmark; Products (xclean, Depth
+   model) and Research (Results, Paper) open a panel (js/v4/common.js); 3-D places; About; Contact. On a phone the menu
+   lists the panels as groups. Colour stays rare: sage marks xclean (the path), lilac the ML model, in their small labels. */
+body.v12 { --head-h: var(--v4-head-h); }
+.v12 .nr-head { background: rgba(0, 0, 0, .92); border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.v12 .nr-head .v4-head-in { gap: clamp(10px, 2vw, 28px); }
+.v12 .nr-head .v4-wordmark { font: 600 21px/1 var(--display); letter-spacing: -.01em; }
+.v12 .nr-nav { gap: clamp(0px, .5vw, 6px); }
+.v12 .nr-nav .nr-a, .v12 .nr-dd-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; margin: 0;
+  border: 0; border-radius: 0; background: none; box-shadow: none; font: 500 14.5px/1 var(--sans); letter-spacing: .01em;
+  color: var(--fg-2); text-decoration: none; white-space: nowrap; cursor: pointer; }
+.v12 .nr-nav .nr-a:hover, .v12 .nr-dd-btn:hover, .v12 .nr-dd.is-open > .nr-dd-btn { color: var(--fg); }
+.v12 .nr-nav .nr-a[aria-current], .v12 .nr-nav .nr-dd-btn[data-current] { color: var(--fg); box-shadow: inset 0 -1px 0 var(--fg); }
+.v12 .nr-nav .nr-a:focus-visible, .v12 .nr-dd-btn:focus-visible, .v12 .nr-cta:focus-visible { outline: 1px solid var(--fg); outline-offset: -1px; }
+.v12 .nr-chev { flex: none; width: 6px; height: 6px; border-right: 1.3px solid currentColor; border-bottom: 1.3px solid currentColor;
+  transform: translateY(-2px) rotate(45deg); transition: transform .18s; }
+.v12 .nr-dd.is-open .nr-chev { transform: translateY(1px) rotate(-135deg); }
+.v12 .nr-dd { position: relative; }
+.v12 .nr-dd-panel { position: absolute; top: calc(100% + 10px); left: 50%; z-index: 70; display: none; gap: 4px;
+  width: min(340px, calc(100vw - 32px)); padding: 8px; transform: translateX(-50%);
+  background: #060607; border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 24px 48px rgba(0, 0, 0, .55); }
+.v12 .nr-dd-panel--2 { width: min(620px, calc(100vw - 32px)); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.v12 .nr-dd-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }   /* the hover bridge */
+.v12 .nr-dd.is-open .nr-dd-panel { display: grid; }
+.v12 .nr-dd-h { display: none; }
+.v12 .nr-nav .nr-dd-item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-height: 0; margin: 0;
+  padding: 16px 18px 17px; border: 1px solid transparent; border-radius: 0; box-shadow: none; background: none;
+  font: inherit; color: var(--fg); text-decoration: none; white-space: normal; }
+.v12 .nr-nav .nr-dd-item:hover, .v12 .nr-nav .nr-dd-item:focus-visible { background: rgba(255, 255, 255, .045); border-color: rgba(255, 255, 255, .14); outline: none; }
+.v12 .nr-nav .nr-dd-item[aria-current] { border-color: rgba(255, 255, 255, .24); }
+.v12 .nr-dd-k { font: 500 10.5px/1.2 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-3); }
+.v12 .nr-dd-item--path .nr-dd-k { color: var(--path, var(--fg-3)); }
+.v12 .nr-dd-item--ml .nr-dd-k { color: var(--ai, var(--fg-3)); }
+.v12 .nr-dd-n { font: 500 21px/1.15 var(--display); letter-spacing: -.01em; color: var(--fg); }
+.v12 .nr-dd-t { font: 400 14px/1.45 var(--sans); color: var(--fg-2); }
+.v12 .nr-dd-s { margin-top: 4px; font: 500 12.5px/1.3 var(--sans); color: var(--fg-3); }
+.v12 .nr-cta { flex: none; display: inline-flex; align-items: center; min-height: 40px; padding: 0 18px; border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 0; font: 500 14.5px/1 var(--sans); letter-spacing: .01em; color: var(--fg); text-decoration: none; white-space: nowrap; }
+.v12 .nr-cta:hover { background: var(--fg); border-color: var(--fg); color: #000; }
+@media (min-width: 901px) { .v12 .nr-nav .nr-a--contact { display: none; } }
+.v12 .v4-menu-btn { border-radius: 0; }                         /* square, like every other control of the bar */
+/* without scripts: a panel opens on hover and on keyboard focus */
+html:not(.v4-js) body.v12 .nr-dd:hover .nr-dd-panel, html:not(.v4-js) body.v12 .nr-dd:focus-within .nr-dd-panel { display: grid; }
+/* phones and narrow windows: the menu. The panels are groups with a small label; Contact moves into the menu */
+@media (max-width: 900px) {
+  .v12 .nr-cta { display: none; }
+  .v12 .nr-nav { gap: 0; padding-bottom: 22px; }
+  .v12 .nr-dd { position: static; padding: 16px 0 6px; border-bottom: 1px solid var(--line); }
+  .v12 .nr-dd-btn { display: none; }
+  .v12 .nr-dd-h { display: block; margin: 0 0 4px; font: 500 10.5px/1.2 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--fg-3); }
+  .v12 .nr-dd-panel, .v12 .nr-dd-panel--2 { position: static; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; width: auto;
+    padding: 0; transform: none; background: none; border: 0; box-shadow: none; }
+  .v12 .nr-dd-panel::before { content: none; }
+  .v12 .nr-nav .nr-dd-item { gap: 3px; padding: 11px 0; border: 0; }
+  .v12 .nr-nav .nr-dd-item::after { content: none; }
+  .v12 .nr-nav .nr-dd-item:hover { background: none; }
+  .v12 .nr-nav .nr-dd-item[aria-current] { box-shadow: inset 3px 0 0 var(--fg); padding-left: 14px; }
+  .v12 .nr-dd-k, .v12 .nr-dd-s { display: none; }
+  .v12 .nr-dd-n { font-size: 20px; }
+  .v12 .nr-nav .nr-a { min-height: 58px; padding: 0 2px; font: 500 20px/1 var(--display); color: var(--fg); border-bottom: 1px solid var(--line); }
+  .v12 .nr-nav .nr-a[aria-current] { box-shadow: inset 3px 0 0 var(--fg); padding-left: 14px; }
+}
+/* phones without scripts: one row of plain links (the menu button cannot open) */
+@media (scripting: none) and (max-width: 900px) {
+  .v12 .nr-dd, .v12 .nr-dd-panel, .v12 .nr-dd-panel--2 { display: contents; }
+  .v12 .nr-dd-h, .v12 .nr-dd-t { display: none; }
+  .v12 .nr-nav .nr-dd-item, .v12 .nr-nav .nr-a { min-height: 44px; padding: 0 8px; border: 0; font: 500 15.5px/1 var(--sans); white-space: nowrap; justify-content: center; }
+  .v12 .nr-dd-n { font: inherit; }
+}
+
+/* ------------------------------------------------------------ the About page (owner 11-13) */
+.v12 .ab-goal { margin: 6px 0 14px; font: 500 clamp(26px, 3vw, 36px)/1.2 var(--display); letter-spacing: -.012em; color: var(--fg); max-width: 24ch; }
+.v12 .ab-list { margin: 10px 0 18px; padding: 0; list-style: none; }
+.v12 .ab-list li { padding: 12px 0; border-top: 1px solid rgba(255, 255, 255, .12); color: var(--fg-2); }
+.v12 .ab-list li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .12); }
+.v12 .ab-list b { color: var(--fg); font-weight: 600; }
+.v12 .ab-stack { margin-top: 30px; }
+.v12 .ab-products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 18px 0 22px; }
+.v12 .ab-prod { display: flex; flex-direction: column; gap: 8px; padding: 22px 22px 24px; border: 1px solid rgba(255, 255, 255, .16);
+  color: var(--fg); text-decoration: none; }
+.v12 .ab-prod:hover { border-color: rgba(255, 255, 255, .4); background: rgba(255, 255, 255, .03); }
+.v12 .ab-prod-k { font: 500 10.5px/1.2 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-3); }
+.v12 .ab-prod--path .ab-prod-k { color: var(--path, var(--fg-3)); }
+.v12 .ab-prod--ml .ab-prod-k { color: var(--ai, var(--fg-3)); }
+.v12 .ab-prod-n { font: 500 28px/1.1 var(--display); letter-spacing: -.012em; }
+.v12 .ab-prod-t { color: var(--fg-2); font-size: 16px; line-height: 1.5; }
+.v12 .ab-prod-s { margin-top: auto; padding-top: 6px; font-size: 14px; color: var(--fg-3); }
+.v12 .ab-mail { display: flex; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 760px) { .v12 .ab-products { grid-template-columns: minmax(0, 1fr); } }
+/* the five layers on the About page: the home's small chip row (css/dark.css, not loaded here), in the V12 finish */
+.v12 .ab-stack .x-stack-l { margin: 0 0 12px; font: 400 17px/1.5 var(--sans); color: var(--fg-2); max-width: 36em; }
+.v12 .ab-stack .x-stack-row { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.v12 .ab-stack .x-stack-row li { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; padding: 0 15px; margin: 0;
+  border: 1.5px dashed rgba(255, 255, 255, .45); border-radius: 0; font: 600 15px/1 var(--sans); color: rgba(255, 255, 255, .66); }
+.v12 .ab-stack .x-stack-row li.is-lit { border: 1.5px solid var(--acc); color: #fff; background: rgba(var(--acc-rgb), .14); box-shadow: none; }
+.v12 .ab-stack .x-stack-row li.is-lit span { font: 700 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--on-acc); background: var(--acc); padding: 5px 8px; border-radius: 0; }
+.v12 .ab-stack .x-stack-k { margin: 10px 0 0; font: 400 14px/1.4 var(--sans); color: var(--fg-2); }
+
+/* the depth model download buttons (gen:model-dl; shown only after the launch switch) */
+.v12 .dm-dl { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+/* site build: the pictures are recoloured to the accent already (tools/make_site_v12.py), so no hue turn */
+:root, :root[data-acc] { --still-rot: 0deg !important; --still-sat: 1 !important; }
+/* the v4 header on the other pages, in the V11 finish */
+.v12 .v4-head { background: #000; border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.v12 .v4-wordmark { font-family: var(--display); font-weight: 600; letter-spacing: -.01em; }
+.v12 .v4-wordmark i { font-weight: 400; }
+.v12 .v4-door { border-radius: 0; box-shadow: none; }
+.v12 .xp-dock, .v12 .xp-auto, .v12 .xp-auto-ic, .v12 .xp-dock .xp-steps .xp-key, .v12 .xp-speed button { border-radius: 0 !important; }
+.v12 .xp-auto { box-shadow: 0 0 0 1px var(--acc); }
+/* V11: square buttons and chips on every page; the serif wordmark (Robotics in italic), no ring */
+.v12 .btn, .v12 .chip, .v12 .v4-chip, .v12 .v4-tag, .v12 .v4-door { border-radius: 0 !important; }
+.v12 .wordmark { font: 600 21px/1 var(--display); gap: .28em; letter-spacing: -.01em; }
+.v12 .wordmark::before { display: none; }
+.v12 .wordmark i { font-style: italic; font-weight: 400; color: var(--fg); }

@@ -1,7 +1,11 @@
+// site v12: ember literals read the accent token (tools/make_site_v12.py)
+const __acc = () => (getComputedStyle(document.documentElement).getPropertyValue('--path').trim() || '#6fc7b0');
+const __accRgb = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rgb').trim() || '111, 199, 176');
+const __accRim = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rim').trim() || '#e3f4ee');
 // The live minimap: the chapter's route from above (data/routes.json), the stretch the scroll rides in ion, and the camera
 // dot with its heading, moving in step with the 3-D view (or the poster in 2-D mode). Plain 2-D canvas; the static route is
 // drawn once per chapter into a cached layer, so a frame costs one drawImage plus a short path.
-const ION = '#6cc9ff';
+const ION = __acc();
 
 export class Minimap {
   constructor(canvas, scaleEl) {
@@ -62,7 +66,7 @@ export class Minimap {
     g.strokeStyle = 'rgba(255,255,255,.34)'; g.lineWidth = 1.4;
     this._path(g, 0, this.track.n - 1); g.stroke();
     const [a, b] = this._range(this.seg[0], this.seg[1]);
-    g.strokeStyle = 'rgba(108,201,255,.42)'; g.lineWidth = 3;
+    g.strokeStyle = `rgba(${__accRgb()}, .42)`; g.lineWidth = 3;
     this._path(g, a, b); g.stroke();
     // a scale bar on the 1-2-5 ladder, about a fifth of the width
     if (this.scaleEl) {
@@ -94,7 +98,7 @@ export class Minimap {
     const [x, y] = this.T(this.xy[0], this.xy[1]);
     const h = -this.xy[2] - yaw;  // screen y is flipped; a look to the left (positive yaw) turns the fan left
     // heading wedge (a field-of-view fan), then the dot
-    g.fillStyle = 'rgba(108,201,255,.28)';
+    g.fillStyle = `rgba(${__accRgb()}, .28)`;
     g.beginPath(); g.moveTo(x, y); g.arc(x, y, 16, h - 0.42, h + 0.42); g.closePath(); g.fill();
     g.fillStyle = '#000'; g.beginPath(); g.arc(x, y, 5.5, 0, 7); g.fill();
     g.fillStyle = ION; g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill();
