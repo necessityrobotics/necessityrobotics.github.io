@@ -1,0 +1,39 @@
+/* V12 accent options on black (lead, 2026-11-13). Tokens per <html data-acc>, set by the head script before the first
+   paint. :root[data-acc] wins over the :root tokens of c.css / a.css by specificity, so the load order does not matter.
+   --acc       the accent (the camera's path, the one main button, "works today", the AI tag)
+   --acc-rgb   the same as r, g, b (for rgba(var(--acc-rgb), a))
+   --on-acc    text on an accent button
+   --acc-text  the accent as text on black
+   --acc-rim   a light tint (the path's rim, the metre marks) */
+:root, :root[data-acc="verdigris"] { --acc: #6fc7b0; --acc-rgb: 111, 199, 176; --on-acc: #04201a; --acc-text: #6fc7b0; --acc-rim: #e3f4ee; --still-rot: 147deg; --still-sat: .62; }
+:root[data-acc="brass"] { --acc: #c9a86a; --acc-rgb: 201, 168, 106; --on-acc: #1d1505; --acc-text: #d4b77d; --acc-rim: #f3e9d4; --still-rot: 21deg; --still-sat: .6; }
+:root[data-acc="bone"]  { --acc: #e8e0cf; --acc-rgb: 232, 224, 207; --on-acc: #1a1712; --acc-text: #e8e0cf; --acc-rim: #f7f3ea; --still-rot: 23deg; --still-sat: .15; }
+:root[data-acc="sage"]  { --acc: #a7bb98; --acc-rgb: 167, 187, 152; --on-acc: #121a0e; --acc-text: #b2c4a4; --acc-rim: #e9efe4; --still-rot: 76deg; --still-sat: .3; }
+:root[data-acc="lilac"] { --acc: #b9a6dc; --acc-rgb: 185, 166, 220; --on-acc: #170f26; --acc-text: #c4b4e3; --acc-rim: #efe9f8; --still-rot: 243deg; --still-sat: .4; }
+:root[data-acc="clay"]  { --acc: #c98d6f; --acc-rgb: 201, 141, 111; --on-acc: #22100a; --acc-text: #d49c80; --acc-rim: #f4e4dc; --still-rot: 2deg; --still-sat: .6; }
+/* the owner's trio (2026-11-13: "combine 3, bone sage, lilac"): one job per colour.
+   Bone = the main action and "works today"; Sage = the camera's path (3-D line, route drawings, ground lights, the line
+   in the pictures); Lilac = everything AI. Single accents set --path and --ai to the accent itself (below). */
+:root[data-acc="trio"]  { --acc: #e8e0cf; --acc-rgb: 232, 224, 207; --on-acc: #1a1712; --acc-text: #ece5d6; --acc-rim: #f7f3ea;
+  --path: #a7bb98; --path-rgb: 167, 187, 152; --path-rim: #e9efe4; --ai: #b9a6dc; --ai-rgb: 185, 166, 220; --on-ai: #170f26;
+  --still-rot: 76deg; --still-sat: .3; }
+/* the path and AI roles follow the single accent unless the trio sets them */
+:root:not([data-acc="trio"]) { --path: var(--acc); --path-rgb: var(--acc-rgb); --path-rim: var(--acc-rim); --ai: var(--acc); --ai-rgb: var(--acc-rgb); --on-ai: var(--on-acc); }
+
+/* the mounted place's own marks, in the accent (they were Verdigris literals) */
+.pl-ring { background: radial-gradient(circle, #fff 0 10%, rgba(var(--path-rgb), .95) 13%, rgba(var(--path-rgb), .5) 24%, rgba(var(--path-rgb), .14) 40%, rgba(var(--path-rgb), 0) 62%) !important; }
+.pl-step.is-near .pl-ring { background: radial-gradient(ellipse 60% 70% at 50% 46%, rgba(var(--path-rgb), .32), rgba(var(--path-rgb), 0) 72%) !important; }
+.pl-pick i { background: rgba(var(--path-rgb), .35) !important; }
+
+/* the review bar (prototype only) */
+.acc-bar { position: fixed; z-index: 80; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+  background: rgba(0, 0, 0, .86); border: 1px solid rgba(255, 255, 255, .22); font: 500 10.5px/1 var(--mono, ui-monospace, monospace);
+  letter-spacing: .14em; text-transform: uppercase; color: #c4c9cd; }
+.acc-bar-k { margin-right: 4px; }
+.acc-bar-n { margin-left: 6px; min-width: 7.5em; color: #f3f5f6; }
+.acc-sw { width: 20px; height: 20px; padding: 0; border: 1px solid rgba(255, 255, 255, .35); border-radius: 0; background: var(--sw); cursor: pointer; }
+.acc-sw[data-acc="trio"] { width: 30px; background: linear-gradient(90deg, #e8e0cf 0 33.3%, #a7bb98 33.3% 66.6%, #b9a6dc 66.6%); }
+.acc-sw[aria-pressed="true"] { outline: 2px solid #fff; outline-offset: 2px; }
+.acc-sw:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.acc-bar .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) { .acc-bar { right: 8px; bottom: 8px; padding: 6px 8px; } .acc-bar-n { display: none; } }

@@ -3,52 +3,96 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- This page is served for ANY missing address, also one in a sub-folder (/old/page). <base> makes every relative
+       link, picture, style sheet and script of the shared fragments start at the site root. -->
+  <base href="/">
   <!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (site.css repeats it): without it the
        incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
   <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
-  <title>Not found · Necessity Robotics</title>
-  <meta name="description" content="This page is not on our map. Necessity Robotics is a robotics company in India building robots for the physical world.">
+  <title>Page not found · Necessity Robotics</title>
+  <meta name="description" content="This page does not exist. Necessity Robotics is a robotics company from India. Walk into a real place that our robot software rebuilt in 3-D.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="/css/site.css">
-  <link rel="stylesheet" href="/css/pages.css">
-  <script type="module" src="/js/site.js"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body class="page-fill">
-<a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="/" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="/xclean.html">xclean</a>
-      <a href="/results.html">Results</a>
-      <a href="/maps.html">Maps</a>
-      <a href="/paper.html">Paper</a>
-      <a href="/credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<body class="nf-page v12">
+<a class="skip" href="#main">Skip to the content</a>
+<!-- with <base>, "#main" would point at the home page: the skip link stays on this page -->
+<script>document.querySelector('a.skip').addEventListener('click', function (e) { e.preventDefault(); var m = document.getElementById('main'); if (m) { m.focus(); m.scrollIntoView(); } });</script>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research">Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
 
-<main id="main" tabindex="-1">
-  <header class="phead phead--poster" data-head-over>
-    <div class="phead-bg" aria-hidden="true"><img src="/img/maps/oak_164002.webp" alt="" width="1280" height="800" decoding="async" fetchpriority="high"></div>
+<main id="main" class="v4-top" tabindex="-1">
+  <section class="nf" aria-labelledby="nf-h">
     <div class="wrap">
-      <p class="eyebrow">404 · Off the map</p>
-      <h1>This page is not on our map.</h1>
+      <p class="eyebrow">Page not found</p>
+      <h1 id="nf-h">This page does not exist.</h1>
       <p class="lead">The link may be old, or the page may have moved.</p>
-      <div class="btns"><a class="btn btn--ion" href="/">Home <span class="arr" aria-hidden="true">→</span></a><a class="btn" href="/viewer.html?map=oak_164002&amp;cam=pov">Fly a 3-D map</a><a class="btn" href="/maps.html">Maps</a><a class="btn" href="/results.html">Results</a></div>
-      <p class="phead-cap"><b>Behind this text</b> Outdoor route (oak_164002), rendered from the map. Our own recording.</p>
+      <div class="btns"><a class="btn btn--ion btn--lg btn--wide" href="explore.html">Walk into a 3-D place <span class="arr" aria-hidden="true">&rarr;</span></a><a class="btn btn--lg btn--wide" href="./">Go to the home page</a></div>
+      <div class="nf-row">
+        <h2 class="nf-row-h">Or pick a place and walk in</h2>
+        <!-- gen:placerow -->
+        <ul class="v4-placerow">
+          <li><a class="v4-placerow-item" href="explore.html?map=oak_161206" data-place="oak_161206" aria-label="A park path under trees. Walk in."><img src="img/places/oak_161206.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Park path</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=oak_161834" data-place="oak_161834" aria-label="A street in India. Walk in."><img src="img/places/oak_161834.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Street</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=oak_164424" data-place="oak_164424" aria-label="A lane under trees. Walk in."><img src="img/places/oak_164424.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Lane</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=oak_164002" data-place="oak_164002" aria-label="A long straight road. Walk in."><img src="img/places/oak_164002.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Straight road</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=oak_160543" data-place="oak_160543" aria-label="A shaded park walk. Walk in."><img src="img/places/oak_160543.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Park walk</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=rosario_01" data-place="rosario_01" aria-label="A soybean field in Argentina. Walk in."><img src="img/places/rosario_01.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Soybean field</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=rosario_03" data-place="rosario_03" aria-label="Soybean rows beside a dry field. Walk in."><img src="img/places/rosario_03.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Soybean rows</span></a></li>
+          <li><a class="v4-placerow-item" href="explore.html?map=rosario_04" data-place="rosario_04" aria-label="Long green soybean rows. Walk in."><img src="img/places/rosario_04.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Green rows</span></a></li>
+        </ul>
+        <p class="v4-credit v4-placerow-credit">Soybean field, Soybean rows and Green rows. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+        <!-- /gen:placerow -->
+      </div>
     </div>
-  </header>
+  </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="/credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

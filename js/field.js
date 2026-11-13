@@ -1,3 +1,7 @@
+// site v12: ember literals read the accent token (tools/make_site_v12.py)
+const __acc = () => (getComputedStyle(document.documentElement).getPropertyValue('--path').trim() || '#6fc7b0');
+const __accRgb = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rgb').trim() || '111, 199, 176');
+const __accRim = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rim').trim() || '#e3f4ee');
 // The "stars": a sparse sample of a map's points (stereo depth of xclean's keyframes, placed with xclean's live poses;
 // data/starfield.json, built by tools/build_site_data.py)
 // drawn on a 2-D canvas in perspective, slowly orbiting, with xclean's live trajectory drawing in as one thin ion line.
@@ -75,7 +79,7 @@ export class PointField {
     const T = this.T, nt = T.length / 3;
     if (this.trail && nt > 1) {
       const upto = REDUCED ? nt : Math.min(nt, Math.floor(nt * Math.min(1, el / 14)));
-      ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(108,201,255,.95)'; ctx.lineJoin = 'round';
+      ctx.lineWidth = 1.6; ctx.strokeStyle = `rgba(${__accRgb()}, .95)`; ctx.lineJoin = 'round';
       ctx.beginPath();
       let head = null;
       for (let i = 0; i < upto; i++) {
@@ -90,7 +94,7 @@ export class PointField {
       ctx.stroke();
       if (head && upto < nt) {
         ctx.fillStyle = '#bfe6ff'; ctx.beginPath(); ctx.arc(head[0], head[1], 3, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = 'rgba(108,201,255,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(head[0], head[1], 9, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = `rgba(${__accRgb()}, .35)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(head[0], head[1], 9, 0, Math.PI * 2); ctx.stroke();
       }
       this.onFrame?.(upto / nt);
     }

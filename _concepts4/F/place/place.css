@@ -1,0 +1,83 @@
+/* V12 concept A (LIFT-OFF): a COPY of site/js/place/place.css, re-skinned to V11 (Verdigris accent, square labels, no
+   glows), plus the marks of this concept: metre labels (.a-mlab), the visitor's spot (.a-you), the ring on the ground
+   (.a-ring). The original is unchanged. Load it with data-pl-css so mount.js does not add the original. */
+
+.pl { position: relative; overflow: hidden; background: #000; isolation: isolate; }
+.pl-still { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none;
+  user-select: none; -webkit-user-select: none; opacity: 1; transition: opacity .2s linear; }
+.pl[data-state="live"] .pl-still { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .pl-still { transition: none; } }
+.pl-canvas { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; max-width: none; display: block; outline-offset: -3px;
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.pl[data-mode="full"] .pl-canvas { touch-action: none; }
+.pl[data-mode="frame"] .pl-canvas, .pl[data-mode="lift"] .pl-canvas { touch-action: pan-y pinch-zoom; }
+.pl[data-state="live"] .pl-canvas { cursor: grab; }
+.pl[data-state="live"][data-dragging] .pl-canvas { cursor: grabbing; }
+.pl[data-state="live"] .pl-canvas[data-over="path"], .pl[data-mode="frame"] .pl-canvas { cursor: pointer; }
+.pl[data-mode="lift"] .pl-canvas { cursor: default; }
+.pl[data-mode="lift"] .pl-canvas[data-over="path"] { cursor: pointer; }
+
+/* ------------------------------------------------------------ the layer over the picture */
+.pl-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+.pl-layer[data-live="0"], .pl:not([data-state="live"]) .pl-layer { display: none; }      /* concept A: the bare renders keep the marks */
+.pl-step { position: absolute; left: 0; top: 0; width: 48px; height: 48px; margin: -24px 0 0 -24px; padding: 0; border: 0; background: none;
+  pointer-events: auto; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; border-radius: 50%; }
+.pl-step[hidden] { display: none; }
+/* ground lights: a small bead on the ground; the nearest one is a double arrow painted on the ground */
+.pl-ring { position: absolute; left: 50%; top: 50%; width: 100px; height: 100px; margin: -50px 0 0 -50px; border-radius: 50%; box-sizing: border-box;
+  background: radial-gradient(circle, #fff 0 10%, rgba(214, 243, 235, .95) 14%, rgba(111, 199, 176, .5) 26%, rgba(111, 199, 176, .12) 42%, rgba(111, 199, 176, 0) 60%);
+  transition: opacity .15s, filter .15s; will-change: transform; }
+.pl-step:hover .pl-ring, .pl-step:focus-visible .pl-ring { filter: brightness(1.25); }
+.pl-step.is-near .pl-ring { background: radial-gradient(ellipse 60% 70% at 50% 46%, rgba(111, 199, 176, .32), rgba(111, 199, 176, 0) 72%); }
+.pl-step:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.pl-chev { display: none; position: absolute; inset: 0; }
+.pl-step.is-near .pl-chev { display: block; }
+.pl-chev::before, .pl-chev::after { content: ""; position: absolute; left: 50%; width: 40px; height: 40px; margin-left: -20px; box-sizing: border-box;
+  border: solid #fff; border-width: 8px 0 0 8px; border-radius: 1px; transform: rotate(45deg); filter: drop-shadow(0 0 2px rgba(0, 10, 8, .9)); }
+.pl-chev::before { top: 18px; }
+.pl-chev::after { top: 46px; opacity: .5; }
+.pl-step:hover .pl-chev::after, .pl-step:focus-visible .pl-chev::after { opacity: .9; }
+.pl-step-label { position: absolute; left: 0; top: 0; padding: 7px 12px; border-radius: 0; background: rgba(0, 0, 0, .88); border: 1px solid rgba(255, 255, 255, .4);
+  color: #f3f5f6; font: 600 14px/18px var(--sans); white-space: nowrap; pointer-events: none; }
+.pl-step-label::after { content: " \2192"; color: var(--acc, #6fc7b0); }
+.pl-step-label.is-rhs::after { content: none; }
+.pl-step-label.is-rhs::before { content: "\2190  "; color: var(--acc, #6fc7b0); }
+.pl-step-label.is-top::after { content: " \2193"; }
+.pl-step-label[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .pl-layer[data-live="1"] .pl-step.is-near .pl-chev::after { animation: pl-pulse 1.1s ease-out 3; }       /* three pulses, then still */
+}
+@keyframes pl-pulse { 0% { opacity: .15; transform: rotate(45deg) translate(6px, 6px); } 60% { opacity: .9; } 100% { opacity: .45; transform: rotate(45deg); } }
+
+/* a mouse over the path: a ring on the point + one plain line */
+.pl-pick { position: absolute; left: 0; top: 0; pointer-events: none; }
+.pl-pick[hidden] { display: none; }
+.pl-pick i { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #fff; background: rgba(111, 199, 176, .35); }
+.pl-pick span { position: absolute; left: 18px; top: -40px; padding: 6px 11px; border-radius: 0; background: #000; border: 1px solid rgba(255, 255, 255, .4);
+  color: #f3f5f6; font: 600 13.5px/1.2 var(--sans); white-space: nowrap; }
+.pl-pick span::after { content: " \2192"; color: var(--acc, #6fc7b0); }
+
+/* the engine's own "You are here" pin is replaced by the cone and .a-you */
+.pl-you { display: none !important; }
+
+/* ------------------------------------------------------------ concept A */
+/* metre labels on the path (from above): small spaced capitals, like the scale of a drawing */
+.a-mlab { position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; margin: -9px 0 0 10px;
+  padding: 3px 6px 2px; background: rgba(0, 0, 0, .78); border-left: 1px solid var(--acc, #6fc7b0);
+  font: 500 10.5px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #e8ecee; }
+.a-mlab[hidden] { display: none; }
+.a-mlab--end { color: #9aa1a7; border-left-color: #9aa1a7; }
+/* the visitor's spot: a label above the cone */
+.a-you { position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; transform-origin: 0 0;
+  margin: -46px 0 0 -1px; padding: 5px 9px 5px; background: rgba(0, 0, 0, .86); border: 1px solid rgba(255, 255, 255, .45);
+  font: italic 400 15px/1.2 var(--serif, Georgia, serif); color: #f3f5f6; }
+.a-you::after { content: ""; position: absolute; left: 0; top: 100%; width: 1px; height: 14px; background: rgba(255, 255, 255, .6); }
+.a-you[hidden] { display: none; }
+/* the ring on the ground under the mouse, with the distance from the visitor */
+.a-ring { position: absolute; left: 0; top: 0; pointer-events: none; }
+.a-ring[hidden] { display: none; }
+.a-ring i { position: absolute; left: -50px; top: -50px; width: 100px; height: 100px; border-radius: 50%; box-sizing: border-box;
+  border: 6px solid rgba(255, 255, 255, .9); transform-origin: 50% 50%; }
+.a-ring span { position: absolute; left: 14px; top: -36px; padding: 4px 8px; background: rgba(0, 0, 0, .86); border: 1px solid rgba(255, 255, 255, .4);
+  font: 500 12.5px/1.2 var(--mono); letter-spacing: .06em; color: #f3f5f6; white-space: nowrap; }
+@media (max-width: 600px) { .pl-step-label { padding: 5px 10px; font-size: 13px; line-height: 16px; } }

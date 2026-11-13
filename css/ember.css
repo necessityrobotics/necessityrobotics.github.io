@@ -1,0 +1,60 @@
+/* Site v4.2 "Ember" (lead, 2026-11-12). Black, white, and ONE ember light.
+   From the Love, Death & Robots study: two light sources only (a warm ember, a cool white); one colour carries the
+   story; hard edges; large empty black; film grain; nothing copied from the series.
+   The ember is used for three things only: the camera's path, the one main action, and "works today". */
+:root { --ion: #ff6a2b; --ion-dim: rgba(255, 106, 43, .16); --v4-ion-hi: #ffa27a; --r: 4px; }
+
+/* film grain: flat black never bands, and every picture gets the same skin */
+body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .055; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* hard edges */
+.btn, .v4-door { border-radius: 4px; }
+.v4-card, .v4-card-pic, .h4-beat-pic, .d-cap, .h4-ready, .h4-building, .h4-engdoor, .v4-note, .d-hint, .v4-chip { border-radius: 4px; }
+.v4-card-pic { border-radius: 3px 3px 0 0; }
+.x-stack-row li { border-radius: 4px; }
+.x-stack-row li.is-lit span { border-radius: 2px; }
+
+/* the ember is rare: labels, links, borders and glows are white */
+.d-eyebrow, .eyebrow, .v4-eyebrow { color: var(--fg-2); }
+.d-eyebrow::before, .eyebrow::before { background: var(--fg-2); }
+.d-h1 .d-ion, .d-ion { color: #fff; }
+.d-h1 .d-ion { color: var(--fg-2); }
+.d-cap .d-cap-k { color: var(--fg-3); }
+.d-hint { border-color: rgba(255, 255, 255, .45); color: var(--fg-2); animation: none; }
+.d-hint b { color: #fff; }
+.d-cue span { color: #fff; }
+.d-rail li { background: rgba(255, 255, 255, .22); }
+.d-stage[data-stop="0"] .d-rail li:nth-child(1), .d-stage[data-stop="1"] .d-rail li:nth-child(2),
+.d-stage[data-stop="2"] .d-rail li:nth-child(3), .d-stage[data-stop="3"] .d-rail li:nth-child(4) { background: #fff; box-shadow: none; }
+.d-ph:hover, .d-ph:focus-visible { border-color: #fff; box-shadow: 0 0 0 2px #fff, 0 0 40px rgba(255, 255, 255, .35); }
+.x-light { background: radial-gradient(closest-side, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015) 64%, #0000); }
+.v4-card { border-color: rgba(255, 255, 255, .2); }
+.v4-card:hover, .v4-card:focus-within { border-color: #fff; box-shadow: 0 0 0 1px #fff, 0 18px 60px rgba(0, 0, 0, .7), 0 0 50px rgba(255, 255, 255, .14); }
+.v4-card::after { background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .12), #0000 62%); }
+.v4-card-main:hover .v4-chip--go, .v4-card-main:focus-visible .v4-chip--go { background: #fff; border-color: #fff; color: #000; }
+.v4-route-label { color: var(--fg-2); }
+.v4-route:hover .v4-route-label, .v4-route:focus-visible .v4-route-label { color: #fff; }
+.h4-beat-door:hover, .h4-beat-door:focus-visible { border-color: #fff; box-shadow: 0 0 0 1px #fff, 0 0 40px rgba(255, 255, 255, .16); }
+a.more, .h4-status-go { color: #fff; }
+.d-row--lit, .d-tile--lit { box-shadow: 0 0 0 1px var(--ion), 0 0 34px rgba(255, 106, 43, .3); }
+.btn--ion { color: #140600; }
+.btn--ion:hover, .btn--ion:focus-visible { box-shadow: 0 0 0 1px var(--ion), 0 0 30px rgba(255, 106, 43, .5); }
+/* the name: white and grey, no tint */
+.d-name-2 { background: none; -webkit-text-fill-color: currentColor; color: rgba(255, 255, 255, .62); font-weight: 300; }
+/* the phone-map picture keeps the dot that everybody knows: blue */
+.h4-beat-pic--phone { --ion: #4aa8ff; }
+
+/* one house grade for every place picture and the live 3-D view: a little more contrast, cool shadows */
+.pl-canvas, .pl-still, .d-place, .v4-card-pic img, .d-tile-view img { filter: contrast(1.08) saturate(.9); }
+.v4-card-pic img { filter: brightness(.86) contrast(1.1) saturate(.85); }
+.v4-card:hover .v4-card-pic img, .v4-card:focus-within .v4-card-pic img { filter: contrast(1.08) saturate(.95); }
+
+/* the 3-D view: white chrome, the ember only on the ride button and the path */
+.xp-speed button[aria-pressed="true"] { border-color: #fff; background: rgba(255, 255, 255, .12); }
+.xp-speed button:hover, .xp-dock .xp-steps .xp-key:hover { border-color: #fff; }
+.xp-auto { box-shadow: 0 0 0 1px var(--ion), 0 0 30px rgba(255, 106, 43, .4); border-radius: 6px; }
+.xp-auto-ic { border-radius: 4px; }
+.xp-dock { border-radius: 8px; }
+.xp-dock .xp-steps .xp-key, .xp-speed button { border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { body::after { display: none; } }

@@ -2,8 +2,10 @@
 import { $, esc, getJSON, keepScroll, restoreScroll } from './site.js';
 import { CODE_PUBLIC, LINKS } from './config.js';
 import { tallyHTML } from './tally.js';
+import { loadPlaces } from './v4/common.js';
 
 keepScroll();   // back/forward and reload land where the visitor left, once the page is built (site.js)
+const placesP = loadPlaces().catch(() => null);   // v4: the public 3-D places (their routes get a "Walk in (3-D)" link)
 const b = await getJSON('data/board.json');
 const h = b.headline;
 const set = (sel, v) => document.querySelectorAll(sel).forEach(e => { e.textContent = v; });
@@ -89,6 +91,17 @@ const fams = [...new Set(b.rows.map(r => r.family))].sort();
 $('.js-fam').insertAdjacentHTML('beforeend', fams.map(f => `<option>${esc(f)}</option>`).join(''));
 // a back/forward visit gets its filter controls back from the browser: the table follows what they show
 const S = { set: 'unseen', fam: $('.js-fam').value, ver: $('.js-ver').value, q: $('.js-q').value.trim() };
+// v4: board route -> its public 3-D place (data/places.json + the board_route of data/maps.json); empty when they did not load
+const WALK = {};
+const placesIn = await Promise.race([placesP, new Promise(r => setTimeout(() => r(null), 3000))]);   // the table never waits long for the links
+(placesIn?.places || []).forEach(p => { WALK[p.map.board_route || p.id] = p; });
+const walkN = b.rows.filter(r => WALK[r.route]).length;
+if (walkN) {
+  const wb = $('.js-set button[data-set="walk"]');
+  if (wb) { wb.textContent = `3-D places ${walkN}`; wb.hidden = false; }
+  const wn = $('.js-walk-note');
+  if (wn) wn.hidden = false;
+}
 const f3 = x => (x == null ? '—' : x < 10 ? x.toFixed(3) : x.toFixed(2));
 function ate(a) {
   if (!a) return '—';
@@ -100,19 +113,23 @@ const OL = { win: ['v-win', 'xclean better'], tie: ['v-tie', 'tie'], loss: ['v-l
 function row(r) {
   const v = r.vs_orb3 ? VL[r.vs_orb3] : null, o = r.vs_okvis2x ? OL[r.vs_okvis2x] : null;
   const flags = [r.crash_or_hang ? '<span class="flag">crash/hang</span>' : '', r.unsupported === 'fail' ? '<span class="flag">unsupported</span>' : '', r.unsupported === 'pending' ? '<span class="flag">pending</span>' : ''].join('');
-  return `<tr id="r-${esc(r.route)}"><td><span class="mono">${esc(r.route)}</span><br><span class="rng">${esc(setName[r.group])}</span></td><td>${esc(r.family)}<br><span class="rng">${esc(r.platform)}</span></td>
+  const w = WALK[r.route];
+  const walk = w ? `<br><a class="walk3d" href="explore.html?map=${encodeURIComponent(w.id)}">Walk in (3-D)<span class="sr">: ${esc(w.name)}</span></a>` : '';
+  return `<tr id="r-${esc(r.route)}"><td><span class="mono">${esc(r.route)}</span><br><span class="rng">${esc(setName[r.group])}</span>${walk}</td><td>${esc(r.family)}<br><span class="rng">${esc(r.platform)}</span></td>
     <td class="num">${r.gt ? ate(r.ours) : 'no ground truth'}</td><td class="num">${r.gt ? ate(r.orb3) + (r.orb3?.status ? `<br><span class="flag">${esc(ST(r.orb3.status))}</span>` : '') + (r.orb3?.stereo_only ? `<br><span class="flag">stereo-only in ${r.orb3.stereo_only} of ${r.orb3.draws} runs: IMU start-up crashed</span>` : '') : '—'}</td>
     <td class="${v ? v[0] : ''}">${v ? v[1] : '—'}${r.vs_orb3 === 'win_forfeit' ? `<br><span class="rng">ORB-SLAM3 ${esc(ST(r.orb3.status))}</span>` : ''}</td>
     <td class="${o ? o[0] : ''}">${o ? `${o[1]}<br><span class="rng">${r.okvis2x_ratio < 0.01 ? `OKVIS2-X diverged: ATE ${r.okvis2x_ate >= 1e4 ? r.okvis2x_ate.toExponential(1) : r.okvis2x_ate?.toFixed(0)} m` : `ratio ${r.okvis2x_ratio?.toFixed(2)}`}${r.okvis2x_ours_frame != null && r.okvis2x_ate != null ? `<br>frame-level: xclean ${r.okvis2x_ours_frame < 10 ? r.okvis2x_ours_frame.toFixed(3) : r.okvis2x_ours_frame.toFixed(2)} m, OKVIS2-X ${r.okvis2x_ate >= 1e4 ? r.okvis2x_ate.toExponential(1) : r.okvis2x_ate < 10 ? r.okvis2x_ate.toFixed(3) : r.okvis2x_ate.toFixed(2)} m` : ''}</span>` : '—'}</td>
     <td class="num">${r.lat_ms_p50?.toFixed(1) ?? '—'}<br><span class="rng">p95 ${r.lat_ms_p95?.toFixed(1) ?? '—'}</span></td><td class="num">${r.lost_runs} of ${r.runs}</td><td>${flags || '—'}</td></tr>`;
 }
 function render() {
-  const rows = b.rows.filter(r => (S.set === 'all' || (S.set === 'unseen' ? G[r.group].unseen : S.set === 'oak' ? r.group === 'oak' : !G[r.group].unseen && r.group !== 'oak'))
+  const rows = b.rows.filter(r => (S.set === 'all' || (S.set === 'walk' ? !!WALK[r.route] : S.set === 'unseen' ? G[r.group].unseen : S.set === 'oak' ? r.group === 'oak' : !G[r.group].unseen && r.group !== 'oak'))
     && (!S.fam || r.family === S.fam) && (!S.ver || r.vs_orb3 === S.ver || (S.ver === 'win' && r.vs_orb3 === 'win_forfeit')) && (!S.q || r.route.includes(S.q.toLowerCase())));
   $('.js-rows').innerHTML = rows.map(row).join('') || '<tr><td colspan="9">No route matches these filters.</td></tr>';
   const c = { win: 0, tie: 0, loss: 0, f: 0 };
   rows.forEach(r => { const v = r.vs_orb3; if (!v) return; if (v === 'win' || v === 'win_forfeit') c.win++; else if (v === 'tie' || v === 'both_lost') c.tie++; else c.loss++; if (v === 'win_forfeit') c.f++; });
-  $('.js-count').textContent = `${rows.length} routes shown · vs ORB-SLAM3: ${c.win} xclean better${c.f ? ` (${c.f} by forfeit)` : ''}, ${c.tie} tie, ${c.loss} ORB-SLAM3 better`;
+  // v4: the "3-D places" set is the list of published 3-D places, not a result set: it gets no win / loss tally of its own
+  $('.js-count').textContent = S.set === 'walk' ? `${rows.length} routes shown · the routes that have a public 3-D place`
+    : `${rows.length} routes shown · vs ORB-SLAM3: ${c.win} xclean better${c.f ? ` (${c.f} by forfeit)` : ''}, ${c.tie} tie, ${c.loss} ORB-SLAM3 better`;
 }
 document.querySelectorAll('.js-set button').forEach(btn => btn.addEventListener('click', () => {
   S.set = btn.dataset.set;

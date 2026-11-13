@@ -1,0 +1,198 @@
+{
+ "released": true,
+ "links": {"code": "https://github.com/necessityrobotics/nrs-large", "weights": "https://huggingface.co/Pyassahu/nrs-large", "guide": "https://github.com/necessityrobotics/nrs-large/blob/main/ANY_STEREO_RIG.md"},
+ "facts": {
+  "train_pairs": 155769,
+  "steps": 200000,
+  "gpu_hours": 92.0,
+  "iters": 32,
+  "licence": "Apache-2.0",
+  "version": "0.1.0",
+  "shortfall_pairs": 7627,
+  "booster_tv": 64,
+  "params": 57378681,
+  "s_per_view": 0.28
+ },
+ "params": 57378681,
+ "params_m": 57.4,
+ "bench": [
+  {
+   "key": "midd_h",
+   "name": "Middlebury (half size)",
+   "kind": "indoor scenes",
+   "metric": "bad-2",
+   "px": 2,
+   "ours": 3.91,
+   "published": 3.76,
+   "raft": 8.67,
+   "bar": 5.82
+  },
+  {
+   "key": "midd21",
+   "name": "Middlebury 2021",
+   "kind": "indoor scenes",
+   "metric": "bad-2",
+   "px": 2,
+   "ours": 8.44,
+   "published": 6.72,
+   "raft": 10.26,
+   "bar": null
+  },
+  {
+   "key": "eth3d",
+   "name": "ETH3D",
+   "kind": "indoor and outdoor",
+   "metric": "bad-1",
+   "px": 1,
+   "ours": 2.04,
+   "published": 2.5,
+   "raft": 2.61,
+   "bar": 3.37
+  },
+  {
+   "key": "kitti12",
+   "name": "KITTI 2012",
+   "kind": "city streets",
+   "metric": "bad-3",
+   "px": 3,
+   "ours": 3.38,
+   "published": 3.3,
+   "raft": 4.76,
+   "bar": null
+  },
+  {
+   "key": "kitti15",
+   "name": "KITTI 2015",
+   "kind": "city streets",
+   "metric": "bad-3",
+   "px": 3,
+   "ours": 4.59,
+   "published": 4.54,
+   "raft": 5.48,
+   "bar": 5.53
+  },
+  {
+   "key": "booster_q",
+   "name": "Booster (quarter size)",
+   "kind": "glass, mirrors and screens",
+   "metric": "bad-2",
+   "px": 2,
+   "ours": 9.22,
+   "published": 9.09,
+   "raft": 17.75,
+   "bar": 11.9
+  }
+ ],
+ "bench_within": 4,
+ "bench_n": 6,
+ "gate": "PASS",
+ "gate_ok": 4,
+ "gate_n": 4,
+ "s_per_view": 0.28,
+ "s_per_view_in_builds": [
+  0.24,
+  0.25,
+  0.27,
+  0.44,
+  0.46,
+  0.47,
+  0.54,
+  0.72
+ ],
+ "refine_skipped_share": [
+  0.47,
+  0.83
+ ],
+ "sgm_ms_per_view": 3.0,
+ "maps": {
+  "oak_161834": {
+   "old_black": 17.08,
+   "new_black": 17.5,
+   "old_sky": 19.9,
+   "new_sky": 20.08,
+   "old_ssim": 0.688,
+   "new_ssim": 0.688,
+   "n_heldout": 188,
+   "splats": 1999998
+  },
+  "oak_160543": {
+   "old_black": 17.64,
+   "new_black": 17.76,
+   "old_sky": 17.91,
+   "new_sky": 17.94,
+   "old_ssim": 0.706,
+   "new_ssim": 0.702,
+   "n_heldout": 264,
+   "splats": 2706608
+  },
+  "oak_164002": {
+   "old_black": 18.04,
+   "new_black": 17.05,
+   "old_sky": 19.52,
+   "new_sky": 19.62,
+   "old_ssim": 0.705,
+   "new_ssim": 0.701,
+   "n_heldout": 112,
+   "splats": 1999997
+  },
+  "oak_164424": {
+   "old_black": 18.14,
+   "new_black": 17.99,
+   "old_sky": 20.41,
+   "new_sky": 20.11,
+   "old_ssim": 0.719,
+   "new_ssim": 0.707,
+   "n_heldout": 115,
+   "splats": 1999999
+  },
+  "oak_161206": {
+   "old_black": 19.26,
+   "new_black": 19.64,
+   "old_sky": 19.67,
+   "new_sky": 19.93,
+   "old_ssim": 0.74,
+   "new_ssim": 0.736,
+   "n_heldout": 203,
+   "splats": 2077956
+  },
+  "rosario_01": {
+   "old_black": 11.79,
+   "new_black": 10.45,
+   "old_sky": 21.28,
+   "new_sky": 20.78,
+   "old_ssim": 0.661,
+   "new_ssim": 0.648,
+   "n_heldout": 184,
+   "splats": 1999986
+  },
+  "rosario_03": {
+   "old_black": 7.17,
+   "new_black": 6.65,
+   "old_sky": 27.38,
+   "new_sky": 27.44,
+   "old_ssim": 0.881,
+   "new_ssim": 0.881,
+   "n_heldout": 66,
+   "splats": 1999994
+  },
+  "rosario_04": {
+   "old_black": 7.44,
+   "new_black": 7.17,
+   "old_sky": 27.35,
+   "new_sky": 27.39,
+   "old_ssim": 0.877,
+   "new_ssim": 0.876,
+   "n_heldout": 60,
+   "splats": 1999996
+  }
+ },
+ "maps_better": 3,
+ "maps_better_sky": 6,
+ "maps_n": 8,
+ "sources": {
+  "scores": "nrs/eval/runs/G_TEACH_w200000.json",
+  "raft": "nrs/eval/runs/p8_raft_public_i32.json",
+  "card": "nrs/release/package/github/nrs-large/MODEL_CARD.md",
+  "published": "WMG, arXiv 2504.16930v3, Table 2 (DLNR from scratch on WMGStereo-150k)"
+ }
+}

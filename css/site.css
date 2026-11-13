@@ -15,8 +15,8 @@
   --fg-2: #cdcdcd;        /* 13.2:1 */
   --fg-3: #a6a6a6;        /* 8.6:1, labels only */
   /* one accent: "ion" signal blue, for xclean, links and live states */
-  --ion: #6cc9ff;         /* 11.4:1 */
-  --ion-dim: rgba(108, 201, 255, .16);
+  --ion: #ff6a2b;         /* 11.4:1 */
+  --ion-dim: rgba(255, 106, 43, .16);
   /* data colours (results only, always with a text label) */
   --loss: #ffad7a;        /* the other system better: warm, hatched marks */
   --tie: #b0b0b0;
@@ -142,7 +142,7 @@ pre .c { color: var(--fg-3); }
 .btn--ion { background: var(--ion); border-color: var(--ion); color: var(--ink); }
 .btn--static { cursor: default; }
 .btn--static:hover { background: var(--ion); border-color: var(--ion); }
-.btn--ion:hover { background: #a6deff; border-color: #a6deff; color: var(--ink); }
+.btn--ion:hover { background: #ffa27a; border-color: #ffa27a; color: var(--ink); }
 .btn .arr { transition: transform .25s var(--ease); }
 .btn:hover .arr { transform: translateX(3px); }
 .btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
@@ -192,7 +192,7 @@ figcaption b { font: 600 13.5px/1 var(--mono); letter-spacing: .06em; text-trans
 .disclose li { margin: 0 0 .5em; max-width: var(--measure); }
 
 .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line-2); font: 500 13px/1 var(--mono); letter-spacing: .04em; color: var(--fg); white-space: nowrap; }
-.chip--ion { border-color: rgba(108,201,255,.6); color: var(--ion); }
+.chip--ion { border-color: rgba(255,106,43,.6); color: var(--ion); }
 .chip--warn { border-color: rgba(255,210,122,.6); color: var(--warn); }
 .chip--loss { border-color: rgba(255,173,122,.6); color: var(--loss); }
 

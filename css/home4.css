@@ -1,0 +1,313 @@
+/* Necessity Robotics v4, lane HOME: the home page (index.html).
+   Load order: css/site.css, css/v4.css, js/place/place.css, then this file.
+   Every colour is a token of site.css (black theme, one blue accent). The name line uses the two greys of the v3 name.
+   Nothing here moves by itself, except one short nudge of the hint mark when the 3-D place becomes live (R1); none with
+   reduced motion. Tap targets are 44 px or more. Phone first; three layouts of screen 1:
+     stacked  (under 1000 px wide)                      name, sentence, photos, arrow, frame, button
+     split    (1000 px or more, window under 850 px high) text and photos left, the frame right
+     tall     (1000 px or more, window 850 px or higher)  name and sentence on top, then photos | arrow | frame
+   The stacked layout has a short form for a phone window up to 800 px high (a phone with the browser's bars on screen):
+   shorter captions, the main button directly under the frame. Up to 720 px the sub-line is left out too.
+   In every layout the frame and the main button are on the first screen (tested: 1440x900, 1366x768, 1280x720,
+   1920x1080, 820x1180, 390x844, 393x727, 390x664, 360x640). */
+
+/* ============================================================ shared section parts */
+.h4-sec { padding: clamp(54px, 8vw, 112px) 0; border-top: 1px solid var(--line); }
+.h4-h2 { margin: 0; max-width: none; font-size: clamp(28px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.02em; }
+.h4-h2 span { display: inline-block; }                                   /* each sentence stays on one line when it fits */
+.h4-h2--big { font-size: clamp(35px, 5.8vw, 76px); line-height: 1.02; letter-spacing: -0.032em; }
+.h4-lead { margin: 14px 0 0; max-width: 46ch; font-size: clamp(18px, 1.55vw, 21px); line-height: 1.5; color: var(--fg); }
+.h4-head { margin-bottom: clamp(22px, 3vw, 36px); }
+@media (min-width: 900px) {
+  .h4-head { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 10fr); column-gap: clamp(28px, 5vw, 72px); align-items: end; }
+  .h4-head .h4-lead { margin-top: 0; }
+}
+/* the numbered mark of a step (1, 2, 3) */
+.h4-n { flex: none; display: inline-block; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--ion); color: var(--ion);
+  font: 700 14px/21px var(--sans); text-align: center; letter-spacing: 0; }
+
+/* ============================================================ SCREEN 1 */
+.h4-hero { padding: 8px 0 20px; }
+.h4-eyebrow { margin: 0 0 4px; font-size: 12px; gap: 9px; }
+.h4-eyebrow::before { width: 16px; }
+/* the company name as a display line (the H1 is the sentence under it) */
+.h4-name { margin: 0 0 6px; max-width: none; font: 700 clamp(31px, 10vw, 46px)/1 var(--display); letter-spacing: -0.04em; color: var(--fg); white-space: nowrap; }
+.h4-name i { font-style: normal; color: var(--fg-2); }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .h4-name i { color: transparent; background: linear-gradient(180deg, #f2f5fa 0%, #b9c6d8 100%); -webkit-background-clip: text; background-clip: text; }
+}
+.h4-h1 { margin: 0 0 7px; max-width: none; font-size: clamp(21px, 6.2vw, 34px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.h4-h1 em { font-style: normal; color: var(--ion); }
+.h4-sub { margin: 0 0 9px; max-width: 52ch; font-size: 16px; line-height: 1.4; color: var(--fg-2); }
+.h4-try { display: none; }
+
+/* the two captions: "1 A small camera took these photos" / "2 Our software built this 3-D place from them" */
+.h4-cap { display: flex; align-items: flex-start; gap: 9px; margin: 0 0 6px; max-width: none; }
+.h4-cap-t { min-width: 0; }
+.h4-cap b { display: block; font: 700 16.5px/1.25 var(--display); letter-spacing: -0.005em; color: var(--fg); }
+.h4-cap-s { display: block; margin-top: 1px; font-size: 14.5px; line-height: 1.35; color: var(--fg-2); }
+.h4-cap-s strong { color: var(--ion); font-weight: 700; }
+
+/* the camera's photos, set like prints (fragment hero-photos). Each one is a door. */
+.h4-photos { margin: 0 0 2px; }
+.h4-photos .v4-hero-photos { padding: 2px 3px 3px; }
+.h4-photos .v4-hero-photos li:nth-child(odd) { transform: rotate(-1.1deg); }
+.h4-photos .v4-hero-photos li:nth-child(even) { transform: rotate(.9deg); }
+.h4-photos .v4-hero-photos li:nth-child(3n) { transform: rotate(1.4deg); }
+.h4-photos .v4-photo { padding: 2px; }
+.h4-photos-note { display: none; margin: 10px 0 0; max-width: none; font-size: 14.5px; line-height: 1.4; color: var(--fg-2); }
+
+/* the arrow "our software": down on a narrow screen, to the right on a wide one */
+.h4-arrow { display: flex; align-items: center; gap: 7px; margin: 1px 0 3px 5px; color: var(--ion); font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.h4-arrow-dn { flex: none; width: 13px; height: 17px; }
+.h4-arrow-rt { display: none; }
+
+/* the frame: the picture of the 3-D place, then the live place (js/place/mount.js, mode "frame") */
+.h4-frame { width: 100%; aspect-ratio: 16 / 10; border: 1px solid var(--line-3); border-radius: 12px; background: #050505; transition: border-color .2s; }
+/* in every state but "live" the whole frame is one link to the 3-D view */
+.h4-door { position: absolute; inset: 0; z-index: 4; display: block; border-radius: 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.h4-door:focus-visible { outline-offset: -4px; border-radius: 11px; }
+.h4-frame[data-state="live"] .h4-door { display: none; }
+/* tags and the chip lie over the picture and take no pointer: top edge and bottom left. The bottom centre stays free
+   for the blue path, the nearest stepping circle and its label (ENGINE.md section 2). */
+.h4-tags { position: absolute; left: 8px; top: 8px; right: 8px; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.h4-chip { position: absolute; left: 8px; bottom: 8px; z-index: 5; margin: 0; max-width: calc(100% - 16px); pointer-events: none; }
+.h4-chip.v4-chip { padding: 5px 11px; font-size: 13.5px; line-height: 17px; }
+.h4-chip-ico { display: inline-block; margin-right: 7px; color: var(--ion); font-weight: 700; }
+.h4-chip.v4-chip--ion .h4-chip-ico { color: var(--ink); }
+@media (hover: hover) and (pointer: fine) {
+  .h4-frame:not([data-state="live"]):hover, .h4-frame:not([data-state="live"]):focus-within { border-color: var(--ion); }
+  .h4-frame:not([data-state="live"]):hover .h4-chip:not(.v4-chip--wait), .h4-frame:not([data-state="live"]):focus-within .h4-chip:not(.v4-chip--wait) { background: var(--ion); border-color: var(--ion); color: var(--ink); }
+}
+.h4-grey { margin: 4px 0 0; max-width: none; font-size: 13px; line-height: 1.4; color: var(--fg-2); }
+.h4-grey-l { display: none; }
+
+/* the buttons */
+.h4-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 14px; margin-top: 7px; }
+.h4-go { min-height: 52px; }
+.h4-all { min-height: 44px; padding: 0 12px; border-color: transparent; background: none; color: var(--ion); font-size: 16.5px; font-weight: 650;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.h4-all:hover { border-color: transparent; background: none; color: var(--fg); }
+/* one plain line beside the buttons. It is in the page in two states only (js/home4.js): live = "Nothing moves until
+   you move it."; failed = why the place stopped + "Open it again". In every other state it is hidden: no gap.
+   Phone: the line sits close under the text link "See all 8 places" (in the lower part of that link's 44 px tap box,
+   so the line itself takes no tap). */
+.h4-say { flex: 0 0 100%; margin: -8px 0 0; max-width: none; font-size: 14px; line-height: 1.4; color: var(--fg-2); text-align: center; pointer-events: none; }
+.h4-say[hidden] { display: none; }
+.h4-hero[data-frame="failed"] .h4-say { margin-top: 0; }
+.h4-say button { pointer-events: auto; margin-left: 6px; padding: 10px 2px; border: 0; background: none; color: var(--ion); font: 650 14.5px/1.2 var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.h4-say button:hover { color: var(--fg); }
+.h4-hero[data-frame="live"] .h4-say { color: var(--fg); font-weight: 600; }
+
+/* one short nudge of the hint mark when the place becomes live: the mark moves, the place does not (R1) */
+@media (prefers-reduced-motion: no-preference) {
+  .h4-chip.is-new .h4-chip-ico { animation: h4-nudge .7s ease-in-out 2; }
+}
+@keyframes h4-nudge { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(-4px); } 70% { transform: translateX(4px); } }
+
+/* ---- a short phone screen, or a tall phone with the browser's bars on screen (window up to 800 px high; test size
+   360 x 640): the frame and the main button stay on the first screen. From 721 px of height the sub-line shows too. */
+@media (max-width: 599px) and (max-height: 800px) {
+  .h4-hero { padding-top: 8px; }
+  .h4-eyebrow { margin-bottom: 3px; }
+  .h4-name { font-size: clamp(29px, 9vw, 36px); margin-bottom: 5px; }
+  .h4-h1 { font-size: clamp(20px, 5.7vw, 23px); margin-bottom: 7px; }
+  .h4-sub { display: none; }
+  .h4-cap { margin-bottom: 5px; font-size: 15.5px; line-height: 1.25; }     /* the caption's own line height: its parts are inline here */
+  .h4-cap-t { padding-top: 2px; }
+  .h4-cap b { display: inline; font-size: 15.5px; }
+  .h4-cap1 .h4-cap-s { display: none; }
+  .h4-cap2 .h4-cap-s { display: inline; font-size: 15.5px; font-weight: 700; }
+  .h4-cap-x { display: none; }
+  .h4-arrow { margin: 1px 0 3px 5px; }
+  .h4-right { display: flex; flex-direction: column; }
+  .h4-stage { display: contents; }
+  .h4-cta { order: 3; margin-top: 8px; }
+  .h4-grey { order: 4; margin-top: 4px; text-align: center; }
+  .h4-go { min-height: 52px; }
+}
+
+@media (max-width: 599px) and (min-height: 721px) and (max-height: 800px) {
+  .h4-sub { display: block; }
+}
+
+/* ---- 600 px and more: more air, the long forms of the lines */
+@media (min-width: 600px) {
+  .h4-hero { padding: 22px 0 34px; }
+  .h4-eyebrow { margin-bottom: 8px; font-size: 13.5px; gap: 12px; }
+  .h4-eyebrow::before { width: 22px; }
+  .h4-name { margin-bottom: 10px; font-size: clamp(46px, 7.4vw, 64px); }
+  .h4-h1 { margin-bottom: 12px; max-width: 24em; font-size: clamp(29px, 4.3vw, 40px); line-height: 1.1; }
+  .h4-sub { margin-bottom: 20px; font-size: 18px; line-height: 1.45; }
+  .h4-try { display: inline; }
+  .h4-n { width: 27px; height: 27px; font-size: 15px; line-height: 24px; }
+  .h4-cap { gap: 11px; margin-bottom: 10px; }
+  .h4-cap b { font-size: 18.5px; }
+  .h4-cap-s { font-size: 15.5px; }
+  .h4-photos .v4-photo { padding: 3px; }
+  .h4-photos-note { display: block; }
+  .h4-arrow { margin: 12px 0 12px 7px; font-size: 12.5px; }
+  .h4-tags { left: 12px; top: 12px; right: 12px; gap: 8px; }
+  .h4-chip { left: 12px; bottom: 12px; max-width: min(calc(100% - 24px), max(46%, 318px)); }
+  .h4-chip.v4-chip { padding: 6px 13px; font-size: 14.5px; line-height: 18px; }
+  .h4-grey { margin-top: 8px; font-size: 14.5px; }
+  .h4-grey-l { display: inline; }
+  .h4-grey-s { display: none; }
+  .h4-cta { justify-content: flex-start; gap: 10px 14px; margin-top: 13px; }
+  .h4-go { min-height: 56px; }
+  .h4-all { min-height: 56px; padding: 0 24px; border-color: var(--line-3); background: rgba(0, 0, 0, .4); color: var(--fg); font-size: 17px; text-decoration: none; }
+  .h4-all:hover { border-color: var(--fg); background: rgba(255, 255, 255, .06); color: var(--fg); }
+  /* live: the line takes the room beside the two buttons and wraps inside it, so the buttons never move when the place
+     becomes live. failed: the longer sentence and its button get their own row. */
+  .h4-say { flex: 1 1 0; min-width: 150px; margin: 0 0 0 4px; font-size: 15.5px; line-height: 1.3; text-align: left; pointer-events: auto; }
+  .h4-hero[data-frame="failed"] .h4-say { flex: 0 0 100%; margin-left: 2px; }
+}
+@media (min-width: 760px) and (max-width: 999px) {
+  .h4-photos .v4-hero-photos { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+}
+/* a tablet held upright (stacked layout): the frame's size follows the window's height, so the main button stays on the first screen */
+@media (min-width: 600px) and (max-width: 999px) {
+  .h4-frame { width: min(100%, max(420px, calc((100svh - 730px) * 1.6))); }
+}
+
+/* ---- 1000 px and more, SPLIT: text and photos left, the frame right. The frame's size follows the window's height,
+   so the frame and the main button stay on the first screen of a laptop. */
+@media (min-width: 1000px) {
+  .h4-hero { display: flex; align-items: center; min-height: calc(100svh - var(--v4-head-h)); padding: 18px 0 22px; }
+  .h4-hero-in { display: grid; grid-template-columns: minmax(0, 4fr) 76px minmax(0, 5fr); align-items: center; }
+  .h4-name { font-size: clamp(40px, 4.3vw, 58px); }
+  .h4-h1 { max-width: none; font-size: clamp(26px, 2.5vw, 36px); }
+  .h4-sub { max-width: 44ch; margin-bottom: 18px; font-size: 17.5px; }
+  .h4-photos .v4-hero-photos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .h4-arrow { flex-direction: column; justify-self: center; gap: 9px; margin: 0; text-align: center; line-height: 1.4; }
+  .h4-arrow-t { max-width: 9ch; }
+  .h4-arrow-dn { display: none; }
+  .h4-arrow-rt { display: block; width: 52px; height: 18px; }
+  .h4-frame { width: min(100%, max(440px, calc((100svh - var(--v4-head-h) - 196px) * 1.6))); border-radius: 14px; }
+  .h4-door, .h4-door:focus-visible { border-radius: 13px; }
+}
+@media (min-width: 1000px) and (max-height: 739px) {
+  .h4-photos .v4-hero-photos { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .h4-photos .v4-photo { padding: 2px; }
+  .h4-sub { margin-bottom: 14px; }
+}
+
+/* ---- 1000 px and more and a tall window, TALL: the name and the sentence on top, then photos | our software | frame */
+@media (min-width: 1000px) and (min-height: 850px) {
+  .h4-left, .h4-right { display: contents; }
+  .h4-hero-in { grid-template-columns: minmax(0, 3fr) 92px minmax(0, 5fr); align-items: start;
+    grid-template-areas: "intro intro intro" "cap1 . cap2" "photos arrow stage" "photos . cta"; }
+  .h4-intro { grid-area: intro; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); column-gap: 48px; align-items: end; margin-bottom: 22px; }
+  .h4-cap1 { grid-area: cap1; }
+  .h4-cap2 { grid-area: cap2; }
+  .h4-photos { grid-area: photos; align-self: start; }
+  .h4-arrow { grid-area: arrow; align-self: center; }
+  .h4-stage { grid-area: stage; }
+  .h4-cta { grid-area: cta; }
+  .h4-name { font-size: clamp(54px, 4.9vw, 72px); line-height: .96; }
+  .h4-h1 { margin-bottom: 0; max-width: 20.5em; font-size: clamp(32px, 2.8vw, 42px); line-height: 1.08; }
+  .h4-sub { margin: 0 0 3px; max-width: none; font-size: 18.5px; text-wrap: balance; }
+  .h4-photos .v4-hero-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .h4-frame { width: min(100%, max(520px, calc((100svh - 480px) * 1.6))); }
+}
+
+/* ============================================================ SCREEN 2: the 8 places */
+.h4-notes { margin-top: clamp(26px, 3.4vw, 42px); }
+
+/* ============================================================ SCREEN 3: why robots need this */
+.h4-why .eyebrow { margin-bottom: 14px; }
+.h4-why-lead { margin-top: 16px; color: var(--fg-2); }
+.h4-beats { list-style: none; margin: clamp(26px, 3.6vw, 46px) 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+@media (min-width: 900px) { .h4-beats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; } }
+.h4-beat { min-width: 0; }
+.h4-beat-pic { position: relative; display: block; aspect-ratio: 16 / 10; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; background: #050505; }
+.h4-beat-pic--phone svg { width: 100%; height: 100%; }
+/* beat 2: a real camera photo (a print) above the path the software worked out from it (a route door) */
+.h4-beat-pic--route { display: flex; flex-direction: column; }
+.h4-print { flex: 1 1 0; min-height: 0; margin: 0; padding: 12px 12px 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; }
+.h4-print img { flex: 0 1 auto; min-height: 0; width: auto; height: auto; max-width: 64%; max-height: calc(100% - 25px); aspect-ratio: 320 / 179; object-fit: cover;
+  border: 3px solid var(--fg); border-radius: 2px; background: #111; box-shadow: 0 6px 18px rgba(0, 0, 0, .6); transform: rotate(-1.4deg); }
+.h4-print figcaption { margin: 0; max-width: none; font: 600 13px/1.3 var(--sans); color: var(--fg-2); }
+.h4-beat-route.v4-route { flex: none; height: 86px; min-height: 0; padding: 0; background: #000; border-top: 1px solid var(--line-2); }
+.h4-beat-route .v4-route-label { position: absolute; left: 12px; bottom: 10px; z-index: 1; margin: 0; }
+.h4-beat-route:focus-visible { border-radius: 0 0 11px 11px; }
+/* beat 3: the 3-D place, a door */
+.h4-beat-door { transition: border-color .2s; }
+.h4-beat-door img { width: 100%; height: 100%; object-fit: cover; }
+.h4-beat-door:hover, .h4-beat-door:focus-visible { border-color: var(--ion); }
+.h4-beat-door:focus-visible { outline-offset: 2px; border-radius: 12px; }
+.h4-beat-door:hover .v4-chip--go, .h4-beat-door:focus-visible .v4-chip--go { background: var(--ion); border-color: var(--ion); color: var(--ink); }
+.h4-beat-tag { position: absolute; left: 10px; top: 10px; }
+.h4-beat-chip { position: absolute; left: 10px; bottom: 10px; }
+.h4-beat-t { display: flex; align-items: flex-start; gap: 11px; margin: 15px 0 0; max-width: none; font: 500 clamp(19px, 1.65vw, 22px)/1.36 var(--display); letter-spacing: -0.005em; color: var(--fg); }
+.h4-beat-t .h4-n { margin-top: 2px; }
+.h4-beat-t b { font-weight: 700; }
+.h4-dot { color: var(--ion); }
+.h4-beat-s { margin: 8px 0 0 35px; max-width: 46ch; font-size: 15.5px; line-height: 1.5; color: var(--fg-2); }
+.h4-beat .v4-credit { margin: 6px 0 0 35px; }
+.h4-replay { margin: clamp(24px, 3vw, 36px) 0 0; padding: 2px 0 2px 14px; border-left: 3px solid var(--line-3); max-width: 72ch; font-size: 16px; line-height: 1.55; color: var(--fg-2); }
+.h4-why .v4-facts { margin-top: clamp(30px, 4vw, 52px); }
+@media (min-width: 600px) { .h4-beat-s, .h4-beat .v4-credit { margin-left: 38px; } }
+
+/* the honest status: what is ready, what we are building */
+.h4-status { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: clamp(36px, 5vw, 68px); }
+@media (min-width: 900px) { .h4-status { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; } }
+.h4-ready, .h4-building { padding: clamp(18px, 2.4vw, 30px); border-radius: 14px; }
+.h4-ready { border: 1.5px solid var(--ion); background: var(--bg-1); }
+.h4-building { border: 1.5px dashed var(--line-3); }
+.h4-status-l { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; max-width: none; font: 700 13.5px/1.2 var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+.h4-status-l::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; }
+.h4-ready .h4-status-l { color: var(--ion); }
+.h4-ready .h4-status-l::before { background: var(--ion); box-shadow: 0 0 0 4px var(--ion-dim); }
+.h4-building .h4-status-l { color: var(--fg-2); }
+.h4-building .h4-status-l::before { border: 1.5px solid var(--fg-2); }
+.h4-status-t { margin: 0 0 12px; max-width: 17ch; font: 700 clamp(23px, 2.5vw, 31px)/1.18 var(--display); letter-spacing: -0.015em; color: var(--fg); text-wrap: balance; }
+.h4-status-go { display: inline-block; margin-top: 0; padding: 11px 0; }      /* 44 px high: a full tap target */
+.h4-status-go::after { display: inline-block; margin-left: 8px; }
+.h4-aims { list-style: none; margin: 0; padding: 0; }
+.h4-aims li { position: relative; padding: 13px 0 13px 26px; border-top: 1px solid var(--line); font: 600 clamp(18px, 1.7vw, 21px)/1.36 var(--display); color: var(--fg); }
+.h4-aims li:first-child { padding-top: 0; border-top: 0; }
+.h4-aims li:last-child { padding-bottom: 0; }
+.h4-aims li::before { content: ""; position: absolute; left: 2px; top: 22px; width: 10px; height: 10px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid var(--fg-3); }
+.h4-aims li:first-child::before { top: 9px; }
+.h4-goal { margin-top: clamp(36px, 5vw, 68px); }
+.h4-goal-t { margin: 0; max-width: 24ch; font: 700 clamp(26px, 3.6vw, 46px)/1.1 var(--display); letter-spacing: -0.022em; color: var(--fg); text-wrap: balance; }
+.h4-goal-s { margin: 16px 0 0; max-width: 64ch; font-size: clamp(17px, 1.45vw, 19px); line-height: 1.55; color: var(--fg-2); }
+.h4-goal-n { margin: 14px 0 0; max-width: 64ch; padding: 2px 0 2px 14px; border-left: 3px solid var(--ion); font: 700 clamp(17.5px, 1.5vw, 20px)/1.45 var(--sans); color: var(--fg); }
+@media (min-width: 900px) {
+  .h4-goal { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 24px; align-items: start; }
+  .h4-goal-t { grid-column: 1; grid-row: 1 / span 2; }
+  .h4-goal-s { grid-column: 2; margin-top: 8px; }
+  .h4-goal-n { grid-column: 2; }
+}
+
+/* ============================================================ SCREEN 4: the door for engineers (technical words live here) */
+.h4-eng { background: var(--bg-1); }
+.h4-engdoor { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: clamp(20px, 3vw, 40px); border: 1px solid var(--line-3); border-radius: 14px; background: #000; }
+@media (min-width: 900px) { .h4-engdoor { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 52px; align-items: start; } }
+.h4-eng-l { margin: 0 0 10px; max-width: none; font: 500 13px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ion); }
+.h4-engdoor .h4-h2 { margin-bottom: 14px; font-size: clamp(24px, 2.8vw, 36px); }
+.h4-engdoor p { margin: 0 0 10px; max-width: 58ch; font-size: 16.5px; line-height: 1.6; color: var(--fg); }
+.h4-engdoor p.h4-eng-s { margin-bottom: 0; color: var(--fg-2); }
+.h4-englinks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-2); }
+.h4-englinks a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 14px; min-height: 60px; padding: 11px 4px; border-bottom: 1px solid var(--line);
+  color: var(--fg); text-decoration: none; }
+.h4-englinks a::after { content: "\2192"; grid-column: 2; grid-row: 1 / span 2; color: var(--ion); font: 600 18px/1 var(--sans); transition: transform .25s var(--ease); }
+.h4-englinks a:hover::after { transform: translateX(4px); }
+.h4-englinks b { grid-column: 1; font: 700 18px/1.3 var(--display); color: var(--fg); }
+.h4-englinks span { grid-column: 1; font-size: 15px; line-height: 1.4; color: var(--fg-2); }
+.h4-englinks a:hover b { color: var(--ion); }
+.h4-englinks a:focus-visible { outline-offset: -2px; }
+
+/* ============================================================ SCREEN 5: contact */
+.h4-contact { padding: clamp(46px, 6vw, 84px) 0; }
+.h4-contact-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 900px) { .h4-contact-in { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: end; } }
+.h4-contact .eyebrow { margin-bottom: 12px; }
+.h4-contact .h4-lead { margin: 0 0 16px; }
+.h4-mail { max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .h4-mail { padding: 0 16px; font-size: 16px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .h4-frame, .h4-beat-door, .h4-englinks a::after { transition: none; }
+}

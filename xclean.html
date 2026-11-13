@@ -22,45 +22,92 @@
   <meta property="og:image:alt" content="Our 3-D map of a street in India (route oak_161834), rendered from xclean's camera poses; not camera video.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%236cc9ff' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/copy.js"></script>
   <script type="module" src="js/xclean.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
 </head>
-<body>
+<body class="v12">
 <a class="skip" href="#main">Skip to content</a>
-<header class="head">
-  <div class="wrap">
-    <a class="wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
-    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span></button>
-    <nav class="nav" id="nav" aria-label="Main">
-      <a href="xclean.html" aria-current="page">xclean</a>
-      <a href="results.html">Results</a>
-      <a href="maps.html">Maps</a>
-      <a href="paper.html">Paper</a>
-      <a href="credits.html">Data credits</a>
-      <a class="nav-gh" href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products" data-current>Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html" aria-current="page"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research">Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
   </div>
 </header>
+<!-- /gen:header -->
+
+<!-- v4: the engineer pages keep one-click links to each other (the shared header has one link, "For engineers") -->
+<nav class="pg-eng v4-top" aria-label="Pages for engineers">
+  <div class="wrap pg-eng-in">
+    <span class="pg-eng-l">For engineers</span>
+    <a href="xclean.html" aria-current="page">xclean</a>
+    <a href="results.html">Results</a>
+    <a href="paper.html">Paper</a>
+    <a href="credits.html">Data credits</a>
+    <a href="https://github.com/necessityrobotics/xclean" data-code-href>GitHub</a>
+  </div>
+</nav>
 
 <main id="main" tabindex="-1">
+  <!-- v4: plain words for a visitor who is not an engineer; the page below it is unchanged -->
+  <div class="wrap pg-plain">
+    <aside class="v4-plain" aria-label="In plain words">
+      <p class="v4-plain-h">In plain words</p>
+      <p>This page is for engineers. It describes xclean, our robot software.</p>
+      <p>xclean tells a robot where it is, and where it has been, while it moves. It needs a camera with two eyes (a stereo camera) and a computer with an NVIDIA graphics card. A motion sensor (IMU) is optional. It needs no satellite signal.</p>
+      <p>Free for anyone. Walk through <!-- gen:val:places.count -->8<!-- /gen:val:places.count --> real places that it helped to rebuild in 3-D.</p>
+      <a class="more" href="maps.html">See the 3-D places</a>
+    </aside>
+  </div>
   <header class="phead phead--media" data-head-over>
     <div class="wrap">
       <div>
-      <p class="eyebrow"><span data-code-when="pending" hidden>Open-source release (Apache-2.0) · coming soon</span><span data-code-when="public">Open source · Apache-2.0</span></p>
+      <p class="eyebrow"><span data-code-when="pending" hidden>Open-source release (Apache-2.0) · coming soon</span><span data-code-when="public">Live SLAM · Open source · Apache-2.0</span></p>
       <h1>xclean</h1>
-      <p class="lead">Real-time stereo visual-inertial SLAM, built in India. Python, with GPU code written in CuPy and CPU hot paths in Numba: no C++ build step, no ROS. It runs natively on Windows 11, installs on Linux and NVIDIA Jetson Orin and Thor from version 0.2.0, and is built for a Luxonis OAK-D-Lite stereo camera.</p>
+      <p class="lead">Real-time stereo visual-inertial SLAM, built in India. Python, with GPU code in CuPy and CPU hot paths in Numba: no C++ build step, no ROS. Connect any calibrated stereo rig (two cameras side by side, pinhole lenses, both images taken at the same time), with or without an IMU, live or from a recording. Live sources through <code>xclean live --source</code>: the Luxonis OAK-D-Lite (built in), a USB stereo camera, two USB cameras (not synchronised: only for tests with a still or slow rig) or your own source for any camera SDK. We tested live runs only on the OAK-D-Lite; the other sources with recordings and simulated cameras. It runs on Windows 11; from version 0.2.0 it also installs on Linux and NVIDIA Jetson Orin and Thor.</p>
       <div class="btns">
-        <span data-code-when="pending" hidden><span class="btn btn--ion btn--static" aria-disabled="true">Code: coming soon</span></span><span data-code-when="public"><a class="btn btn--ion" href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.2.0.zip">Download xclean 0.2.0 <span class="arr" aria-hidden="true">↓</span></a> <a class="btn" data-code-href href="https://github.com/necessityrobotics/xclean">View on GitHub <span class="arr" aria-hidden="true">→</span></a></span>
+        <span data-code-when="pending" hidden><span class="btn btn--ion btn--static" aria-disabled="true">Code: coming soon</span></span><span data-code-when="public"><a class="btn btn--ion" href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.3.0.zip">Download xclean 0.3.0 <span class="arr" aria-hidden="true">↓</span></a> <a class="btn" data-code-href href="https://github.com/necessityrobotics/xclean">View on GitHub <span class="arr" aria-hidden="true">→</span></a></span>
         <a class="btn" href="results.html">Results</a>
       </div>
       </div>
       <figure class="phead-fig">
         <div class="field-box frame"><canvas class="field-canvas" aria-hidden="true"></canvas></div>
-        <figcaption><b>Fig. 1</b> Not stars: <span class="js-field-n">5,200</span> of the <span class="js-field-of">232,817</span> points of route oak_161834, seen from above. The points come from stereo depth of xclean's keyframes, computed afterwards by our map builder and placed with xclean's live poses; the blue line is xclean's live trajectory. The only "space" on this site is our own data.</figcaption>
+        <figcaption><b>Fig. 1</b> Not stars: <span class="js-field-n">5,200</span> of the <span class="js-field-of">232,817</span> points of route oak_161834, seen from above. The points come from stereo depth of xclean's keyframes (32-path SGM in this picture; the maps now use our <a href="depth.html">depth model</a>), computed afterwards by our map builder and placed with xclean's live poses; the line is xclean's live trajectory. The only "space" on this site is our own data.</figcaption>
       </figure>
     </div>
   </header>
@@ -74,11 +121,11 @@
       <div class="prose">
         <div class="disclose disclose--ion" data-code-when="pending" hidden><h2 class="disclose-h">The code is not public yet.</h2><p>The open-source release (Apache-2.0) is coming soon; the repository will be <code>github.com/necessityrobotics/xclean</code>. Until then, <a href="https://github.com/necessityrobotics">github.com/necessityrobotics</a> is our organisation page.</p></div>
         <h2 id="what">What it does</h2>
-        <p>xclean estimates the pose of a stereo camera at every frame, while it moves. Every pose is published live from a solve that contains that frame, and loop corrections are applied live.</p>
+        <p>xclean estimates the pose of a stereo camera at every frame, while it moves. When tracking works, each published pose comes from a solve that contains that frame. When tracking fails, xclean publishes a predicted pose and marks it "coasting". Loop corrections are applied live.</p>
         <p>xclean is a stereo visual-inertial SLAM system: it uses the IMU while a built-in consistency check accepts it, and otherwise continues as stereo visual odometry with loop closure. In the final board the IMU stayed in use to the end on 50 of 216 runs (mostly EuRoC and 4Seasons). On MADMAX, Rosario and our own OAK-D-Lite recordings the check dropped or refused it. KITTI has no IMU. <a href="results.html#imu">Per dataset</a>.</p>
         <ul class="ticks">
           <li><strong>On the GPU:</strong> feature detection, ORB descriptors, stereo matching, and the first feature-matching step of each frame.</li>
-          <li><strong>Inertial, on the CPU:</strong> IMU preintegration, with an online consistency check (it can drop or refuse the IMU) and an online camera-IMU clock-offset estimate.</li>
+          <li><strong>Inertial, on the CPU:</strong> IMU preintegration, with an online consistency check that can drop or refuse the IMU. xclean does not estimate the camera-IMU time offset: if you know it, add it to the camera time stamps.</li>
           <li><strong>Back end on the CPU (Numba):</strong> matching against the local map, and the sliding-window factor graph that gives each frame its pose.</li>
           <li><strong>Full SLAM:</strong> loop closure, relocalisation and map reuse, in a separate CPU process outside the frame path; their corrections are applied to the published pose live.</li>
           <li><strong>No learned networks</strong> in the SLAM pipeline.</li>
@@ -88,21 +135,21 @@
         <h2 id="numbers">In numbers</h2>
         <div class="specs specs--3" data-reveal>
           <div class="spec"><div class="v"><span class="js-h" data-k="p50">20.4</span><small>ms</small></div><div class="k">median frame-to-pose latency (p95 <span class="js-h" data-k="p95">26.4</span> ms)</div></div>
-          <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">live paced runs on <span class="js-h" data-k="routes">72</span> routes</div></div>
+          <div class="spec"><div class="v"><span class="js-h" data-k="runs">216</span><small>runs</small></div><div class="k">real-time replays on <span class="js-h" data-k="routes">72</span> routes</div></div>
           <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs of record on the <span class="js-h" data-k="unseen">38</span> held-out routes</div></div>
         </div>
-        <p class="note">Measured on one desktop (RTX 5090) with its normal background load, host-side from frame arrival to the loop-corrected pose, in our development environment. The 38 routes were held out from xclean's development; 10 of them were run in a set-aside first launch whose results were never read. Robustness caveat: on 2 of those 38 routes a replay attempt crashed or hung, and the unsupported-frames check passed on 9 routes, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults). The engine was frozen with one of its pre-registered tests (K14) failed on two routes and passed on a third (kitti_09) only through its no-harm clause; <a href="results.html#disclosures">details</a>. Source: the final board of 2026-10-30 (<a href="data/board.json">data/board.json</a> on this site).</p>
+        <p class="note">Measured on one desktop (RTX 5090) with its normal background load, host-side from frame arrival to the loop-corrected pose, in our development environment. The 38 routes were held out from xclean's development; 10 of them were run in a first launch that we set aside; we read no accuracy number from it. Robustness caveat: on 2 of those 38 routes a replay attempt crashed or hung, and the unsupported-frames check passed on 9 routes, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults). The engine was frozen with one of its pre-registered tests (K14) failed on two routes and passed on a third (kitti_09) only through its no-harm clause; <a href="results.html#disclosures">details</a>. Source: the final board of 2026-10-30 (<a href="data/board.json">data/board.json</a> on this site).</p>
         <p>Accuracy against other systems, wins and losses, is on the <a href="results.html#accuracy">results page</a>.</p>
 
         <h2 id="install">Install and run</h2>
-        <p><span data-code-when="pending" hidden>Install and run instructions will be published with the code.</span><span data-code-when="public"><a href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.2.0.zip">Download xclean 0.2.0</a> (source code, zip, 1.3 MB), or clone it: <code>git clone https://github.com/necessityrobotics/xclean</code>. Install and run instructions are in its README.</span> What you will need: Windows 11 (64-bit) or Linux (x86-64 or ARM64), an NVIDIA GPU with a driver that supports CUDA 13 (R580 or newer), and conda. No CUDA Toolkit is needed: the conda environment carries the CUDA kernel compiler. On an NVIDIA Jetson, use JetPack 7 (Jetson Thor, or Orin on JetPack 7.2) or JetPack 6 (Jetson Orin, CUDA 12.6) with a Python venv<span data-code-when="pending" hidden>.</span><span data-code-when="public">: see the <a href="https://github.com/necessityrobotics/xclean/blob/main/docs/LINUX_JETSON.md">Linux and Jetson guide</a>.</span></p>
-        <div class="disclose"><h3>Known limits</h3><p>Tested on one machine: AMD Ryzen 9 9950X, NVIDIA RTX 5090, Windows 11. Other CPUs, GPUs and drivers are not tested. Linux and Jetson (version 0.2.0): every install route installs and passes the unit tests on GitHub's Linux machines (x86-64 and ARM64, no GPU), and every GPU kernel compiles for Jetson Orin and Thor, but we have not run xclean on a Linux GPU or a Jetson, so its accuracy and speed there are unmeasured. macOS has no CUDA. At start-up the GPU front end checks itself against the CPU code; if a check fails, xclean says so and runs the whole route on the CPU front end, with higher latency.</p></div>
+        <p><span data-code-when="pending" hidden>Install and run instructions will be published with the code.</span><span data-code-when="public"><a href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.3.0.zip">Download xclean 0.3.0</a> (source code, zip, about 1.3 MB), or clone it: <code>git clone https://github.com/necessityrobotics/xclean</code>. Install and run instructions are in its README. Any stereo rig, live: <a href="https://github.com/necessityrobotics/xclean/blob/main/docs/ANY_STEREO_LIVE.md">the guide</a>.</span> What you will need: a calibrated stereo camera or a recorded sequence (for live mode: a calibrated stereo rig; the OAK-D-Lite is the only camera we tested live); Windows 11 (64-bit) or Linux (x86-64 or ARM64); an NVIDIA GPU of the Turing generation (RTX 20 series) or newer, with a driver that supports CUDA 13 (R580 or newer); conda; and git. No CUDA Toolkit is needed: the conda environment carries the CUDA kernel compiler. On an NVIDIA Jetson, use JetPack 7 (Jetson Thor, or Orin on JetPack 7.2) or JetPack 6 (Jetson Orin, CUDA 12.6) with a Python venv<span data-code-when="pending" hidden>.</span><span data-code-when="public">: see the <a href="https://github.com/necessityrobotics/xclean/blob/main/docs/LINUX_JETSON.md">Linux and Jetson guide</a>.</span></p>
+        <div class="disclose"><h3>Known limits</h3><p>Tested on one machine: AMD Ryzen 9 9950X, NVIDIA RTX 5090, Windows 11. Other CPUs, GPUs and drivers are not tested. Linux and Jetson (version 0.2.0): every install route installs and passes the unit tests on GitHub's Linux machines (x86-64 and ARM64, no GPU), and every GPU kernel compiles for Jetson Orin and Thor, but we have not run xclean on a Linux GPU or a Jetson, so its accuracy and speed there are unmeasured. macOS has no CUDA. At start-up the GPU front end checks itself against the CPU code. If only its 3&times;3 solver differs (expected on CPUs without AVX-512), xclean prints a note and keeps the GPU front end. If another check fails, xclean says so and runs the whole route on the CPU front end, with higher latency.</p></div>
 
         <h2 id="status">Tested, and not yet</h2>
         <div class="table-wrap"><table class="t status-t">
           <thead><tr><th>What</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td class="wrapcell">The engine on the final board: 216 live paced runs on 72 routes, one frozen build, Windows 11, RTX 5090</td><td class="wrapcell"><span class="pass">Done</span>, in our development environment</td></tr>
+            <tr><td class="wrapcell">The engine on the final board: 216 real-time replays on 72 routes, one frozen build, Windows 11, RTX 5090</td><td class="wrapcell"><span class="pass">Done</span>, in our development environment</td></tr>
             <tr><td class="wrapcell">Release package 0.1.0: unit tests</td><td class="wrapcell"><span class="pass">247 pass</span> (3 skipped), run with the GPU hidden. The GPU path is checked by the rows below.</td></tr>
             <tr><td class="wrapcell">Release package 0.1.0: lock-step identity with the frozen engine, on CPU (5 routes)</td><td class="wrapcell"><span class="pass">Identical</span>, except once: the last frame of rosario_01 differed in 1 of 4 runs, from an end-of-stream race in the frozen engine's lock-step feeder</td></tr>
             <tr><td class="wrapcell">Release package 0.1.0: offline runner on the GPU</td><td class="wrapcell"><span class="pass">Byte for byte</span> the frozen engine's output under deterministic settings. Its default settings vary from run to run, for the frozen engine too.</td></tr>
@@ -110,29 +157,32 @@
             <tr><td class="wrapcell">Live on-device run of the release on the OAK-D-Lite</td><td class="wrapcell"><span class="pass">Done</span> with the camera standing still on a tripod: three 60 s live runs, 0 of 1,801 frames dropped in each. A live run with the camera moving is still to come.</td></tr>
             <tr><td class="wrapcell">Our OAK-D-Lite routes on the board</td><td class="wrapcell">Recorded on the camera and replayed in real time (paced); no ground truth</td></tr>
             <tr><td class="wrapcell">A fresh install, without the CUDA Toolkit</td><td class="wrapcell"><span class="pass">Done</span> on our machine: the package installed into a new environment and passed <code>xclean doctor</code>; with the toolkit hidden from xclean, a whole EuRoC run gave the same trajectory. A machine that never had the toolkit is not tested.</td></tr>
-            <tr><td class="wrapcell">Version 0.2.0 on Windows</td><td class="wrapcell"><span class="pass">264 pass</span> (5 skipped), unit tests with the GPU hidden; the SLAM engine is unchanged from 0.1.0. A GPU run of 0.2.0 is still to come.</td></tr>
+            <tr><td class="wrapcell">Version 0.2.0 on Windows</td><td class="wrapcell"><span class="pass">264 pass</span> (5 skipped), unit tests with the GPU hidden; the SLAM engine is unchanged from 0.1.0. On the GPU, 0.2.0 was the baseline of the 0.3.0 tests: the same poses on every frame.</td></tr>
             <tr><td class="wrapcell">Linux and NVIDIA Jetson (version 0.2.0)</td><td class="wrapcell"><span class="pass">Installs</span> and passes its unit tests on GitHub's Linux machines (x86-64 and ARM64; conda, and CUDA 12.6 or 13 toolkits), and every GPU kernel compiles for Jetson Orin and Thor. Not yet run on a Linux GPU or a Jetson.</td></tr>
-            <tr><td class="wrapcell">Other GPUs, CPUs and drivers, another machine</td><td class="wrapcell">Not tested: all timings come from one desktop</td></tr>
+            <tr><td class="wrapcell">Version 0.3.0: any calibrated stereo rig, live (<code>xclean live --source</code>)</td><td class="wrapcell"><span class="pass">Done</span> for the OAK-D-Lite: a 30 s live run with the camera standing still, 0 of 901 frames dropped, the same poses as the replays of its recording. Unit tests 294 pass (5 skipped) on Windows; Linux CI 6 of 6. GPU poses identical to 0.2.0 on EuRoC V1_01_easy and our own OAK data. USB stereo cameras, two USB cameras and SDK sources: tested with recordings and simulated cameras only.</td></tr>
+    <tr><td class="wrapcell">Other GPUs, CPUs and drivers, another machine</td><td class="wrapcell">Not tested: all timings come from one desktop</td></tr>
           </tbody>
         </table></div>
 
         <h2 id="licence">Licence</h2>
         <p><span data-code-when="pending" hidden>xclean will be released under the <strong>Apache License 2.0</strong> (release coming soon): free for personal, research and commercial use.</span><span data-code-when="public">xclean is open source under the <strong>Apache License 2.0</strong>: free for personal, research and commercial use.</span></p>
         <div class="disclose disclose--ion">
-          <h3>If you ship xclean in a product, you must credit it.</h3>
-          <p>Keep the <code>NOTICE</code> file and show its text where your product lists third-party software (an About screen, the documentation or the credits). If you distribute modified files, mark them as changed.</p>
+          <h3>If you distribute xclean, alone or in a product, you must pass on its credit.</h3>
+          <p>Give each recipient a copy of the licence. Keep the copyright notices in the source files. Mark each file that you changed. Show the text of the <code>NOTICE</code> file in at least one of these places: a NOTICE file that you distribute, the source code or documentation, or the screen where your product lists third-party notices.</p>
         </div>
-        <p style="margin-top:20px">Using it in a service or inside your company? We would love to know: add your name to <code>USERS.md</code> in the repository once it is public, or write to <a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a> (optional).</p>
+        <p style="margin-top:20px">Using it in a service or inside your company? We would love to know: add your name to <code>USERS.md</code> in the repository, or write to <a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a> (optional).</p>
         <p class="muted">The datasets used in our evaluation keep their own licences and are not included. The place-recognition vocabulary shipped in the package is derived from TartanAir images (CC BY 4.0); its attribution and the licences of the dependencies are in <code>THIRD_PARTY.md</code> and on our <a href="credits.html">data credits</a> page.</p>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="foot">
+<!-- gen:footer -->
+<footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>© 2026 Necessity Robotics</span><span class="dot">·</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot">·</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot">·</span><a href="https://huggingface.co/datasets/Pyassahu/xclean-maps">Maps on Hugging Face</a><span class="dot">·</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
   </div>
 </footer>
+<!-- /gen:footer -->
 </body>
 </html>

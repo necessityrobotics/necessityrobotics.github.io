@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
+  <title>Depth model · Necessity Robotics</title>
+  <meta name="description" content="nrs-large: our own trained weights for DLNR, a published stereo network. Trained from scratch. Compare it with classic stereo depth, photo by photo and in 3-D.">
+  <link rel="canonical" href="https://necessityrobotics.github.io/depth.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Necessity Robotics">
+  <meta property="og:title" content="Depth model · Necessity Robotics">
+  <meta property="og:description" content="nrs-large: our own trained weights for DLNR, a published stereo network. Trained from scratch. Compare it with classic stereo depth.">
+  <meta property="og:url" content="https://necessityrobotics.github.io/depth.html">
+  <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+  <!-- the depth page (2026-11-12). First paint = static HTML: the first picture pair, the numbers (gen:), the tables.
+       js/depth.js adds: the split slider, the route and photo pickers, the 3-D pair. Nothing moves by itself (R1). -->
+  <script type="importmap">
+  {"imports":{
+    "three":"./vendor/three/three.module.js",
+    "three/addons/":"./vendor/three/addons/",
+    "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
+  }}
+  </script>
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="js/place/place.css">
+  <link rel="stylesheet" href="css/pages4.css">
+  <link rel="stylesheet" href="css/x.css">
+  <link rel="stylesheet" href="css/ml.css">
+  <link rel="stylesheet" href="css/depth.css">
+  <script type="module" src="js/v4/common.js"></script>
+  <script type="module" src="js/x.js"></script>
+  <script type="module" src="js/depth.js"></script>
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
+</head>
+<body class="dm v12">
+<a class="skip" href="#main">Skip to the content</a>
+<!-- gen:header -->
+<header class="v4-head nr-head">
+  <div class="wrap v4-head-in">
+    <a class="wordmark v4-wordmark" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+    <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
+      <div class="nr-dd" data-dd="products">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products" data-current>Products<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+          <p class="nr-dd-h">Products</p>
+          <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html" aria-current="page"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="maps.html">3-D places</a>
+      <div class="nr-dd" data-dd="research">
+        <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-research">Research<span class="nr-chev" aria-hidden="true"></span></button>
+        <div class="nr-dd-panel" id="nr-dd-research">
+          <p class="nr-dd-h">Research</p>
+          <a class="nr-dd-item" href="results.html"><span class="nr-dd-n">Results</span><span class="nr-dd-t">Every route and every loss, in one table.</span></a>
+          <a class="nr-dd-item" href="paper.html"><span class="nr-dd-n">Paper</span><span class="nr-dd-t">The method and the test protocol.</span></a>
+        </div>
+      </div>
+      <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
+    </nav>
+    <a class="nr-cta" href="about.html#contact">Contact</a>
+    <button class="v4-menu-btn" type="button" aria-expanded="false" aria-controls="v4-nav"><span class="v4-menu-ico" aria-hidden="true"></span><span class="v4-menu-txt">Menu</span></button>
+  </div>
+</header>
+<!-- /gen:header -->
+
+<main id="main" class="v4-top" tabindex="-1">
+
+  <!-- ============ 1. who: the model in one sentence ============ -->
+  <section class="dm-hero" aria-labelledby="dm-h1">
+    <div class="wrap dm-hero-in">
+      <div class="dm-hero-t">
+        <p class="eyebrow">Depth model &middot; zero-shot ML</p>
+        <h1 id="dm-h1"><span>Zero-shot depth</span> <span>from two cameras.</span></h1>
+        <p class="dm-lead">Two cameras, like two eyes. This ML model (machine learning, a kind of AI) works out <b>how far away each point is</b>. It learned only from computer-made images. We tested it on real photos from cameras it never saw. We trained it from scratch. The network design, DLNR, is from another team.</p>
+        <p class="dm-name"><b><!-- gen:val:model.name -->nrs-large<!-- /gen:val:model.name --></b> <span>version <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></span> <span class="dm-rel"><!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short --></span></p>
+        <div class="dm-cta">
+          <a class="btn btn--ion btn--lg" href="#see">See the difference <span aria-hidden="true">&darr;</span></a>
+          <a class="btn btn--lg" href="explore.html">Walk into a place it helped build <span class="arr" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <!-- gen:model-dl -->
+        <div class="dm-dl">
+          <a class="btn btn--ion" href="https://github.com/necessityrobotics/nrs-large" rel="noopener">Code on GitHub <span class="arr" aria-hidden="true">&rarr;</span></a>
+          <a class="btn" href="https://huggingface.co/Pyassahu/nrs-large" rel="noopener">Weights on Hugging Face <span class="arr" aria-hidden="true">&rarr;</span></a>
+          <a class="btn" href="https://github.com/necessityrobotics/nrs-large/blob/main/ANY_STEREO_RIG.md" rel="noopener">Any stereo rig: the guide <span class="arr" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <!-- /gen:model-dl -->
+      </div>
+      <ul class="dm-specs" aria-label="The model in numbers">
+        <li><b><!-- gen:val:model.params_words -->57 million<!-- /gen:val:model.params_words --></b><span><dfn class="ml" tabindex="0" data-def="The numbers inside the network that training adjusts, one small step at a time.">parameters</dfn></span></li>
+        <li><b><!-- gen:val:model.pairs -->155,769<!-- /gen:val:model.pairs --></b><span>computer-made photo pairs it learned from: <dfn class="ml" tabindex="0" data-def="Pictures rendered by a computer, so the true distance of every pixel is known exactly.">synthetic training data</dfn></span></li>
+        <li><b><!-- gen:val:model.steps -->200,000<!-- /gen:val:model.steps --></b><span><dfn class="ml" tabindex="0" data-def="One step: the network guesses, sees its error, and corrects its parameters a little.">training steps</dfn>, <!-- gen:val:model.gpu_hours -->92<!-- /gen:val:model.gpu_hours --> hours on one graphics card</span></li>
+        <li><b>From scratch</b><span><dfn class="ml" tabindex="0" data-def="Training starts from random numbers. Nothing is copied from another team's trained model.">random initialisation</dfn>, no other team's trained model inside</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 2. the difference, picture by picture ============ -->
+  <section class="dm-sec dm-see" id="see" aria-labelledby="dm-see-h">
+    <div class="wrap">
+      <p class="eyebrow">See the difference</p>
+      <h2 class="h4-h2" id="dm-see-h"><span>Same photo.</span> <span>Two ways to see depth.</span></h2>
+      <p class="dm-intro">Left: <b>32-path SGM</b>, the classic method: a fixed rule. Right: our <b>depth model</b>: learned from examples. <span class="when-fine">Drag</span><span class="when-touch">Slide</span> the line.</p>
+
+      <div class="dm-cmp" id="dm-cmp" data-route="oak_161206">
+        <div class="dm-stage" id="dm-stage">
+          <img class="dm-img dm-img--a" id="dm-a" src="img/depth/oak_161206/kf000741_sgm.jpg" alt="Depth from the classic method (SGM32): blotchy, with grey stripes where it has no answer" width="640" height="400" decoding="async">
+          <div class="dm-clip" id="dm-clip"><img class="dm-img dm-img--b" id="dm-b" src="img/depth/oak_161206/kf000741_nrs.jpg" alt="Depth from our ML model (nrs-large): sharp edges on tree trunks and posts" width="640" height="400" decoding="async"></div>
+          <span class="dm-tag dm-tag--a" id="dm-tag-a">Classic: 32-path SGM</span>
+          <span class="dm-tag dm-tag--b">ML: nrs-large</span>
+          <div class="dm-handle" id="dm-handle" role="slider" tabindex="0" aria-label="Compare: move left or right" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span aria-hidden="true"></span></div>
+          <img class="dm-img dm-img--photo" id="dm-photo" src="img/depth/oak_161206/kf000741_photo.jpg" alt="The camera's photo of the same spot" width="640" height="400" decoding="async" hidden>
+        </div>
+        <div class="dm-bar">
+          <div class="dm-routes" id="dm-routes" role="group" aria-label="Place"></div>
+          <button class="dm-photo-btn" id="dm-photo-btn" type="button" aria-pressed="false">Show the photo</button>
+        </div>
+        <div class="dm-thumbs" id="dm-thumbs" role="group" aria-label="Photo along the path"></div>
+        <p class="dm-legend"><span class="dm-key" aria-hidden="true"></span> Bright = near. Dark = far. <span class="dm-hatch" aria-hidden="true"></span> Grey stripes = no answer. The photo is the grey image that both methods see.</p>
+        <p class="dm-stat" id="dm-stat">Classic method: an answer for 96 % of the pixels. ML model: 100 %. Where both answer, they agree within one pixel on 91 % of them.</p>
+      </div>
+
+      <div class="dm-notes">
+        <div class="v4-note"><h3 class="v4-note-q">What to look for</h3><p>Trunks, poles, fences, leaves. The ML model draws sharper edges. The classic method smears them and leaves holes.</p></div>
+        <div class="v4-note"><h3 class="v4-note-q">Where the ML model guesses</h3><p>It answers every pixel, also sky, glare and blank walls, where nobody can measure. It cannot say "I do not know". The classic method says "no answer" there.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. the same place, two 3-D maps ============ -->
+  <section class="dm-sec dm-two" id="maps" aria-labelledby="dm-two-h">
+    <div class="wrap">
+      <p class="eyebrow">Same place, built twice.</p>
+      <h2 class="h4-h2" id="dm-two-h"><span>Same photos, two depths,</span> <span>two 3-D places.</span></h2>
+      <p class="dm-intro">Depth gives a 3-D place its starting shape. We built each place twice from the same photos and camera path. Only the depth changed. <b>Move one view: the other follows.</b></p>
+
+      <div class="dm-pair" id="dm-pair" data-place="oak_161206">
+        <figure class="dm-pane" data-folder="maps_sgm32">
+          <div class="dm-frame" id="dm-f-a"><img class="pl-still" src="img/depth/sgm32/oak_161206.jpg" alt="The 3-D place built with classic depth (SGM32)" width="1280" height="800" decoding="async" data-place="oak_161206"></div>
+          <figcaption><b>Classic depth</b> 32-path SGM</figcaption>
+        </figure>
+        <figure class="dm-pane" data-folder="maps">
+          <div class="dm-frame" id="dm-f-b"><img class="pl-still" src="img/places/oak_161206.jpg" alt="The 3-D place built with depth from our ML model (nrs-large)" width="1280" height="800" decoding="async" data-place="oak_161206"></div>
+          <figcaption><b>ML depth</b> nrs-large</figcaption>
+        </figure>
+        <div class="dm-pair-bar">
+          <div class="dm-routes" id="dm-pair-routes" role="group" aria-label="Place"></div>
+          <div class="dm-switch" id="dm-switch" role="group" aria-label="Map to show">
+            <button type="button" data-folder="maps_sgm32" aria-pressed="false">Classic depth</button>
+            <button type="button" data-folder="maps" aria-pressed="true">ML depth</button>
+          </div>
+          <button class="btn btn--ion dm-go" id="dm-go" type="button">Open both in 3-D</button>
+        </div>
+        <p class="dm-pair-note" id="dm-pair-note">Drag in either view to look around. Use the arrow keys to walk.</p>
+      </div>
+
+      <h3 class="dm-h3">How close each place looks to photos it never saw</h3>
+      <p class="dm-small">We kept some camera photos out of the build, then compared them with the 3-D place from the same spot. Higher is closer (<dfn class="ml" tabindex="0" data-def="Peak signal-to-noise ratio: how close two pictures are, in decibels. Higher is closer.">PSNR</dfn>). We give two measures: the map alone, and the map with a sky backdrop behind it. On the field places most of each photo is sky, which a map does not hold, so their "map alone" numbers are low for both. The new depth is better on <!-- gen:val:model.maps_better -->3 of 8<!-- /gen:val:model.maps_better --> places for the map alone and on <!-- gen:val:model.maps_better_sky -->6 of 8<!-- /gen:val:model.maps_better_sky --> with the sky. The changes are small, and some places got a little worse.</p>
+      <!-- gen:mapscores -->
+      <div class="dm-tablewrap"><table class="dm-table dm-maps">
+        <caption class="v4-sr">How close each 3-D place looks to camera photos it never saw (PSNR in dB, higher is better), for the map alone and with the sky backdrop.</caption>
+        <thead><tr><th scope="col" rowspan="2">Place</th><th scope="colgroup" colspan="3">Map alone (dB)</th><th scope="colgroup" colspan="3">With the sky backdrop (dB)</th></tr>
+        <tr><th scope="col">Old<span>SGM32</span></th><th scope="col" class="dm-ours">ML<span>nrs-large</span></th><th scope="col">Change</th><th scope="col">Old<span>SGM32</span></th><th scope="col" class="dm-ours">ML<span>nrs-large</span></th><th scope="col">Change</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">A park path under trees<span>203 test photos</span></th><td>19.26</td><td class="dm-ours"><b>19.64</b></td><td class="dm-up">+0.38<span class="v4-sr"> (better)</span></td><td>19.67</td><td class="dm-ours"><b>19.93</b></td><td class="dm-up">+0.26<span class="v4-sr"> (better)</span></td></tr>
+          <tr><th scope="row">A street in India<span>188 test photos</span></th><td>17.08</td><td class="dm-ours"><b>17.50</b></td><td class="dm-up">+0.42<span class="v4-sr"> (better)</span></td><td>19.90</td><td class="dm-ours"><b>20.08</b></td><td class="dm-up">+0.18<span class="v4-sr"> (better)</span></td></tr>
+          <tr><th scope="row">A lane under trees<span>115 test photos</span></th><td>18.14</td><td class="dm-ours"><b>17.99</b></td><td class="dm-down">-0.15<span class="v4-sr"> (worse)</span></td><td>20.41</td><td class="dm-ours"><b>20.11</b></td><td class="dm-down">-0.30<span class="v4-sr"> (worse)</span></td></tr>
+          <tr><th scope="row">A long straight road<span>112 test photos</span></th><td>18.04</td><td class="dm-ours"><b>17.05</b></td><td class="dm-down">-0.99<span class="v4-sr"> (worse)</span></td><td>19.52</td><td class="dm-ours"><b>19.62</b></td><td class="dm-up">+0.10<span class="v4-sr"> (better)</span></td></tr>
+          <tr><th scope="row">A shaded park walk<span>264 test photos</span></th><td>17.64</td><td class="dm-ours"><b>17.76</b></td><td class="dm-up">+0.12<span class="v4-sr"> (better)</span></td><td>17.91</td><td class="dm-ours"><b>17.94</b></td><td class="dm-up">+0.03<span class="v4-sr"> (better)</span></td></tr>
+          <tr><th scope="row">A soybean field in Argentina<span>184 test photos</span></th><td>11.79</td><td class="dm-ours"><b>10.45</b></td><td class="dm-down">-1.34<span class="v4-sr"> (worse)</span></td><td>21.28</td><td class="dm-ours"><b>20.78</b></td><td class="dm-down">-0.50<span class="v4-sr"> (worse)</span></td></tr>
+          <tr><th scope="row">Soybean rows beside a dry field<span>66 test photos</span></th><td>7.17</td><td class="dm-ours"><b>6.65</b></td><td class="dm-down">-0.52<span class="v4-sr"> (worse)</span></td><td>27.38</td><td class="dm-ours"><b>27.44</b></td><td class="dm-up">+0.06<span class="v4-sr"> (better)</span></td></tr>
+          <tr><th scope="row">Long green soybean rows<span>60 test photos</span></th><td>7.44</td><td class="dm-ours"><b>7.17</b></td><td class="dm-down">-0.27<span class="v4-sr"> (worse)</span></td><td>27.35</td><td class="dm-ours"><b>27.39</b></td><td class="dm-up">+0.04<span class="v4-sr"> (better)</span></td></tr>
+        </tbody>
+      </table></div>
+      <!-- /gen:mapscores -->
+
+      <h3 class="dm-h3" id="dm-same-h">Seen from the same spot</h3>
+      <p class="dm-small">A camera photo that neither map was built from, and both maps from the same spot. Four photos per place. All are shown, also where the classic depth looks closer.</p>
+      <div class="dm-same" id="dm-same" aria-labelledby="dm-same-h">
+        <div class="dm-routes" id="dm-same-routes" role="group" aria-label="Place"></div>
+        <figure class="dm-same-fig">
+          <div class="dm-same-pic"><img id="dm-same-img" src="img/depth/oak_161206/same_kf000935.jpg" width="1936" height="400" alt="Camera photo, the 3-D place with the classic depth, and the 3-D place with the ML depth, from the same spot" loading="lazy" decoding="async"></div>
+          <figcaption class="dm-same-cap"><span class="dm-same-views" id="dm-same-views" role="group" aria-label="Photo"></span> <span id="dm-same-stat" aria-live="polite"></span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. how it was made ============ -->
+  <section class="dm-sec dm-how" id="how" aria-labelledby="dm-how-h">
+    <div class="wrap">
+      <p class="eyebrow">How we trained it</p>
+      <h2 class="h4-h2" id="dm-how-h"><span>From random numbers</span> <span>to depth, in four steps.</span></h2>
+      <ol class="dm-steps">
+        <li class="dm-step">
+          <p class="dm-step-n">1 · Data</p>
+          <h3>Computer-made worlds</h3>
+          <p>Rooms, flying objects and nature, rendered by a computer. The true distance of every pixel is known, so the network can be graded exactly. <b><!-- gen:val:model.pairs -->155,769<!-- /gen:val:model.pairs --> stereo pairs</b> from the public WMGStereo-150k set.</p>
+        </li>
+        <li class="dm-step">
+          <p class="dm-step-n">2 · Training</p>
+          <h3>From scratch, on one GPU</h3>
+          <p><dfn class="ml" tabindex="0" data-def="Learning from examples where the right answer is known.">Supervised deep learning</dfn>: <!-- gen:val:model.steps -->200,000<!-- /gen:val:model.steps --> steps of <dfn class="ml" tabindex="0" data-def="The method that nudges every parameter a little in the direction that lowers the error.">gradient descent</dfn>, <!-- gen:val:model.gpu_hours -->92<!-- /gen:val:model.gpu_hours --> hours on one NVIDIA RTX 5090. The network started from random numbers.</p>
+        </li>
+        <li class="dm-step">
+          <p class="dm-step-n">3 · Test</p>
+          <h3>Real photos it never saw</h3>
+          <p>A <dfn class="ml" tabindex="0" data-def="Tested on kinds of data the model was never trained on.">zero-shot</dfn> test on six public <dfn class="ml" tabindex="0" data-def="A public test set that everyone scores the same way.">benchmark</dfn> sets of real photos. For four of them we wrote the pass marks down <b>before</b> training began (<dfn class="ml" tabindex="0" data-def="Writing the pass marks down before training, so they cannot be moved after.">pre-registration</dfn>). It passed <!-- gen:val:model.gate -->4 of 4<!-- /gen:val:model.gate -->.</p>
+        </li>
+        <li class="dm-step">
+          <p class="dm-step-n">4 · Use</p>
+          <h3>Into our 3-D places</h3>
+          <p>Our 3-D places take their depth from this model. Next, we plan to use it as the <dfn class="ml" tabindex="0" data-def="A big model that teaches a small, fast model by example: knowledge distillation.">teacher</dfn> of a small model for the robot itself. That model is not built yet.</p>
+        </li>
+      </ol>
+
+      <h3 class="dm-h3">Scores on real photos (lower is better)</h3>
+      <p class="dm-small">Each number is the share of pixels whose answer is off by more than 1, 2 or 3 pixels (bad-1, bad-2, bad-3). Another team trained this same network design on this data set and published its scores. We followed their recipe, with small changes that we list. Our copy of the nature data had <!-- gen:val:model.shortfall -->7,627<!-- /gen:val:model.shortfall --> fewer pairs. Our numbers are within 5 % (or 0.1) of theirs on <!-- gen:val:model.within -->4 of 6<!-- /gen:val:model.within --> sets. On ETH3D ours is better. On Middlebury 2021 ours is worse.</p>
+      <!-- gen:bench -->
+      <div class="dm-tablewrap"><table class="dm-table dm-bench">
+        <caption class="v4-sr">Error on public test sets the model never trained on. Lower is better.</caption>
+        <thead><tr><th scope="col">Test set</th><th scope="col">Measure</th><th scope="col" class="dm-ours">nrs-large<span>our weights</span></th><th scope="col">Same design, published<span>other team's training, same data</span></th><th scope="col">RAFT-Stereo<span>public weights, scored in TF32</span></th><th scope="col">Our run against the published row<span>same within 5 % or 0.1</span></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Middlebury (half size)<span>indoor scenes</span></th><td class="dm-metric">bad-2</td><td class="dm-ours"><b>3.91</b> %</td><td>3.76 %</td><td>8.67 %</td><td class="dm-flat">Same</td></tr>
+          <tr><th scope="row">Middlebury 2021<span>indoor scenes</span></th><td class="dm-metric">bad-2</td><td class="dm-ours"><b>8.44</b> %</td><td>6.72 %</td><td>10.26 %</td><td class="dm-down">Worse</td></tr>
+          <tr><th scope="row">ETH3D<span>indoor and outdoor</span></th><td class="dm-metric">bad-1</td><td class="dm-ours"><b>2.04</b> %</td><td>2.50 %</td><td>2.61 %</td><td class="dm-up">Better</td></tr>
+          <tr><th scope="row">KITTI 2012<span>city streets</span></th><td class="dm-metric">bad-3</td><td class="dm-ours"><b>3.38</b> %</td><td>3.30 %</td><td>4.76 %</td><td class="dm-flat">Same</td></tr>
+          <tr><th scope="row">KITTI 2015<span>city streets</span></th><td class="dm-metric">bad-3</td><td class="dm-ours"><b>4.59</b> %</td><td>4.54 %</td><td>5.48 %</td><td class="dm-flat">Same</td></tr>
+          <tr><th scope="row">Booster (quarter size)<span>glass, mirrors and screens</span></th><td class="dm-metric">bad-2</td><td class="dm-ours"><b>9.22</b> %</td><td>9.09 %</td><td>17.75 %</td><td class="dm-flat">Same</td></tr>
+        </tbody>
+      </table></div>
+      <!-- /gen:bench -->
+    </div>
+  </section>
+
+  <!-- ============ 5. what it cannot do ============ -->
+  <section class="dm-sec dm-limits" id="limits" aria-labelledby="dm-lim-h">
+    <div class="wrap">
+      <p class="eyebrow">What it cannot do (yet)</p>
+      <h2 class="h4-h2" id="dm-lim-h">The honest list.</h2>
+      <ul class="dm-lim">
+        <li><b>It is slow.</b> <dfn class="ml" tabindex="0" data-def="Using a trained model to get answers.">Inference</dfn>: <!-- gen:val:model.s_per_view -->0.28<!-- /gen:val:model.s_per_view --> s per photo pair (640 &times; 480) on one RTX 5090. In our map builds: <!-- gen:val:model.build_s -->0.24 to 0.72<!-- /gen:val:model.build_s --> s per pair, <!-- gen:val:model.slower_x -->80 to 280<!-- /gen:val:model.slower_x --> times slower than the classic method (about <!-- gen:val:model.sgm_ms -->3<!-- /gen:val:model.sgm_ms --> ms). So we use it only after the recording, to give depth to our map builder. Our live software that tells a robot where it is (xclean) uses no neural network.</li>
+        <li><b>It learned only from computer-made pictures.</b> Real camera noise, glare and blur are new to it: the <dfn class="ml" tabindex="0" data-def="The difference between computer-made training pictures and real camera photos.">sim-to-real gap</dfn>.</li>
+        <li><b>It always answers.</b> Also where it can only guess: sky, glare, blank walls. It cannot say "I do not know". The classic method says "no answer" there.</li>
+        <li><b>The maps changed only a little.</b> With the sky backdrop, the new maps are better on <!-- gen:val:model.maps_better_sky -->6 of 8<!-- /gen:val:model.maps_better_sky --> places. The map alone is better on only <!-- gen:val:model.maps_better -->3 of 8<!-- /gen:val:model.maps_better -->. Two places got worse on both measures: the soybean field in Argentina and the lane under trees.</li>
+        <li><b>Glass and mirrors fool it.</b> On photos of TV screens, <!-- gen:val:model.booster_tv -->64<!-- /gen:val:model.booster_tv --> % of the pixels are off by more than 2 pixels.</li>
+        <li><b>The network design is not ours.</b> It is DLNR, published by Zhao and others with open code (MIT licence). The trained weights are ours.</li>
+        <li><b>One test is worse than published.</b> On Middlebury 2021 we score 8.44 % against their 6.72 %. We do not know why. Our copy of the nature data had <!-- gen:val:model.shortfall -->7,627<!-- /gen:val:model.shortfall --> fewer pairs than theirs. That may be the cause. We have not tested it.</li>
+        <li><b>The last refinement step did not always run.</b> The design runs it only when every pixel gets a positive answer. On the photos of our 8 places it ran on only some of them: it was skipped on <!-- gen:val:model.refine_skip -->47 to 83<!-- /gen:val:model.refine_skip --> % of the photos of each place (the 83 % is a farm-robot field; on our own camera it was 47 to 75 %).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 6. next: the small model (an aim, not shipped) ============ -->
+  <section class="dm-sec dm-next" aria-labelledby="dm-next-h">
+    <div class="wrap dm-next-in">
+      <div>
+        <p class="eyebrow">Next</p>
+        <h2 class="h4-h2" id="dm-next-h">A small model for the robot itself.</h2>
+      </div>
+      <div class="dm-next-card">
+        <p class="dm-next-l">Not built yet</p>
+        <p><b>nrs-edge</b>: a small, fast network for the small computer inside a robot. The aim is about 30 depth pictures a second on a Jetson-class board. nrs-large will teach it by example (<dfn class="ml" tabindex="0" data-def="A big model labels data; a small model learns to copy its answers.">knowledge distillation</dfn>).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. engineers ============ -->
+  <section class="dm-sec dm-eng" id="engineers" aria-labelledby="dm-eng-h">
+    <div class="wrap dm-eng-in">
+      <div>
+        <p class="h4-eng-l">For engineers</p>
+        <h2 class="h4-h2" id="dm-eng-h">nrs-large <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></h2>
+        <p class="dm-release"><!-- gen:val:model.release_line -->Free to download under Apache-2.0, also for commercial use.<!-- /gen:val:model.release_line --></p>
+      </div>
+      <dl class="dm-spec">
+        <div><dt>Task</dt><dd>Dense stereo matching: disparity of the left image for every pixel; depth = focal length × baseline ÷ disparity.</dd></div>
+        <div><dt>Architecture</dt><dd>DLNR (high-frequency stereo matching): channel-attention transformer feature extractor, 1-D correlation pyramid (4 levels, radius 4), multi-level LSTM-style recurrent update block, normalisation refinement. <!-- gen:val:model.iters -->32<!-- /gen:val:model.iters --> iterations at inference.</dd></div>
+        <div><dt>Size</dt><dd><!-- gen:val:model.params_m -->57.4<!-- /gen:val:model.params_m --> M parameters. FP32 inference, TF32 off.</dd></div>
+        <div><dt>Training</dt><dd>Random initialisation; WMGStereo-150k only (BSD-3-Clause tag on its dataset card); the authors' recipe (AdamW, OneCycle, batch 8, crop 384×736) with our listed changes: bf16 mixed precision with FP32 correlation and loss; micro-batch 2 with 4-step gradient accumulation; <!-- gen:val:model.steps -->200,000<!-- /gen:val:model.steps --> steps, <!-- gen:val:model.gpu_hours -->92<!-- /gen:val:model.gpu_hours --> GPU-hours (RTX 5090).</dd></div>
+        <div><dt>Evaluation</dt><dd>Zero-shot, WMG protocol, our harness (it reproduces the published RAFT-Stereo numbers). Release gate fixed before training (pre-registered): <!-- gen:val:model.gate -->4 of 4<!-- /gen:val:model.gate --> passed.</dd></div>
+        <div><dt>In our maps</dt><dd>Our map builder, xclean-maps, with nrs-large depth: a version not released yet (the released xclean-maps 0.1.0 uses 32-path SGM only). The same poses, keyframes and recipe as the earlier maps; only the depth changed.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+</main>
+<!-- gen:footer -->
+<footer class="foot v4-foot">
+  <div class="wrap">
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+  </div>
+</footer>
+<!-- /gen:footer -->
+</body>
+</html>

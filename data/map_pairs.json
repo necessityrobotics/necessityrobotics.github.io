@@ -1,0 +1,213 @@
+{
+ "_rule": "held-out views (role = hold: photos neither map trained on); raw renders on black, no exposure fit, no sky; PSNR on the grey of the render vs the grey photo, whole picture (sky included, so field routes score low for both)",
+ "places": {
+  "oak_161834": [
+   {
+    "kf": "kf000704",
+    "file": "img/depth/oak_161834/same_kf000704.jpg",
+    "psnr_sgm32": 18.54,
+    "psnr_nrs": 18.12
+   },
+   {
+    "kf": "kf002273",
+    "file": "img/depth/oak_161834/same_kf002273.jpg",
+    "psnr_sgm32": 15.28,
+    "psnr_nrs": 15.58
+   },
+   {
+    "kf": "kf003778",
+    "file": "img/depth/oak_161834/same_kf003778.jpg",
+    "psnr_sgm32": 17.45,
+    "psnr_nrs": 17.76
+   },
+   {
+    "kf": "kf005258",
+    "file": "img/depth/oak_161834/same_kf005258.jpg",
+    "psnr_sgm32": 14.95,
+    "psnr_nrs": 18.98
+   }
+  ],
+  "oak_160543": [
+   {
+    "kf": "kf001117",
+    "file": "img/depth/oak_160543/same_kf001117.jpg",
+    "psnr_sgm32": 13.55,
+    "psnr_nrs": 14.09
+   },
+   {
+    "kf": "kf003772",
+    "file": "img/depth/oak_160543/same_kf003772.jpg",
+    "psnr_sgm32": 15.31,
+    "psnr_nrs": 14.4
+   },
+   {
+    "kf": "kf006215",
+    "file": "img/depth/oak_160543/same_kf006215.jpg",
+    "psnr_sgm32": 17.92,
+    "psnr_nrs": 17.91
+   },
+   {
+    "kf": "kf008534",
+    "file": "img/depth/oak_160543/same_kf008534.jpg",
+    "psnr_sgm32": 19.38,
+    "psnr_nrs": 19.02
+   }
+  ],
+  "oak_164002": [
+   {
+    "kf": "kf000445",
+    "file": "img/depth/oak_164002/same_kf000445.jpg",
+    "psnr_sgm32": 18.92,
+    "psnr_nrs": 17.18
+   },
+   {
+    "kf": "kf001346",
+    "file": "img/depth/oak_164002/same_kf001346.jpg",
+    "psnr_sgm32": 17.13,
+    "psnr_nrs": 16.12
+   },
+   {
+    "kf": "kf002200",
+    "file": "img/depth/oak_164002/same_kf002200.jpg",
+    "psnr_sgm32": 18.74,
+    "psnr_nrs": 17.92
+   },
+   {
+    "kf": "kf003166",
+    "file": "img/depth/oak_164002/same_kf003166.jpg",
+    "psnr_sgm32": 17.29,
+    "psnr_nrs": 17.6
+   }
+  ],
+  "oak_164424": [
+   {
+    "kf": "kf000709",
+    "file": "img/depth/oak_164424/same_kf000709.jpg",
+    "psnr_sgm32": 17.38,
+    "psnr_nrs": 17.77
+   },
+   {
+    "kf": "kf001710",
+    "file": "img/depth/oak_164424/same_kf001710.jpg",
+    "psnr_sgm32": 16.64,
+    "psnr_nrs": 17.24
+   },
+   {
+    "kf": "kf002645",
+    "file": "img/depth/oak_164424/same_kf002645.jpg",
+    "psnr_sgm32": 19.35,
+    "psnr_nrs": 19.03
+   },
+   {
+    "kf": "kf003632",
+    "file": "img/depth/oak_164424/same_kf003632.jpg",
+    "psnr_sgm32": 16.27,
+    "psnr_nrs": 16.75
+   }
+  ],
+  "oak_161206": [
+   {
+    "kf": "kf000935",
+    "file": "img/depth/oak_161206/same_kf000935.jpg",
+    "psnr_sgm32": 18.16,
+    "psnr_nrs": 18.79
+   },
+   {
+    "kf": "kf003349",
+    "file": "img/depth/oak_161206/same_kf003349.jpg",
+    "psnr_sgm32": 21.8,
+    "psnr_nrs": 22.07
+   },
+   {
+    "kf": "kf005367",
+    "file": "img/depth/oak_161206/same_kf005367.jpg",
+    "psnr_sgm32": 19.26,
+    "psnr_nrs": 19.73
+   },
+   {
+    "kf": "kf007343",
+    "file": "img/depth/oak_161206/same_kf007343.jpg",
+    "psnr_sgm32": 19.86,
+    "psnr_nrs": 20.4
+   }
+  ],
+  "rosario_01": [
+   {
+    "kf": "kf000640",
+    "file": "img/depth/rosario_01/same_kf000640.jpg",
+    "psnr_sgm32": 19.04,
+    "psnr_nrs": 14.61
+   },
+   {
+    "kf": "kf002742",
+    "file": "img/depth/rosario_01/same_kf002742.jpg",
+    "psnr_sgm32": 11.9,
+    "psnr_nrs": 12.15
+   },
+   {
+    "kf": "kf004556",
+    "file": "img/depth/rosario_01/same_kf004556.jpg",
+    "psnr_sgm32": 14.84,
+    "psnr_nrs": 12.68
+   },
+   {
+    "kf": "kf006221",
+    "file": "img/depth/rosario_01/same_kf006221.jpg",
+    "psnr_sgm32": 12.43,
+    "psnr_nrs": 11.17
+   }
+  ],
+  "rosario_03": [
+   {
+    "kf": "kf000386",
+    "file": "img/depth/rosario_03/same_kf000386.jpg",
+    "psnr_sgm32": 11.14,
+    "psnr_nrs": 10.7
+   },
+   {
+    "kf": "kf001110",
+    "file": "img/depth/rosario_03/same_kf001110.jpg",
+    "psnr_sgm32": 11.04,
+    "psnr_nrs": 10.73
+   },
+   {
+    "kf": "kf001917",
+    "file": "img/depth/rosario_03/same_kf001917.jpg",
+    "psnr_sgm32": 10.6,
+    "psnr_nrs": 10.0
+   },
+   {
+    "kf": "kf002736",
+    "file": "img/depth/rosario_03/same_kf002736.jpg",
+    "psnr_sgm32": 11.44,
+    "psnr_nrs": 10.72
+   }
+  ],
+  "rosario_04": [
+   {
+    "kf": "kf000275",
+    "file": "img/depth/rosario_04/same_kf000275.jpg",
+    "psnr_sgm32": 12.22,
+    "psnr_nrs": 12.14
+   },
+   {
+    "kf": "kf000899",
+    "file": "img/depth/rosario_04/same_kf000899.jpg",
+    "psnr_sgm32": 11.89,
+    "psnr_nrs": 11.78
+   },
+   {
+    "kf": "kf001523",
+    "file": "img/depth/rosario_04/same_kf001523.jpg",
+    "psnr_sgm32": 12.42,
+    "psnr_nrs": 12.09
+   },
+   {
+    "kf": "kf002294",
+    "file": "img/depth/rosario_04/same_kf002294.jpg",
+    "psnr_sgm32": 12.73,
+    "psnr_nrs": 11.73
+   }
+  ]
+ }
+}

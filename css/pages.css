@@ -19,7 +19,7 @@
 .code .copy { position: absolute; top: 6px; right: 6px; min-height: 44px; min-width: 64px; background: var(--bg-2); color: var(--fg); border: 1px solid var(--line-2); border-radius: 6px; font: 500 13.5px/1 var(--mono); padding: 8px 10px; cursor: pointer; }
 .code .copy:hover { border-color: var(--fg); }
 kbd { border: 1px solid var(--line-3); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; font-size: .85em; }
-.disclose--ion { border-color: rgba(108,201,255,.5); background: rgba(108,201,255,.06); }
+.disclose--ion { border-color: rgba(255,106,43,.5); background: rgba(255,106,43,.06); }
 .disclose--ion h3 { color: var(--ion); }
 .disclose h3, .disclose .disclose-h { font-size: 18px; line-height: 1.35; letter-spacing: 0; }
 .disclose .disclose-h { margin: 0 0 .5em; }
@@ -57,7 +57,7 @@ table.t td .rng { color: var(--fg-2); }
 .count { font: 500 15px/1.4 var(--mono); color: var(--fg-2); margin: 0 0 10px; }
 .defs dt { color: var(--fg); font: 600 17px/1.4 var(--sans); text-transform: none; letter-spacing: 0; margin-top: 18px; }
 .defs dd { margin: 4px 0 0; color: var(--fg-2); max-width: var(--measure); }
-tr.is-hit td { background: rgba(108,201,255,.1); }
+tr.is-hit td { background: rgba(255,106,43,.1); }
 
 /* the header's verdict panel: 38 unseen routes as 38 cells, wins / ties / losses (SB-8) */
 .vpanel { background: rgba(10,10,10,.92); border: 1px solid var(--line-2); border-radius: var(--r); padding: clamp(18px, 2vw, 26px); }

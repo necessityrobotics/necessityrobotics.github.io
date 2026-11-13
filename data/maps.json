@@ -1,11 +1,11 @@
 {
- "generated": "2026-10-31 06:37",
+ "generated": "2026-11-13 02:36",
  "hero": "oak_161834",
- "note": "Built from each staged map's ATTRIBUTION.json, manifest.json, traj.json, points.json, splats_lite.json and film/film.json; path length = sum of xclean keyframe-to-keyframe distances in traj.json.",
+ "note": "Maps rebuilt with nrs-large depth (same poses, keyframes and recipe as the SGM32 maps; only depth differs). Sizes and counts from each staged map folder by tools/update_maps_json.py; names, routes, credits, licences and limits unchanged from the SGM32 build.",
  "maps": [
   {
    "id": "oak_161834",
-   "title": "Street ride",
+   "title": "A street in India",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_161834",
@@ -20,58 +20,40 @@
     "keyframes": 1873,
     "duration_s": 199.5,
     "path_m": 1020.7,
-    "gaussians": 1999999,
+    "gaussians": 1999998,
     "gaussians_lite": 600000,
-    "points": 232817,
+    "points": 215702,
     "has_gt": false,
     "has_orb3": false
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 152.0,
-     "t1": 164.0,
-     "path_m": 70.61,
-     "mean_speed_mps": 5.898,
-     "n_kf": 118
-    },
-    "speed_factor": 1.0,
-    "width": 1280,
-    "height": 800,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 779,
     "keyframes.json": 18705,
-    "manifest.json": 3388,
-    "points.bin": 1629719,
-    "points.json": 1472,
-    "preview.jpg": 124442,
-    "splats.spz": 34909857,
+    "manifest.json": 3222,
+    "points.bin": 1509914,
+    "points.json": 1470,
+    "preview.jpg": 124133,
+    "splats.spz": 34683684,
     "splats_lite.json": 976,
-    "splats_lite.spz": 10667507,
-    "thumb.jpg": 27748,
+    "splats_lite.spz": 10635395,
+    "thumb.jpg": 27496,
     "traj.json": 137716,
-    "film/film.jpg": 72757,
-    "film/film.json": 830,
-    "film/film.mp4": 3478381,
-    "film/film.webm": 1412467,
-    "film/film.webp": 29284,
-    "full/splats.ply": 208000529
+    "full/splats.ply": 208000425
    },
    "keyframe_images": 80,
-   "bytes_total": 261934575,
+   "bytes_total": 256561933,
    "source_sha1": {
-    "manifest.json": "2556db8346ed617449e8623fe67496ec1767260f"
+    "manifest.json": "e72bc851db0e5d757b79f11154d8f71a3c64b635"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "oak_160543",
-   "title": "Park walk",
+   "title": "A shaded park walk",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording (walking)",
    "board_route": "oak_20260329_160543",
@@ -80,7 +62,7 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (of the three final-board runs, the one whose end point is closest to the other two), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
    "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 2632,
@@ -88,56 +70,38 @@
     "path_m": 231.6,
     "gaussians": 2706608,
     "gaussians_lite": 676652,
-    "points": 1216779,
+    "points": 1412783,
     "has_gt": false,
     "has_orb3": false
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 2.5,
-     "t1": 14.5,
-     "path_m": 5.99,
-     "mean_speed_mps": 0.495,
-     "n_kf": 76
-    },
-    "speed_factor": 1.0,
-    "width": 1280,
-    "height": 800,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 716,
     "keyframes.json": 18588,
-    "manifest.json": 3390,
-    "points.bin": 8517453,
-    "points.json": 1474,
-    "preview.jpg": 196030,
-    "splats.spz": 49003837,
+    "manifest.json": 3222,
+    "points.bin": 9889481,
+    "points.json": 1479,
+    "preview.jpg": 191755,
+    "splats.spz": 48318615,
     "splats_lite.json": 982,
-    "splats_lite.spz": 12323225,
-    "thumb.jpg": 35977,
+    "splats_lite.spz": 12195498,
+    "thumb.jpg": 35494,
     "traj.json": 186541,
-    "film/film.jpg": 195118,
-    "film/film.json": 826,
-    "film/film.mp4": 3964906,
-    "film/film.webm": 2050459,
-    "film/film.webp": 120646,
     "full/splats.ply": 281487865
    },
    "keyframe_images": 80,
-   "bytes_total": 360376020,
+   "bytes_total": 354598223,
    "source_sha1": {
-    "manifest.json": "b9dc6df5d07ca74d579bec3d95f2d9aede7fc74b"
+    "manifest.json": "1164c7c96c3d31654110c65be55b69d483f5088a"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "oak_164002",
-   "title": "Outdoor route",
+   "title": "A long straight road",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_20260327_164002",
@@ -146,64 +110,46 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 4 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (of the three final-board runs, the one whose end point is closest to the other two), not from ground truth. The map's pose check found: 4 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
    "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1117,
     "duration_s": 116.6,
     "path_m": 654.4,
-    "gaussians": 1999988,
+    "gaussians": 1999997,
     "gaussians_lite": 600000,
-    "points": 279129,
+    "points": 310283,
     "has_gt": false,
     "has_orb3": false
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 48.0,
-     "t1": 60.0,
-     "path_m": 66.27,
-     "mean_speed_mps": 5.513,
-     "n_kf": 120
-    },
-    "speed_factor": 1.0,
-    "width": 1280,
-    "height": 800,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 716,
     "keyframes.json": 18672,
-    "manifest.json": 3388,
-    "points.bin": 1953903,
-    "points.json": 1476,
-    "preview.jpg": 123386,
-    "splats.spz": 35608000,
-    "splats_lite.json": 978,
-    "splats_lite.spz": 10938590,
-    "thumb.jpg": 27034,
+    "manifest.json": 3221,
+    "points.bin": 2171981,
+    "points.json": 1472,
+    "preview.jpg": 132266,
+    "splats.spz": 34824445,
+    "splats_lite.json": 976,
+    "splats_lite.spz": 10866215,
+    "thumb.jpg": 28797,
     "traj.json": 82095,
-    "film/film.jpg": 102085,
-    "film/film.json": 829,
-    "film/film.mp4": 5549806,
-    "film/film.webm": 2445306,
-    "film/film.webp": 44938,
-    "full/splats.ply": 207999385
+    "full/splats.ply": 208000321
    },
    "keyframe_images": 80,
-   "bytes_total": 266154615,
+   "bytes_total": 257385205,
    "source_sha1": {
-    "manifest.json": "d8636bea999b39a01267a3e7728ef96a04353d77"
+    "manifest.json": "9cc812f8df673786fbfe4c68e520f6b553a19263"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "oak_164424",
-   "title": "Outdoor route",
+   "title": "A lane under trees",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording",
    "board_route": "oak_20260327_164424",
@@ -212,64 +158,46 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs); this route has no ground truth. During that run, 8 of the 4,068 camera frames were not published by the live stream, so the map is built from the 4,060 that were. Some surfaces may look soft.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (of the three final-board runs, the one whose end point is closest to the other two); this route has no ground truth. During that run, 8 of the 4,068 camera frames were not published by the live stream, so the map is built from the 4,060 that were. Some surfaces may look soft.",
    "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 1148,
     "duration_s": 135.7,
     "path_m": 472.0,
-    "gaussians": 1999997,
+    "gaussians": 1999999,
     "gaussians_lite": 600000,
-    "points": 372684,
+    "points": 347746,
     "has_gt": false,
     "has_orb3": false
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 43.0,
-     "t1": 55.0,
-     "path_m": 48.57,
-     "mean_speed_mps": 4.044,
-     "n_kf": 110
-    },
-    "speed_factor": 1.0,
-    "width": 1280,
-    "height": 800,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 753,
     "keyframes.json": 18706,
-    "manifest.json": 3388,
-    "points.bin": 2608788,
-    "points.json": 1476,
-    "preview.jpg": 162525,
-    "splats.spz": 35071876,
-    "splats_lite.json": 976,
-    "splats_lite.spz": 10685157,
-    "thumb.jpg": 34967,
+    "manifest.json": 3221,
+    "points.bin": 2434222,
+    "points.json": 1474,
+    "preview.jpg": 157812,
+    "splats.spz": 34661250,
+    "splats_lite.json": 975,
+    "splats_lite.spz": 10653681,
+    "thumb.jpg": 33723,
     "traj.json": 84533,
-    "film/film.jpg": 114271,
-    "film/film.json": 829,
-    "film/film.mp4": 4054601,
-    "film/film.webm": 1893782,
-    "film/film.webp": 54152,
-    "full/splats.ply": 208000321
+    "full/splats.ply": 208000529
    },
    "keyframe_images": 80,
-   "bytes_total": 264291792,
+   "bytes_total": 257551570,
    "source_sha1": {
-    "manifest.json": "caf374b62fa1de3b6b9f81cc9c0bffcee459090e"
+    "manifest.json": "0542f21bdb212295c7c710335d461047da65aa8d"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "oak_161206",
-   "title": "Park walk",
+   "title": "A park path under trees",
    "place": "India",
    "platform": "OAK-D-Lite, our own recording (walking)",
    "board_route": "oak_161206",
@@ -278,64 +206,46 @@
    "source_licence": "Necessity Robotics recording",
    "map_licence": "CC BY 4.0",
    "credit": "3-D map by Necessity Robotics (xclean).",
-   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (the median run of the three final-board runs), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
+   "limitation": "Camera poses come from xclean's live output in a real-time (paced) replay (of the three final-board runs, the one whose end point is closest to the other two), not from ground truth. The map's pose check found: 3 place(s) visited twice cannot be checked (no ground truth exists). Some surfaces may look doubled or soft.",
    "engine_note": "Camera poses: xclean's live output in a real-time (paced) replay, from the median run of the three final-board runs (by ATE on routes with ground truth; on OAK routes, the run whose end position is closest to the other two), not ground truth.",
    "stats": {
     "keyframes": 2023,
     "duration_s": 271.5,
     "path_m": 227.1,
-    "gaussians": 2077962,
+    "gaussians": 2077956,
     "gaussians_lite": 600000,
-    "points": 1668374,
+    "points": 1717075,
     "has_gt": false,
     "has_orb3": false
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 116.5,
-     "t1": 128.5,
-     "path_m": 9.84,
-     "mean_speed_mps": 0.819,
-     "n_kf": 86
-    },
-    "speed_factor": 1.0,
-    "width": 1280,
-    "height": 800,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 716,
     "keyframes.json": 18545,
-    "manifest.json": 3390,
-    "points.bin": 11678618,
-    "points.json": 1482,
-    "preview.jpg": 214015,
-    "splats.spz": 37644274,
-    "splats_lite.json": 987,
-    "splats_lite.spz": 10963139,
-    "thumb.jpg": 38976,
+    "manifest.json": 3223,
+    "points.bin": 12019525,
+    "points.json": 1483,
+    "preview.jpg": 219095,
+    "splats.spz": 37612547,
+    "splats_lite.json": 985,
+    "splats_lite.spz": 10974222,
+    "thumb.jpg": 40131,
     "traj.json": 143435,
-    "film/film.jpg": 179322,
-    "film/film.json": 829,
-    "film/film.mp4": 4192780,
-    "film/film.webm": 2405364,
-    "film/film.webp": 99684,
-    "full/splats.ply": 216108681
+    "full/splats.ply": 216108057
    },
    "keyframe_images": 80,
-   "bytes_total": 285779198,
+   "bytes_total": 279226925,
    "source_sha1": {
-    "manifest.json": "dc8a64a127bad159a725685667d4fb4a08019845"
+    "manifest.json": "3abb5a062dee01c4f7ef172ad4e67a55337a285b"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "rosario_01",
-   "title": "Soybean field",
+   "title": "A soybean field in Argentina",
    "place": "Rosario, Argentina",
    "platform": "farm robot (Rosario Dataset)",
    "board_route": "rosario_01",
@@ -350,58 +260,40 @@
     "keyframes": 1838,
     "duration_s": 444.9,
     "path_m": 462.2,
-    "gaussians": 1999991,
+    "gaussians": 1999986,
     "gaussians_lite": 600000,
-    "points": 728936,
+    "points": 788957,
     "has_gt": true,
     "has_orb3": true
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 330.0,
-     "t1": 354.0,
-     "path_m": 27.99,
-     "mean_speed_mps": 1.166,
-     "n_kf": 108
-    },
-    "speed_factor": 2.0,
-    "width": 1280,
-    "height": 716,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 1194,
     "keyframes.json": 18606,
-    "manifest.json": 3390,
-    "points.bin": 6560424,
-    "points.json": 1462,
-    "preview.jpg": 161636,
-    "splats.spz": 40774252,
+    "manifest.json": 3223,
+    "points.bin": 7100613,
+    "points.json": 1461,
+    "preview.jpg": 166173,
+    "splats.spz": 40581566,
     "splats_lite.json": 979,
-    "splats_lite.spz": 12633848,
-    "thumb.jpg": 31424,
+    "splats_lite.spz": 12561262,
+    "thumb.jpg": 32467,
     "traj.json": 240648,
-    "film/film.jpg": 109639,
-    "film/film.json": 831,
-    "film/film.mp4": 5092804,
-    "film/film.webm": 2284537,
-    "film/film.webp": 52482,
-    "full/splats.ply": 207999697
+    "full/splats.ply": 207999177
    },
    "keyframe_images": 80,
-   "bytes_total": 277424603,
+   "bytes_total": 270164119,
    "source_sha1": {
-    "manifest.json": "a738295de0c18d278b07f783979e875118f791a0"
+    "manifest.json": "91fba92f99c9b53a3a135c9cf58d728b2a08eef4"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "rosario_03",
-   "title": "Soybean field",
+   "title": "Soybean rows beside a dry field",
    "place": "Rosario, Argentina",
    "platform": "farm robot (Rosario Dataset)",
    "board_route": "rosario_03",
@@ -416,58 +308,40 @@
     "keyframes": 654,
     "duration_s": 194.6,
     "path_m": 162.6,
-    "gaussians": 1999990,
+    "gaussians": 1999994,
     "gaussians_lite": 600000,
-    "points": 579625,
+    "points": 600578,
     "has_gt": true,
     "has_orb3": true
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 36.5,
-     "t1": 60.5,
-     "path_m": 27.0,
-     "mean_speed_mps": 1.123,
-     "n_kf": 94
-    },
-    "speed_factor": 2.0,
-    "width": 1280,
-    "height": 716,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 1194,
     "keyframes.json": 18418,
-    "manifest.json": 3388,
-    "points.bin": 5216625,
-    "points.json": 1467,
-    "preview.jpg": 142353,
-    "splats.spz": 38540920,
+    "manifest.json": 3222,
+    "points.bin": 5405202,
+    "points.json": 1471,
+    "preview.jpg": 145152,
+    "splats.spz": 38358010,
     "splats_lite.json": 979,
-    "splats_lite.spz": 11805216,
-    "thumb.jpg": 28161,
+    "splats_lite.spz": 11788756,
+    "thumb.jpg": 28823,
     "traj.json": 93573,
-    "film/film.jpg": 79818,
-    "film/film.json": 826,
-    "film/film.mp4": 3202564,
-    "film/film.webm": 1437001,
-    "film/film.webp": 33730,
-    "full/splats.ply": 207999593
+    "full/splats.ply": 208000009
    },
    "keyframe_images": 80,
-   "bytes_total": 269602490,
+   "bytes_total": 264841473,
    "source_sha1": {
-    "manifest.json": "498bed2a53d20d99509b5110c6c7dd3ddc62945d"
+    "manifest.json": "47f080492e0d539070a79c1ebb04a33145a03cb7"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   },
   {
    "id": "rosario_04",
-   "title": "Soybean field",
+   "title": "Long green soybean rows",
    "place": "Rosario, Argentina",
    "platform": "farm robot (Rosario Dataset)",
    "board_route": "rosario_04",
@@ -482,53 +356,35 @@
     "keyframes": 597,
     "duration_s": 164.8,
     "path_m": 142.9,
-    "gaussians": 1999991,
+    "gaussians": 1999996,
     "gaussians_lite": 600000,
-    "points": 515836,
+    "points": 543895,
     "has_gt": true,
     "has_orb3": true
-   },
-   "film": {
-    "mp4": "film/film.mp4",
-    "webm": "film/film.webm",
-    "poster": "film/film.jpg",
-    "mp4_type": "video/mp4; codecs=\"avc1.640028\"",
-    "webm_type": "video/webm; codecs=\"av01.0.08M.08\"",
-    "stretch": {
-     "t0": 15.0,
-     "t1": 39.0,
-     "path_m": 25.3,
-     "mean_speed_mps": 1.052,
-     "n_kf": 94
-    },
-    "speed_factor": 2.0,
-    "width": 1280,
-    "height": 716,
-    "duration_s": 12.0
    },
    "files": {
     "ATTRIBUTION.json": 1042,
     "keyframes.json": 18445,
-    "manifest.json": 3389,
-    "points.bin": 4642524,
+    "manifest.json": 3223,
+    "points.bin": 4895055,
     "points.json": 1468,
-    "preview.jpg": 141162,
-    "splats.spz": 38859850,
-    "splats_lite.json": 979,
-    "splats_lite.spz": 11899735,
-    "thumb.jpg": 29165,
+    "preview.jpg": 149329,
+    "splats.spz": 38716800,
+    "splats_lite.json": 980,
+    "splats_lite.spz": 11895324,
+    "thumb.jpg": 30043,
     "traj.json": 112480,
-    "film/film.jpg": 89584,
-    "film/film.json": 826,
-    "film/film.mp4": 3388832,
-    "film/film.webm": 1651003,
-    "film/film.webp": 39188,
-    "full/splats.ply": 207999697
+    "full/splats.ply": 208000217
    },
    "keyframe_images": 80,
-   "bytes_total": 269987591,
+   "bytes_total": 264932628,
    "source_sha1": {
-    "manifest.json": "d7b2390ab1eed6bfcd2c8874c4d4407827a6d6c8"
+    "manifest.json": "dff6019019dfec212983b81fe58f0fd91223c6a3"
+   },
+   "depth": {
+    "model": "nrs-large",
+    "version": "0.1.0",
+    "old": "SGM32 (32-path semi-global matching)"
    }
   }
  ]

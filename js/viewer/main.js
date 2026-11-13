@@ -1,3 +1,7 @@
+// site v12: ember literals read the accent token (tools/make_site_v12.py)
+const __acc = () => (getComputedStyle(document.documentElement).getPropertyValue('--path').trim() || '#6fc7b0');
+const __accRgb = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rgb').trim() || '111, 199, 176');
+const __accRim = () => (getComputedStyle(document.documentElement).getPropertyValue('--path-rim').trim() || '#e3f4ee');
 // Necessity Robotics 3-D map viewer ("mission control", DESIGN.md section 5.2).
 //   viewer.html?map=<id>[&t=<s>][&cam=pov|follow][&q=lite|standard]
 //
@@ -478,7 +482,7 @@ function onQuality(q) {
   stage.world.quaternion.setFromUnitVectors(up, new THREE.Vector3(0, 1, 0));
   stage.world.updateMatrixWorld(true);
   R.track = new PoseTrack(traj.ours);
-  const C = { ours: '#6cc9ff', orb3: '#ffad7a', gt: '#f2f5fa', ink: '#000000', none: '#a3aebe' };
+  const C = { ours: __acc(), orb3: '#c4c9cd', gt: '#f2f5fa', ink: '#000000', none: '#a3aebe' };
   const ext = Math.max(1, R.track.cum[R.track.n - 1] / 20);
   R.trajs = new Trajectories({ ...traj, orb3: null }, { seg: null, C, ramp: null, scale: null, dash: clamp(ext / 40, 0.05, 6) });
   stage.world.add(R.trajs.group);

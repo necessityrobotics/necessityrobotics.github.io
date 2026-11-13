@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- page-to-page cross-fade opt-in, inline so it holds from the first style pass (css/site.css repeats it) -->
+<style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
+<title>Walk into a 3-D place · Necessity Robotics</title>
+<meta name="description" content="A real place you can walk through in 3-D, built from camera photos by our robot software. Drag to look around, step along the camera's path. It is not a video.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
+<!-- the import map comes before every module request. The 3-D modules (three.js, Spark) are fetched only by
+     js/place/mount.js, and only on a device that can run them. -->
+<script type="importmap">
+{"imports":{
+  "three":"./vendor/three/three.module.js",
+  "three/addons/":"./vendor/three/addons/",
+  "@sparkjsdev/spark":"./vendor/spark/spark.module.js"
+}}
+</script>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/v4.css">
+<link rel="stylesheet" href="js/place/place.css">
+<link rel="stylesheet" href="css/explore.css">
+<link rel="modulepreload" href="js/v4/common.js">
+<link rel="modulepreload" href="js/place/mount.js">
+<script>document.documentElement.dataset.acc = 'trio';</script>
+<link rel="stylesheet" href="css/recolour.css">
+<link rel="stylesheet" href="css/v12.css">
+<link rel="stylesheet" href="css/accent.css">
+</head>
+<body class="xp v12" data-state="still">
+<a class="skip" href="#pl">Skip to the 3-D place</a>
+
+<!-- THE 3-D VIEW (BUILD_PLAN 3.2). No Play, no Pause, no time bar, no speed: nothing here moves until the visitor moves it.
+     Names, numbers and credits come from data/places.json (tools/build_static.py fills the gen: markers; js/place/explore.js
+     fills the rest). -->
+<header class="xp-top">
+  <a class="xp-back" href="maps.html"><span class="xp-arr" aria-hidden="true">&larr;</span> All places</a>
+  <a class="wordmark xp-wm" href="./" aria-label="Necessity Robotics, home">Necessity <i>Robotics</i></a>
+  <div class="xp-title">
+    <h1 class="xp-name" id="xp-name"><!-- gen:val:hero.name -->A park path under trees<!-- /gen:val:hero.name --></h1>
+    <p class="xp-line">A 3-D place built from camera photos. <b>Not a video.</b></p>
+  </div>
+  <nav class="xp-switch" aria-label="Places">
+    <a class="xp-nav" id="xp-prev" href="maps.html" aria-label="Previous place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a>
+    <button class="xp-pill" id="xp-pill" type="button" aria-expanded="false" aria-controls="xp-places">
+      <img class="xp-pill-pic" id="xp-pill-pic" alt="" width="52" height="34" hidden>
+      <span class="xp-pill-t"><b id="xp-count">Place</b><i>change</i></span>
+      <svg class="xp-pill-v" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <a class="xp-nav" id="xp-next" href="maps.html" aria-label="Next place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></a>
+  </nav>
+  <button class="xp-about" id="xp-about" type="button" aria-expanded="false" aria-controls="xp-sheet">About this place</button>
+</header>
+
+<main id="main" class="xp-stage">
+  <div class="pl" id="pl" data-mode="full" data-state="still">
+    <!-- gen:hero-still -->
+    <img class="pl-still" src="img/places/oak_161206.jpg" alt="Picture of the 3-D place: A park path under trees" width="1280" height="800" decoding="async" fetchpriority="high" data-place="oak_161206" data-kf="40" data-at="117.2">
+    <!-- /gen:hero-still -->
+  </div>
+  <script>
+    // the right picture before the first paint (the static picture above is the hero place: it is what shows without scripts).
+    // An upright screen gets the upright picture <id>_p.jpg: the live view then replaces it without a change of size.
+    (function () {
+      var q = new URLSearchParams(location.search), m = q.get('map'), im = document.querySelector('#pl .pl-still'), d = document.documentElement;
+      if (q.get('bare') === '1') d.classList.add('xp-bare');
+      var id = im.dataset.place, other = m && /^[a-z0-9_]{3,40}$/.test(m) && m !== id;
+      if (other) {
+        id = m; im.alt = 'Picture of the 3-D place'; im.dataset.place = m;
+        im.removeAttribute('data-kf'); im.removeAttribute('data-at');
+        d.classList.add('xp-other');                    // its name and credit follow from data/places.json
+        if (/^rosario_/.test(m)) d.classList.add('xp-ros');
+      }
+      var upright = window.innerHeight > window.innerWidth;
+      if (upright) { im.onerror = function () { im.onerror = null; im.src = 'img/places/' + id + '.jpg'; }; im.removeAttribute('width'); im.removeAttribute('height'); }
+      if (other || upright) im.src = 'img/places/' + id + (upright ? '_p' : '') + '.jpg';
+    })();
+  </script>
+
+  <!-- loading: a small text chip. Never a spinner, never a bar over the picture (R4). -->
+  <p class="v4-chip v4-chip--wait xp-status" id="xp-status" hidden>Getting the 3-D place ready</p>
+
+  <!-- a device that cannot run the 3-D place keeps the picture and gets one plain sentence (R5) -->
+  <div class="xp-cannot" id="xp-cannot" hidden>
+    <p id="xp-cannot-t"></p>
+    <p class="xp-cannot-b"><button class="btn btn--ion" id="xp-again" type="button" hidden>Open it again</button><a class="btn" href="maps.html">See all places</a></p>
+  </div>
+
+  <!-- the hint: beside the picture, never over its middle, never a button to press first. Shown only while the place is live (R3). -->
+  <aside class="xp-hint xp-live" id="xp-hint" aria-label="How to move">
+    <p class="xp-hint-h"><span class="xp-wide">You are standing on this path. </span><b>You are in control.</b></p>
+    <ul class="xp-hint-rows">
+      <li id="xp-h-ride"><span class="xp-ic" aria-hidden="true"><svg viewBox="0 0 64 36"><path class="b" d="m22 20 10-10 10 10M22 31l10-10 10 10"/></svg></span><span><b>Press Ride</b> to glide along the path<span class="xp-narrow">.</span></span></li>
+      <li id="xp-h-look"><span class="xp-ic" aria-hidden="true"><svg viewBox="0 0 64 36"><path class="b" d="M17 18H4m0 0 5.5-5.5M4 18l5.5 5.5M47 18h13m0 0-5.5-5.5M60 18l-5.5 5.5"/><path d="M30 17V8a2.2 2.2 0 0 1 4.4 0v8l5.6 1.2a2.6 2.6 0 0 1 2 3l-.8 6a3.4 3.4 0 0 1-3.4 2.9h-5.3a3.4 3.4 0 0 1-2.6-1.2l-5.3-5.3a1.8 1.8 0 0 1 2.6-2.5l2.8 2.5"/></svg></span><span><b><span class="when-touch">Swipe</span><span class="when-fine">Drag</span></b> to look<span class="xp-wide"> around</span><span class="xp-narrow">. </span></span></li>
+      <li id="xp-h-step"><span class="xp-ic" aria-hidden="true"><svg viewBox="0 0 64 36"><path d="M32 3v30" stroke-opacity=".45"/><circle cx="32" cy="29" r="2.6" fill="currentColor" stroke="none"/><path d="m24 17 8-7 8 7"/><path d="m26 24 6-5 6 5" stroke-opacity=".5"/></svg></span><span><b><span class="when-touch">Tap</span><span class="when-fine">Click</span> a light on the path</b> to step<span class="xp-wide"> there</span><span class="xp-narrow">.</span></span></li>
+      <li class="xp-fine" id="xp-h-keys"><span class="xp-ic" aria-hidden="true"><svg viewBox="0 0 64 36"><rect x="24" y="2" width="16" height="14" rx="3"/><rect x="6" y="19" width="16" height="14" rx="3"/><rect x="24" y="19" width="16" height="14" rx="3"/><rect x="42" y="19" width="16" height="14" rx="3"/><path class="b" d="m29 11 3-3 3 3M29 24l3 3 3-3M16 23l-3 3 3 3M48 23l3 3-3 3"/></svg></span><span>or use the <b>arrow keys</b></span></li>
+    </ul>
+    <button class="xp-hint-x" id="xp-hint-x" type="button" aria-label="Hide these tips"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </aside>
+  <button class="xp-help xp-live" id="xp-help" type="button" hidden>How to move</button>
+
+  <!-- one plain line after the visitor's first look and first step (also read to screen readers) -->
+  <p class="xp-said" id="xp-said" role="status" aria-live="polite"></p>
+
+  <!-- "You are here": the camera's path from above, the dot, the view fan. A tap on the line jumps there. -->
+  <section class="xp-you xp-live" id="xp-you" aria-label="You are here">
+    <p class="xp-you-h"><span class="xp-dot" aria-hidden="true"></span><b>You are here</b><span class="xp-prog" id="xp-prog"></span></p>
+    <div class="xp-map" id="xp-map"></div>
+    <p class="xp-map-note"><span class="when-touch">Tap the path</span><span class="when-fine">Click the path</span><i class="xp-note-more"> to jump there</i></p>
+    <button class="xp-above" id="xp-above" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg><span>See the whole path from above</span></button>
+  </section>
+
+  <!-- the real camera photo of this spot: flat, it cannot turn. Phone: a small picture; a tap opens the card. -->
+  <figure class="xp-photo xp-live" id="xp-photo">
+    <button class="xp-print" id="xp-photo-btn" type="button" aria-expanded="false" aria-controls="xp-photo-cap"><img id="xp-photo-img" alt="" width="320" height="200" decoding="async"></button>
+    <span class="xp-photo-s" id="xp-photo-s" aria-hidden="true">Photo from here</span>
+    <figcaption id="xp-photo-cap"><b id="xp-photo-h">The camera&rsquo;s photo from here.</b> <span id="xp-photo-t">A photo is flat. This place turns.</span></figcaption>
+  </figure>
+
+  <!-- move: ONE dock. The big button starts and stops the ride along the camera's path (a tap, no holding).
+       The two step keys use the sign of the circles on the ground: a chevron. -->
+  <div class="xp-dock xp-live" id="xp-move" role="group" aria-label="Move through the place">
+    <button class="xp-auto" id="xp-ride" type="button" aria-pressed="false" aria-label="Ride along the path">
+      <span class="xp-auto-ic" aria-hidden="true"><svg class="xp-ic-go" viewBox="0 0 24 24"><path d="m6 12 6-6 6 6M6 19l6-6 6 6"/></svg><svg class="xp-ic-stop" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12m0-6.5V5a1.5 1.5 0 0 1 3 0v7m0-5.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-.5a6 6 0 0 1-4.6-2.2L4.3 15a1.5 1.5 0 0 1 2.3-1.9L8 15"/></svg></span>
+      <span class="xp-auto-t" aria-hidden="true"><b id="xp-ride-b">Ride along the path</b><i id="xp-ride-i"><span class="when-touch">Tap</span><span class="when-fine">Click</span> to start. <span class="when-touch">Tap</span><span class="when-fine">Click</span> again to stop.</i></span>
+    </button>
+    <div class="xp-steps">
+      <button class="xp-key xp-key--fwd" type="button" data-act="fwd" aria-label="One step forward along the path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg><span>Step</span></button>
+      <button class="xp-key" type="button" data-act="back" aria-label="One step back along the path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span>Back</span></button>
+    </div>
+    <div class="xp-speed" id="xp-speed" role="group" aria-label="Speed of the ride">
+      <span class="xp-speed-l">Speed:</span>
+      <button type="button" data-k="0.5" aria-pressed="false">Slow</button>
+      <button type="button" data-k="1" aria-pressed="true">Normal</button>
+      <button type="button" data-k="2.5" aria-pressed="false">Fast</button>
+    </div>
+    <button class="xp-keep" id="xp-keep" type="button" hidden></button>
+  </div>
+
+  <!-- off the path, or above it: one button back -->
+  <button class="xp-center xp-live" id="xp-backpath" type="button" hidden>Back to the camera&rsquo;s path</button>
+  <div class="xp-aboveui xp-live" id="xp-aboveui" hidden>
+    <p class="xp-above-t">The whole path the camera took. <span class="when-touch">Tap</span><span class="when-fine">Click</span> the line to go down there.</p>
+    <button class="btn btn--ion xp-ground" id="xp-ground" type="button">Back to the ground</button>
+  </div>
+</main>
+
+<footer class="xp-foot">
+  <p class="xp-honest">This is a 3-D place built from camera photos. It is not a video.</p>
+  <p class="xp-foot-r">
+    <button class="xp-link" id="xp-limits-btn" type="button" aria-controls="xp-sheet">Where it is not perfect</button>
+    <button class="xp-link xp-link--about" id="xp-about2" type="button" aria-controls="xp-sheet">About this place</button>
+    <span class="v4-credit xp-credit" id="xp-credit"><span class="xp-credit-own"><!-- gen:val:places.own_credit -->3-D place by Necessity Robotics. Free to reuse with credit.<!-- /gen:val:places.own_credit --></span><span class="xp-credit-ros"><!-- gen:val:places.rosario_credit -->Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.<!-- /gen:val:places.rosario_credit --></span></span>
+  </p>
+</footer>
+
+<!-- change place: 8 pictures with plain names; one tap -->
+<section class="xp-places" id="xp-places" aria-labelledby="xp-places-h" hidden>
+  <div class="xp-places-head">
+    <h2 id="xp-places-h" tabindex="-1">Change place</h2>
+    <button class="xp-x" id="xp-places-x" type="button">Close</button>
+  </div>
+  <!-- gen:placerow -->
+  <ul class="v4-placerow">
+    <li><a class="v4-placerow-item" href="explore.html?map=oak_161206" data-place="oak_161206" aria-label="A park path under trees. Walk in."><img src="img/places/oak_161206.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Park path</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=oak_161834" data-place="oak_161834" aria-label="A street in India. Walk in."><img src="img/places/oak_161834.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Street</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=oak_164424" data-place="oak_164424" aria-label="A lane under trees. Walk in."><img src="img/places/oak_164424.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Lane</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=oak_164002" data-place="oak_164002" aria-label="A long straight road. Walk in."><img src="img/places/oak_164002.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Straight road</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=oak_160543" data-place="oak_160543" aria-label="A shaded park walk. Walk in."><img src="img/places/oak_160543.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Park walk</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=rosario_01" data-place="rosario_01" aria-label="A soybean field in Argentina. Walk in."><img src="img/places/rosario_01.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Soybean field</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=rosario_03" data-place="rosario_03" aria-label="Soybean rows beside a dry field. Walk in."><img src="img/places/rosario_03.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Soybean rows</span></a></li>
+    <li><a class="v4-placerow-item" href="explore.html?map=rosario_04" data-place="rosario_04" aria-label="Long green soybean rows. Walk in."><img src="img/places/rosario_04.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async"><span>Green rows</span></a></li>
+  </ul>
+  <p class="v4-credit v4-placerow-credit">Soybean field, Soybean rows and Green rows. Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+  <!-- /gen:placerow -->
+</section>
+
+<!-- About this place / For engineers. Plain words first; every technical fact of the old viewer panel stays, closed. -->
+<section class="xp-sheet" id="xp-sheet" aria-labelledby="xp-sheet-h" hidden>
+  <div class="xp-sheet-head">
+    <h2 id="xp-sheet-h" tabindex="-1">About this place</h2>
+    <button class="xp-x" id="xp-sheet-x" type="button">Close</button>
+  </div>
+  <div class="xp-sheet-body" id="xp-sheet-body">
+    <p class="xp-s-kind" id="xp-s-kind"></p>
+    <h3 id="xp-limits">Where it is not perfect</h3>
+    <p id="xp-s-limits"></p>
+    <p class="xp-s-quiet" id="xp-s-intro"></p>
+    <h3 id="xp-s-bw-h" hidden>Why black and white?</h3>
+    <p id="xp-s-bw" hidden>Black and white, because this camera&rsquo;s two eyes see no colour.</p>
+    <h3>Where does its shape come from?</h3>
+    <p>From our depth model, nrs-large. It looked at the photo pair of each keyframe and worked out how far away each point is. The map builder starts from these points, then fits the place to the photos. <a class="v4-quiet" href="depth.html">Compare the old depth and the new depth</a></p>
+    <h3>Why does it look soft?</h3>
+    <p>A computer built it from the photos. No person touched it up.</p>
+    <p class="v4-credit xp-s-credit" id="xp-s-credit"></p>
+    <p><a class="v4-quiet" href="maps.html#limits">All places, and where each is not perfect</a></p>
+    <details class="xp-eng" id="xp-eng" data-engineers>
+      <summary>For engineers</summary>
+      <div class="xp-eng-body" id="xp-eng-body"></div>
+    </details>
+  </div>
+</section>
+
+<noscript><p class="xp-noscript">The 3-D place needs scripts. This is a picture of it. <a href="maps.html">See all places</a></p></noscript>
+<script type="module" src="js/v4/common.js"></script>
+<script type="module" src="js/place/explore.js"></script>
+</body>
+</html>

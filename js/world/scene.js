@@ -117,7 +117,7 @@ export class WorldScene {
   /** stage: WorldStage; atlas: atlas.json; params: the tier's. */
   constructor(stage, atlas, params) {
     this.stage = stage; this.atlas = atlas; this.params = params;
-    this.ion = new THREE.Color(token('--ion', '#6cc9ff'));
+    this.ion = new THREE.Color(token('--path', '#6fc7b0'));
     this.islands = new Map();
     this.mats = new Set();
     this.routeMats = new Set();

@@ -1,0 +1,419 @@
+// V12 home (owner 2026-11-13: "we land on landing page, we see park in background, we scroll down and move with the park
+// for few seconds then animation takes to all floating trajectories to choose from, when further scrolled down let's
+// choose maps (from thumbnail); this entire section is 1 about the 3d map, trajectories"). One sticky stage, six stops;
+// the scroll is the only clock, except the first screen's ride.
+//   0  first screen (V11): the park plays in the background (a walk round the path, which this page closes into a loop);
+//      the pointer moves the camera sideways a little (parallax)
+//   1  the scroll moves the visitor along the path with the park (30 m from where the ride was)
+//   2  THE LIVE SITE'S PULL-BACK (website_nr3 director.js 'rise' + world.js splat rule): up and back on a cubic Bezier;
+//      the gaze drops onto the ground ahead early, then pans to the place's middle. As the camera climbs, the splats
+//      fade out and the 3-D points fade in (engine o.pointsAbove); the path draws outward from the visitor's spot.
+//   3  the whole park from above: points and one line in the dark
+//   4  the view goes on out to all eight places: the floating trajectories (atlas.js, the AI-depth points of each map)
+//   5  pick one: each name or island opens a choice (walk into the 3-D place / its depth, classic vs AI)
+// The page sets the camera (setDirect, w = 1). A short spring follows the scroll and stops; the pointer adds parallax.
+// Reduced motion: no ride, the stage cuts from stop to stop. Test shots (?snap=1) and ?ride=0: no ride. Phones: pictures.
+import { mountPlace, SWITCH } from './place/mount.js';
+import { mountDark } from './dark.js';
+import { current as accent, picker } from './accent.js';
+
+performance.mark('f-mod');                                // timing marks (a test reads them; they cost nothing)
+const $ = (s, r = document) => r.querySelector(s);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const sm = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const ss = t => { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };      // smootherstep (as director.js)
+const ramp = (x, a, b) => clamp((x - a) / (b - a), 0, 1);
+const easeOutCubic = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const DEG = Math.PI / 180;
+const Q = new URLSearchParams(location.search);
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PHONE = matchMedia('(max-width: 760px)').matches;
+const SNAP = Q.get('snap') === '1' || REDUCE;            // tests: no spring (one exact frame per scroll position)
+const STOPS = 5;
+const PLACE = 'oak_161206';
+const RIDE = !REDUCE && !SNAP && Q.get('ride') !== '0';
+const RIDE_MS = 1.4;                                      // metres per second (the first screen's ride)
+const LOOK_M = 24;                                        // the eye looks this far ahead; the picture's push-in aims there (f.css)
+// owner 11-13: "landing page should immediately show the moving map": until the live place is ready, its picture (a frame
+// of this very view, img/first.jpg) pushes in like the walk; the live ride then starts as far along the path as the picture
+// went. The page head adds f-drift too (before this module and three.js arrive); this line is for pages without that head.
+if (RIDE && !PHONE) document.documentElement.classList.add('f-drift');
+if (!PHONE) document.documentElement.classList.add('f-desk');
+const RIDE_TAU = 0.9;                                     // s: the live walk eases from the picture's speed to RIDE_MS
+const FADE_MS = 650;                                      // the picture and the live place cross this long (f.css 0.6 s)
+const SEAM_M = 25;                                        // the loop: the path's last metres bend onto its start
+const MOVE_M = 30;                                        // stop 1: the scroll moves the visitor this far along the path
+const RIDE_B = 0.04;                                      // the walk runs below this beat; above it the scroll moves the visitor
+const ATLAS_B = 0.25;                                     // the eight places load once the visitor scrolls past this beat
+const RISE0 = 1.05, RISE1 = 2.6;                          // the pull-back runs between these beats
+const OUT0 = 3.25, OUT1 = 4.15;                           // the view goes out to all eight places between these beats
+const END_SX = -0.22;                                     // the whole park sits right of the caption cards
+const HERE = (p) => new URL(p, import.meta.url).href;      // this folder (the page may live elsewhere: the V12 mix)
+const ACC = accent();
+const OPEN = (typeof window !== 'undefined' && window.__fOpen) || HERE('open.html');   // the site build: explore.html
+
+const stage = $('#stage'), hero = $('#hero'), box = $('#place');
+const first = $('#first'), veil = $('#veil'), hint = $('#hint'), hintT = $('#hint-t'), stateEl = $('#state');
+const still = $('#still'), stillP = $('#still-p'), atlasEl = $('#atlas-in'), darkEl = $('#dark');
+// the first screen: out of the dark (site v4.1, owner 11-13): the place shows where the visitor points; the scroll lights it
+const dark = !PHONE && darkEl ? mountDark(darkEl, stage, { at: [0.62, 0.36] }) : null;
+const caps = [...document.querySelectorAll('.h-cap')], rail = [...document.querySelectorAll('.h-rail li')];
+// phones: pictures of the same views, cut at each stop
+const PICS = ['/img/places/oak_161206_p.jpg', '/img/places/oak_161206_p.jpg', HERE('img/a_p2.jpg'), HERE('img/a_p3.jpg'), HERE('img/atlas_p.jpg'), HERE('img/atlas_p.jpg')];
+// a desktop without the live place: the first screen is a frame of this very view (img/first.jpg)
+const PICS_L = [HERE('img/first.jpg'), HERE('img/first.jpg'), HERE('img/a_l2.jpg'), HERE('img/a_l3.jpg'), HERE('img/a_l3.jpg'), HERE('img/a_l3.jpg')];
+
+// links keep the test switches; the 3-D view opens where the visitor is on the path
+const keep = new URLSearchParams();
+for (const k of ['force3d', 'shot', 'q', 'tier', 'assets']) if (Q.has(k)) keep.set(k, Q.get(k));
+let hereAt = 117;
+const openHref = (at, id = PLACE) => { const u = new URL(OPEN, location.href); u.searchParams.set('map', id); if (at != null) u.searchParams.set('at', String(Math.round(at))); for (const [k, v] of keep) u.searchParams.set(k, v); return u.href; };
+/** Every door of the stage (a[data-open]) opens the 3-D view: data-open="<id>" another place, "" this park where you are. */
+function setLinks() {
+  document.querySelectorAll('a[data-open]').forEach(a => { const id = a.dataset.open; a.href = id ? openHref(null, id) : openHref(hereAt); });
+}
+setLinks();
+
+// ------------------------------------------------------------------ the scroll: beat b in 0..5 (one unit per stop)
+let bt = 0, b = 0, fixedB = null, stopNow = -1;
+function readScroll() {
+  const r = hero.getBoundingClientRect(), H = innerHeight;
+  const p = clamp(-r.top / Math.max(1, r.height - H), 0, 1);
+  bt = fixedB != null ? fixedB : p * STOPS;
+  if (REDUCE) bt = Math.round(bt);
+}
+
+/** The words and the layers of the stage for beat x (no 3-D here). */
+function ui(x) {
+  const f = 1 - sm(0.04, 0.3, x);
+  first.style.opacity = (f * f).toFixed(3);
+  first.style.visibility = f < 0.01 ? 'hidden' : 'visible';
+  first.inert = f < 0.5;
+  hint.style.opacity = (1 - sm(0.04, 0.22, x)).toFixed(3);
+  // with the dark (desktop) the dark itself is the vignette, as on site v4.1: C's veil would keep a cleared area black
+  veil.style.opacity = dark ? '0' : (1 - sm(0.08, 0.5, x)).toFixed(3);
+  dark?.setP(ramp(x, 0, 1));
+  const s = Math.round(x), on = Math.abs(x - s) < 0.3 ? s : -1;
+  if (on !== stopNow) {
+    stopNow = on;
+    stage.dataset.stop = String(Math.max(0, on));
+    caps.forEach(c => { const k = +c.dataset.cap === on; c.classList.toggle('is-on', k); c.inert = !k; });
+    if (!live.E) {
+      const i = clamp(s, 0, STOPS);
+      if (still.src !== PICS_L[i]) still.src = PICS_L[i];
+      if (new URL(stillP.getAttribute('srcset') || '', location.href).href !== new URL(PICS[i], location.href).href) stillP.srcset = PICS[i];
+    }
+  }
+  rail.forEach((li, i) => li.classList.toggle('is-on', i === s));
+  // the hand-off (owner 11-13: "more blend in, smoother"): the eight places start from the park's own camera, so the park
+  // island lies exactly on the park's points; the two layers cross (no dark moment) and the view goes on out
+  // no eight places (no 3-D here, or they failed): the park picture stays, and the list under the hero shows them
+  const parkO = live.atlas ? 1 - sm(OUT0 + 0.05, OUT0 + 0.45, x) : 1, atlasO = live.atlas ? sm(OUT0 - 0.05, OUT0 + 0.25, x) : 0;
+  box.style.opacity = parkO.toFixed(3);
+  if (atlasEl) {
+    atlasEl.style.opacity = atlasO.toFixed(3);
+    atlasEl.style.visibility = atlasO < 0.01 ? 'hidden' : 'visible';
+    live.atlas?.setK(ramp(x, OUT0 + 0.1, OUT1));
+    live.atlas?.setOn(x > OUT1 - 0.1);
+  }
+  live.parkHidden = parkO < 0.01;
+  if (live.E) live.E.setOffscreen(live.parkHidden);          // no frames for a park nobody sees
+}
+
+// ------------------------------------------------------------------ the place
+const live = { E: null, handle: null, atlas: null, par: { x: 0, y: 0, tx: 0, ty: 0 }, look: { yaw: 0, pitch: 0, tyaw: 0, tpitch: 0, drag: null } };
+window.__f = {
+  get b() { return b; }, get bt() { return bt; }, get live() { return !!live.E; },
+  get handle() { return handle; },                         // tests: the place loader (its engine before it is live)
+  get settled() { return !!live.E && (live.parkHidden || live.E.settled) && Math.abs(b - bt) < 1e-3; },   // a hidden park draws nothing
+  get points() { return live.E?.measured || null; },
+  get atlas() { return live.atlas; },
+  /** test hook: hold the stage at beat x (null = follow the scroll again) */
+  at(x) { fixedB = x; readScroll(); if (SNAP) b = bt; live.E?.stage.invalidate(); ui(b); return true; },
+  /** test hook: the pointer (-1..1) for parallax, without a mouse */
+  par(x, y) { live.par.tx = live.par.x = x; live.par.ty = live.par.y = y; live.E?.stage.invalidate(); return true; },
+  /** test hook: hold the first screen's ride at metre `at` (the ride stops; tests need exact frames) */
+  ride(at) { return live.rideTo ? live.rideTo(at) : false; },
+  /** test hook: the walk goes on from metre `at` (it keeps walking); returns the loop's length and seam */
+  walk(at) { return live.walkFrom ? live.walkFrom(at) : false; },
+  get rideState() { const r = live.ride; return r ? { at: r.at, v: r.v, lock: r.lock, on: r.on } : null; },
+  get E() { return live.E; },
+};
+
+function setState(d) {
+  // the words: on a desktop the live versions from the start (the picture walks in, the dark answers the mouse); the
+  // picture versions only where no live place will come
+  const liveish = d.state === 'live' || (dark && (d.state === 'loading' || (d.state === 'still' && !d.text)));
+  stage.dataset.live = liveish ? '1' : '0';
+  if (d.state === 'failed' && live.E) {
+    // the place died after it was live (too slow, context lost): the page goes back to its pictures for every stop
+    live.E = null; live.starting = false; live.riding = false; delete box.dataset.posed; stopNow = -1; ui(bt);
+  }
+  if (d.state === 'failed' || (d.state === 'still' && d.text)) {
+    document.documentElement.classList.add('f-noatlas');      // v12.css shows the list
+    document.documentElement.classList.add('f-still');         // no live walk will follow: the picture stops where it is
+  }
+  // while the picture walks in (desktop), the first screen says nothing about loading: it is already moving
+  stateEl.textContent = d.state === 'loading' ? (dark ? '' : 'Getting the 3-D place ready.') : d.state === 'live' ? '' : d.text || '';
+  // a touch screen has no mouse: the dark does not follow a finger (dark.js) and a drag scrolls, so no mouse words there
+  const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
+  hintT.textContent = liveish ? (touch ? 'The dark hides a real place. Scroll to light it.' : 'Move your mouse. The dark hides a real place. Scroll to light it.') : 'Scroll: move along the path, then rise above it.';
+}
+
+async function startLive(handle) {
+  const E = handle?.engine;
+  if (!E?.live || live.E || live.starting) return;
+  live.starting = true;
+  performance.mark('f-live');
+  const THREE = await import('three');
+  live.E = E; live.handle = handle;
+  const tr = E.track, UP = new THREE.Vector3(0, 1, 0);
+  const left = at => { const a = tr.tanAt(at); return new THREE.Vector3(-Math.cos(a), 0, Math.sin(a)); };
+  const m4 = new THREE.Matrix4();
+  const look = (p, t) => new THREE.Quaternion().setFromRotationMatrix(m4.lookAt(p, t, UP));
+  // the loop: the camera's path ends 9 m past its start, 1.7 m aside and 1.6 m LOWER (the drift of the measurement; the
+  // map near metres 0-15 holds both passes' ground, 1.6-1.8 m apart). The walk goes round at LOOP, the metre nearest the
+  // start, and the last SEAM_M metres bend onto the start (camera and line, engine X.loop): a slow rise of 1.6 m over 25 m
+  // (the camera may not go below the start's own ground, which begins at about metre 2). From above, the line is drawn
+  // as measured again (X.loop.k goes to 0 in the pull-back, while the camera is high).
+  const L = E.total, g0 = tr.ground(0, new THREE.Vector3()), gq = new THREE.Vector3();
+  let LOOP = L, gap = Infinity;
+  for (let a = L - 40; a <= L; a += 0.05) { const h = tr.ground(a, gq); const d = Math.hypot(h.x - g0.x, h.z - g0.z); if (d < gap) { gap = d; LOOP = a; } }
+  if (!(gap < 4)) LOOP = L;                                 // no near closure: the walk wraps as the path is
+  const SEAM = LOOP < L ? g0.clone().sub(tr.ground(LOOP, gq)) : new THREE.Vector3();
+  const wrap = a => ((a % LOOP) + LOOP) % LOOP;
+  const G = (at, out) => { at = wrap(at); tr.ground(at, out); return out.addScaledVector(SEAM, sm(LOOP - SEAM_M, LOOP, at)); };
+  const P = (at, side, h) => G(at, new THREE.Vector3()).addScaledVector(left(wrap(at)), side).addScaledVector(UP, h);
+  const loopX = k => ({ len: LOOP, seam: [SEAM.x, SEAM.y, SEAM.z], seamLen: SEAM_M, k });
+  // the eye 1.35 m up, a little left of the path, looking 24 m ahead
+  const eyeAt = at => { const p = P(at, 0.3, 1.35); return { p, q: look(p, P(at + LOOK_M, 0, 1.05)), sx: -0.24 }; };
+  const at00 = wrap(E.photos[E.photos.length > 40 ? 40 : 0].at - 10.4);          // where img/first.jpg was made
+  // how far the picture has walked: its push-in scale s (f.css) = LOOK_M (1 - 1 / s) metres toward the point ahead
+  const pushed = RIDE && still.src.includes('first.jpg');
+  const went = () => {
+    if (!pushed) return 0;
+    const tf = getComputedStyle(still).transform, s = tf && tf !== 'none' ? parseFloat(tf.slice(tf.indexOf('(') + 1)) : 1;
+    return s > 1 ? LOOK_M * (1 - 1 / s) : 0;
+  };
+  // lock: while the picture and the live place cross, the live walk stands where the picture is (from the first posed
+  // frame for FADE_MS); then it goes on at the picture's speed v and eases to RIDE_MS
+  live.ride = { at: wrap(at00 + went()), on: RIDE, at0: null, v: 0, lock: pushed ? -1 : 0 };
+  performance.mark('f-went', { detail: { metres: live.ride.at - at00 } });
+  live.walkFrom = at => { live.ride.on = RIDE; live.ride.lock = 0; live.ride.at = wrap(at); live.ride.at0 = null; E.stage.invalidate(); return { loop: LOOP, seam: SEAM.toArray() }; };
+  live.rideTo = at => { live.ride.on = false; live.riding = false; live.ride.lock = 0; live.ride.at = wrap(at); live.ride.at0 = null; build(); E.S.at = live.ride.at; E.stage.invalidate(); return true; };
+  // the whole park: its middle and size (ground points every 2 m), for the end of the pull-back
+  const bb = new THREE.Box3(), g = new THREE.Vector3();
+  for (let m = 0; m <= L; m += 2) bb.expandByPoint(tr.ground(m, g));
+  const mid = bb.getCenter(new THREE.Vector3()), size = bb.getSize(new THREE.Vector3());
+  const RAD = 0.5 * Math.hypot(size.x, size.z);
+  /** The pull-back from the eye at metre `capAt` (director.js 'rise', scaled from the live site's 1 km street to 227 m). */
+  function build() {
+    const at0 = live.ride.at0 ?? live.ride.at, capAt = wrap(at0 + MOVE_M);
+    const cap = eyeAt(capAt);
+    const f = new THREE.Vector3(0, 0, -1).applyQuaternion(cap.q); f.y = 0; f.normalize();
+    const endPos = mid.clone().addScaledVector(f, -RAD * 1.45).addScaledVector(UP, RAD * 2.05);
+    const P1 = cap.p.clone().addScaledVector(UP, 14).addScaledVector(f, -22);
+    const P2 = P1.clone().lerp(endPos, 0.5); P2.y += 0.15 * P1.distanceTo(endPos);
+    const ahead = cap.p.clone().addScaledVector(f, 18); ahead.y = G(capAt, g).y;
+    live.rise = { cap, capAt, P1, P2, endPos, endTarget: mid.clone(), ahead };
+  }
+  build();
+
+  const rp = new THREE.Vector3(), T = new THREE.Vector3(), yawQ = new THREE.Quaternion();
+  const fwd = new THREE.Vector3(), right = new THREE.Vector3(), up = new THREE.Vector3(), F = new THREE.Vector3(), dir = new THREE.Vector3(), rot = new THREE.Quaternion(), dPar = new THREE.Vector3();
+  const bez = (a, b1, b2, c, t, out) => {
+    const u = 1 - t;
+    return out.copy(a).multiplyScalar(u * u * u).addScaledVector(b1, 3 * u * u * t).addScaledVector(b2, 3 * u * t * t).addScaledVector(c, t * t * t);
+  };
+  const fv = () => E.fov().v;
+  function pose(x) {
+    const par = live.par, R = live.rise;
+    if (x <= RISE0) {
+      // the first screen (the ride) and stop 1: the visitor moves along the path with the park
+      const at0 = live.ride.at0 ?? live.ride.at, at = wrap(at0 + MOVE_M * easeOutCubic(ramp(x, RIDE_B, 1)));   // no still band
+      const s = eyeAt(at);
+      hereAt = at;
+      E.S.at = at;                                         // the path's window follows the visitor
+      // the pointer moves the camera sideways (parallax)
+      dPar.set(0, 0, 0);
+      if (!REDUCE && (par.x || par.y)) {
+        fwd.set(0, 0, -1).applyQuaternion(s.q); right.set(1, 0, 0).applyQuaternion(s.q); up.set(0, 1, 0).applyQuaternion(s.q);
+        F.copy(s.p).addScaledVector(fwd, 7);
+        dPar.addScaledVector(right, par.x * 0.4).addScaledVector(up, -par.y * 0.16);
+        s.p.add(dPar);
+        dir.subVectors(F, s.p).normalize();
+        s.q.premultiply(rot.setFromUnitVectors(fwd, dir));
+      }
+      const L0 = live.look;
+      if (L0.yaw || L0.pitch) {
+        right.set(1, 0, 0).applyQuaternion(s.q);
+        s.q.premultiply(rot.setFromAxisAngle(UP, L0.yaw)).premultiply(yawQ.setFromAxisAngle(right, L0.pitch));
+      }
+      E.setDirect({ w: 1, p: s.p, q: s.q, fov: fv(), sx: s.sx, sy: 0, ribbon: 1, route: null, dark: 0, loop: loopX(1) });
+      return;
+    }
+    // ---- the pull-back (the live site's rise), then the whole park from above
+    const p = ramp(x, RISE0, RISE1), e = ss(p);
+    bez(R.cap.p, R.P1, R.P2, R.endPos, e, rp);
+    T.copy(R.ahead).lerp(R.endTarget, ss(ramp(p, 0.1, 0.7)));
+    const yaw = (x > RISE1 ? Math.min(x - RISE1, 0.6) * 4 : 0) * DEG + (REDUCE ? 0 : par.x * 7 * DEG * sm(0.55, 1, p));
+    if (yaw) {
+      yawQ.setFromAxisAngle(UP, -yaw);
+      rp.sub(R.endTarget).applyQuaternion(yawQ).add(R.endTarget);
+      T.sub(R.endTarget).applyQuaternion(yawQ).add(R.endTarget);
+    }
+    rp.y += REDUCE ? 0 : -par.y * 4 * sm(0.55, 1, p);
+    const q = new THREE.Quaternion().slerpQuaternions(R.cap.q, look(rp, T), ss(ramp(p, 0, 0.3)));
+    const alt = rp.y - R.cap.p.y, kr = easeOutCubic(ramp(p, 0.35, 0.85));
+    E.S.at = R.capAt;
+    E.setDirect({
+      w: 1, p: rp, q, fov: fv() + (46 * DEG - fv()) * e, sx: R.cap.sx * (1 - e) + END_SX * e, sy: 0,
+      ribbon: 1, dark: sm(2, 12, alt), loop: loopX(1 - sm(0.4, 0.85, p)),
+      route: { back: 10 + kr * L, ahead: 45 + kr * L, far: 60 + kr * 2 * L, minPx: 2.2, maxPx: 1e6 },
+    });
+  }
+  // the stage's own frame loop: runs while the scroll, the pointer or the first screen's ride moves something
+  let last = performance.now();
+  E.stage.hooks.add(() => {
+    const now = performance.now(), raw = (now - last) / 1000, dt = clamp(raw, 0, 0.1);
+    last = now;
+    let more = false;
+    if (SNAP) b = bt;
+    else { b += (bt - b) * (1 - Math.exp(-dt * 7)); if (Math.abs(bt - b) < 1e-3) b = bt; else more = true; }
+    const par = live.par, kp = REDUCE || SNAP ? 1 : 1 - Math.exp(-dt * 5);
+    par.x += (par.tx - par.x) * kp; par.y += (par.ty - par.y) * kp;
+    if (Math.abs(par.tx - par.x) + Math.abs(par.ty - par.y) < 1e-3) { par.x = par.tx; par.y = par.ty; } else more = true;
+    // the first screen: the park plays (owner 11-13); the scroll freezes the ride and moves on from there
+    const R0 = live.ride;
+    if (R0.on && b < RIDE_B && fixedB == null && !document.hidden) {
+      // the cross-fade starts with the first posed frame; if that frame came while the visitor was further down, the
+      // picture is long gone and the walk just starts from where it stands
+      if (R0.lock < 0) R0.lock = now - (live.posedAt ?? now) < 100 ? now + FADE_MS : 0;
+      if (R0.lock) {
+        // the hand-over: the live walk stands where the picture is while the two cross (f.css), and learns its speed
+        const a = wrap(at00 + went()), step = ((a - R0.at) % LOOP + LOOP * 1.5) % LOOP - LOOP * 0.5;
+        if (raw > 0.004) R0.v += (clamp(step / raw, 0, RIDE_MS * 1.5) - R0.v) * 0.35;
+        R0.at = a;
+        if (now > R0.lock) R0.lock = 0;
+      } else {
+        R0.v += (RIDE_MS - R0.v) * (1 - Math.exp(-dt / RIDE_TAU));
+        R0.at = wrap(R0.at + dt * R0.v);
+      }
+      R0.at0 = null;
+      if (!live.riding && !performance.getEntriesByName('f-ride').length) performance.mark('f-ride');
+      live.riding = true; more = true;
+    } else if (live.riding && b >= RIDE_B) {
+      live.riding = false;
+      R0.at0 = R0.at; R0.v = 0; R0.lock = 0;                // the scroll takes over; back at the top the walk starts again
+      build();
+    } else if (!live.riding && b < RIDE_B && R0.at0 != null && R0.on) {
+      R0.at = R0.at0; R0.at0 = null;                        // back on the first screen: the walk goes on from here
+    }
+    const lk = live.look, kl = REDUCE ? 1 : 1 - Math.exp(-dt * 6);
+    if (b > 0.85 && !lk.drag) { lk.tyaw = 0; lk.tpitch = 0; }                // back to the path before the pull-back
+    lk.yaw += (lk.tyaw - lk.yaw) * kl; lk.pitch += (lk.tpitch - lk.pitch) * kl;
+    if (Math.abs(lk.tyaw - lk.yaw) + Math.abs(lk.tpitch - lk.pitch) < 1e-4) { lk.yaw = lk.tyaw; lk.pitch = lk.tpitch; } else more = true;
+    pose(b); ui(b);
+    if (!box.dataset.posed) { box.dataset.posed = '1'; live.posedAt = now; }   // this frame shows the page's own view: the picture may go
+    if (b > ATLAS_B) loadAtlas();
+    if (live.atlas && b > OUT0 - 0.6 && !live.parkHidden) heroToAtlas();
+    return more;
+  });
+  // the park's camera, in the frame of the eight places (map -> atlas: the park island's own matrix)
+  const Winv = new THREE.Matrix4(), hp = new THREE.Vector3(), ht = new THREE.Vector3(), hf = new THREE.Vector3();
+  function heroToAtlas() {
+    const cam = E.stage.camera, M = live.atlas.mapToScene(PLACE);
+    if (!M) return;
+    Winv.copy(E.stage.world.matrixWorld).invert();
+    hf.set(0, 0, -1).applyQuaternion(cam.quaternion);
+    const D = cam.position.distanceTo(live.rise.endTarget);
+    hp.copy(cam.position).applyMatrix4(Winv).applyMatrix4(M);
+    ht.copy(cam.position).addScaledVector(hf, D).applyMatrix4(Winv).applyMatrix4(M);
+    live.atlas.setFrom({ pos: hp, target: ht, fov: cam.fov, shiftX: -(E.X?.sx || 0) / 2 });
+  }
+  // the eight places (the floating trajectories): one more canvas in the stage, loaded when the visitor scrolls toward
+  // them (b > ATLAS_B): nothing extra runs on the main thread while the walk starts
+  let atlasP = null;
+  function loadAtlas() {
+    if (atlasP || !atlasEl) return;
+    const links = { open: id => openHref(null, id), depth: id => new URL(`/depth.html?map=${id}#dm-cmp`, location.href).href };
+    atlasP = import('./atlas.js')
+      .then(({ mountAtlas }) => mountAtlas(atlasEl, links, { embedded: true, close: PLACE, shiftX: -0.03, shiftY: 0.09 }))   // the names sit right of each shape: the group moves left a little
+      .then(h => {
+        if (!h) throw new Error('no WebGL2 context for the eight places');
+        const late = b > OUT0 + 0.05;                      // the visitor is already where they show: cross, do not cut
+        if (late) for (const el of [box, atlasEl]) { el.style.transition = 'opacity .6s linear'; setTimeout(() => { el.style.transition = ''; }, 700); }
+        live.atlas = h; stage.dataset.atlas = '1'; ui(b);   // the shapes are the choices now: f.css makes the last words short
+        if (late) heroToAtlas();
+      })
+      .catch(e => { console.warn('[F] atlas', e); document.documentElement.classList.add('f-noatlas'); ui(b); });
+  }
+  live.loadAtlas = loadAtlas;
+  if (bt > ATLAS_B) loadAtlas();
+  else setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(loadAtlas, { timeout: 2000 }), 4000);
+  onScroll();
+  E.stage.invalidate();
+}
+
+let handle = null;
+if (!PHONE) {
+  mountPlace(box, {
+    id: PLACE, mode: 'lift', kf: 40, allowReduced: true, tierPref: 'lite',
+    ribbon: { color: ACC.path || ACC.hex, rim: ACC.pathRim || ACC.rim },          // the camera's path
+    engine: { aboveEl: 40, shiftX: 0, ovMargin: 1.1, dolly: false, youLabel: '', cone: false, marks: false, pointsAbove: true,
+      lift: 0, accent: ACC.path || ACC.hex, accentRim: ACC.pathRim || ACC.rim },
+    onEvent(type, d) {
+      if (type === 'state') { setState(d); if (d.state === 'live') startLive(handle).catch(e => console.warn('[F]', e)); }
+    },
+  }).then(h => { handle = h; if (h.live && !live.E) startLive(h).catch(e => console.warn('[F]', e)); });
+} else {
+  stage.dataset.live = '0';
+  hintT.textContent = 'On a phone you see pictures. Tap Walk into the place to move in 3‑D.';
+}
+
+// the pointer: parallax (mouse); a drag looks around at eye level (owner 11-13: "make it interactive with mouse so user can
+// explore / get glimpse of map in background"). A click never leaves the page.
+box.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.pointerType !== 'mouse' || !live.E || b > 0.9) return;
+  live.look.drag = { x: e.clientX, y: e.clientY, yaw: live.look.tyaw, pitch: live.look.tpitch };
+  stage.dataset.drag = '1';
+  try { box.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+});
+box.addEventListener('pointermove', e => {
+  const d = live.look.drag;
+  if (!d) return;
+  live.look.tyaw = clamp(d.yaw - (e.clientX - d.x) * 0.0024, -0.75, 0.75);           // a 300 px drag turns about 40 degrees; at most +-43
+  live.look.tpitch = clamp(d.pitch - (e.clientY - d.y) * 0.0024, -0.28, 0.22);
+  live.E?.stage.invalidate();
+}, { passive: true });
+const endDrag = () => { live.look.drag = null; delete stage.dataset.drag; };
+box.addEventListener('pointerup', endDrag);
+box.addEventListener('pointercancel', endDrag);
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || !live.E || REDUCE) return;
+  live.par.tx = clamp(e.clientX / innerWidth * 2 - 1, -1, 1);
+  live.par.ty = clamp(e.clientY / innerHeight * 2 - 1, -1, 1);
+  live.E.stage.invalidate();
+}, { passive: true });
+document.addEventListener('pointerleave', () => { live.par.tx = live.par.ty = 0; live.E?.stage.invalidate(); });
+
+function onScroll() {
+  readScroll();
+  if (live.E && !live.parkHidden) live.E.stage.invalidate();
+  else { b = bt; ui(bt); }                               // the park is hidden (no frames): the words and the islands follow directly
+  if (live.E) setLinks();
+}
+let pend = false;
+addEventListener('scroll', () => {
+  if (pend) return; pend = true;
+  requestAnimationFrame(() => { pend = false; onScroll(); });
+}, { passive: true });
+addEventListener('resize', () => { onScroll(); ui(live.E ? b : bt); });
+// "See how": to stop 1 (the visitor's click; a cut with reduced motion)
+$('.h-more').addEventListener('click', e => {
+  e.preventDefault();
+  scrollTo({ top: hero.offsetTop + (hero.offsetHeight - innerHeight) / STOPS, behavior: REDUCE ? 'auto' : 'smooth' });
+});
+readScroll(); b = bt; ui(b);
+if (!Q.has('shot') && !window.__noAccentBar) picker();   // the review bar (prototype only; not in test shots or the site build)
+void SWITCH;
