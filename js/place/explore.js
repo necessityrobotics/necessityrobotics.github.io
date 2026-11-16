@@ -7,6 +7,7 @@
 import { loadPlaces, fmtOf, fmtLen, exploreHref, getJSON, esc, isTouch } from '../v4/common.js';
 import { routeDoor } from '../v4/route-door.js';
 import { mountPlace, SWITCH } from './mount.js';
+import { canTilt, askTilt, startTilt } from './tilt.js';
 
 const $ = id => document.getElementById(id);
 const html = document.documentElement, body = document.body;
@@ -146,6 +147,7 @@ function onEvent(type, d) {
 }
 function onState(d) {
   body.dataset.state = d.state;
+  if (typeof tiltOnState === 'function') tiltOnState(d);   // (look with your phone: only while the place is live)
   $('xp-status').hidden = d.state !== 'loading';
   const cannot = (d.state === 'still' || d.state === 'failed') && !!d.text;
   $('xp-cannot').hidden = !cannot;
@@ -251,6 +253,53 @@ document.addEventListener('pointerdown', e => {         // a tap outside an open
 
 view = await mountPlace($('pl'), { id: place.id, mode: 'full', at: atQ, onEvent });
 
+// ------------------------------------------------------------------ look with your phone (tilt.js; touch + HTTPS only)
+const tiltBtn = $('xp-tilt');
+let tilt = null, tiltAsking = false, tiltRefused = false;
+var tiltOnState;                                            // (var: onState may run before this line)
+const tiltOff = () => { tilt?.stop(); tilt = null; tiltBtn?.setAttribute('aria-pressed', 'false'); };
+if (tiltBtn && canTilt()) {
+  // only while the place is live (as the dock); a place that fails stops the phone look
+  tiltOnState = d => { tiltBtn.hidden = tiltRefused || d.state !== 'live'; if (d.state === 'failed') tiltOff(); };
+  tiltBtn.hidden = tiltRefused || !view?.engine?.live;
+  tiltBtn.addEventListener('click', () => {
+    if (tilt) { tiltOff(); said('Phone look is off. Swipe to look.', 3500); return; }
+    if (tiltAsking || !view?.engine?.live) return;
+    tiltAsking = true;
+    askTilt().then(r => {                                   // (the request runs inside this tap: iPhone asks once)
+      tiltAsking = false;
+      if (tilt) return;
+      if (r !== 'granted') {
+        said(r === 'denied' ? 'Motion access is not allowed. Swipe to look.' : 'This device gives no motion data. Swipe to look.', 5000);
+        if (r === 'denied') { tiltRefused = true; tiltBtn.hidden = true; }
+        return;
+      }
+      // a magic window: phone upright = the horizon, turn = the view's turn
+      tilt = startTilt(d => view?.engine?.setDeviceLook?.(d), { absPitch: true });
+      if (view?.engine) view.engine.onRecentre = () => tilt?.recentre();      // double-tap: ahead is where the phone points
+      tiltBtn.setAttribute('aria-pressed', 'true');
+      said('Turn your phone to look around. Swipe still works. Tap the phone button again to stop.', 6500);
+    });
+  });
+  addEventListener('pagehide', tiltOff);
+}
+
+// ------------------------------------------------------------------ see it on your table (WebXR AR, js/xr/table.js; Android ARCore)
+const arBtn = $('xp-ar');
+// phones and tablets only (a headset browser has no screen overlay for the words and Close); three loads only where AR can run
+if (arBtn && window.isSecureContext && navigator.xr && matchMedia('(pointer: coarse)').matches) {
+  navigator.xr.isSessionSupported('immersive-ar').then(ok => (ok ? import('../xr/table.js') : null)).then(async m => {
+    if (!m) return;
+    const { openTable } = m;
+    arBtn.hidden = false;
+    arBtn.addEventListener('click', () => {
+      tiltOff();
+      view?.engine?.setOffscreen?.(true);                    // the place rests while AR runs
+      openTable({ id: place.id, name: place.name, len: place.length || '', onEnd: () => { view?.engine?.setOffscreen?.(false); view?.engine?.stage?.invalidate?.(); } });
+    });
+  }).catch(e => console.warn('[xr]', e));
+}
+
 // ------------------------------------------------------------------ walk, turn, ride
 for (const b of document.querySelectorAll('.xp-key')) {
   b.addEventListener('click', () => {
@@ -273,7 +322,8 @@ function rideLabel(on) {
 }
 // the ride always goes forward along the camera's path: a visitor who looks back is turned to face ahead first
 function faceAhead() {
-  const l = Number(window.__place?.look) || 0;                 // degrees between the view and the path's direction
+  // degrees between the view and the path's direction, the phone's own turn included
+  const E = view.engine, l = E ? Math.atan2(Math.sin(E.viewYaw - E.track.tanAt(E.S.at)), Math.cos(E.viewYaw - E.track.tanAt(E.S.at))) / DEG : 0;
   if (Math.abs(l) > 80) view.engine.lookBy(-l * DEG, 0, { first: false });
   view.engine.S.facing = 1;
 }

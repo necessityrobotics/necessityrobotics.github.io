@@ -78,6 +78,7 @@ export class PlaceEngine {
     this.leash = this.ride_ ? 5 : 3;                      // metres sideways from the path, at most
     this.dead = false; this.live = false;
     // the visitor's state. Every field changes only through a visitor's input or a call of the public methods.
+    this.dev = { on: false, yaw: 0, pitch: 0 };              // look with your phone (setDeviceLook)
     this.S = {
       at: 0, off: 0, offRaw: 0,
       yaw: 0, pitch: 0, tyaw: 0, tpitch: 0,               // look, relative to the path's heading and the rest pitch
@@ -349,12 +350,14 @@ export class PlaceEngine {
     return more;
   }
   /** The heading of the view on the ground (radians about +Y). */
-  get viewYaw() { return this.track.yawAt(this.S.at) + this.S.yaw; }
+  get viewYaw() { return this.track.yawAt(this.S.at) + this.S.yaw + this.dev.yaw; }
   _groundPose(p, q) {
     const S = this.S, tr = this.track, tan = tr.tanAt(S.at);
     tr.pos(S.at, p);
     if (S.off) { p.x += -Math.cos(tan) * S.off; p.z += Math.sin(tan) * S.off; }     // left of the path = positive
-    this._e.set(clamp(this.rest + S.pitch, -50 * DEG, 40 * DEG), this.viewYaw, 0, 'YXZ');
+    // the phone's own turn (tilt.js) adds to the look; with it the visitor may look further up and down
+    const lo = this.dev.on ? -85 * DEG : -50 * DEG, hi = this.dev.on ? 70 * DEG : 40 * DEG;
+    this._e.set(clamp(this.rest + S.pitch + this.dev.pitch, lo, hi), this.viewYaw, 0, 'YXZ');
     q.setFromEuler(this._e);
   }
   _abovePose(p, q) {
@@ -397,12 +400,12 @@ export class PlaceEngine {
     this.steps.place(this);
     const p = cam.position, xy = this.fit.xy(this._gp.x, this._gp.z);
     const heading = this.fit.ok ? this.fit.deg(this.viewYaw) : null;
-    const key = `${S.at.toFixed(2)}|${S.off.toFixed(2)}|${this.viewYaw.toFixed(3)}|${S.pitch.toFixed(3)}|${S.above.k.toFixed(2)}|${p.x.toFixed(2)}`;
+    const key = `${S.at.toFixed(2)}|${S.off.toFixed(2)}|${this.viewYaw.toFixed(3)}|${(S.pitch + this.dev.pitch).toFixed(3)}|${S.above.k.toFixed(2)}|${p.x.toFixed(2)}`;
     if (key !== this._lastPose) {
       this._lastPose = key;
       this.emit('pose', {
         at: S.at, total: this.total, heading, x: this.fit.ok ? xy[0] : null, y: this.fit.ok ? xy[1] : null,
-        look: (this.viewYaw - this.track.tanAt(S.at)) / DEG, pitch: (this.rest + S.pitch) / DEG, off: S.off, facing: S.facing,
+        look: (this.viewYaw - this.track.tanAt(S.at)) / DEG, pitch: (this.rest + S.pitch + this.dev.pitch) / DEG, off: S.off, facing: S.facing,
         above: S.above.on, riding: S.riding, walked: S.walked,
       });
       this._photo();
@@ -430,6 +433,18 @@ export class PlaceEngine {
   get at() { return this.S.at; }
   get heading() { const y = this.track.yawAt(this.S.tw ? this.S.tw.to : this.S.at) + this.S.tyaw; return this.fit.ok ? this.fit.deg(y) : y / DEG; }
   /** Turn the view. dx: radians to the LEFT; dy: radians UP. */
+  /** Look with your phone (tilt.js): d = { yaw, pitch } in radians added to the look, or null to stop. */
+  setDeviceLook(d) {
+    const v = this.dev, S = this.S;
+    if (!d && v.on) {
+      // off: the phone's turn becomes the swipe look, so the view does not jump back
+      S.yaw += v.yaw; S.tyaw += v.yaw;
+      S.tpitch = S.pitch = clamp(S.pitch + v.pitch, -38 * DEG - this.rest, 32 * DEG - this.rest);
+    }
+    v.on = !!d; v.yaw = d ? d.yaw : 0; v.pitch = d ? d.pitch : 0;
+    // from above the phone's turn has no effect: no frame for it
+    if (!(S.above.k >= 1 && !S.above.tw) || !d) this.stage?.invalidate();
+  }
   lookBy(dx, dy, { first = true } = {}) {
     const S = this.S;
     if (S.above.on) { S.above.taz += dx; S.above.tel = clamp(S.above.tel - dy, 25 * DEG, 85 * DEG); }

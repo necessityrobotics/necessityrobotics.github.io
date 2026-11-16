@@ -94,3 +94,8 @@ html.f-desk .h-veil { background: radial-gradient(44% 30% at 74% 47%, #0000 0, r
 .h-stage[data-atlas="1"] .h-cap--go .h-cap-cta { display: none; }
 .h-stage[data-atlas="1"] .h-cap--go .f-cap-credit { position: fixed; left: 0; right: 0; bottom: 18px; width: auto; max-width: none; margin: 0; padding-inline: 16px; text-align: center; }
 @media (max-width: 760px) { .h-stage[data-atlas="1"] .h-cap--go .h-cap-cta { display: flex; } .h-stage[data-atlas="1"] .h-cap--go .f-cap-credit { position: static; } }
+/* look with your phone (iPhone / iPad: the system asks once, from this tap): a text action inside the first screen's hint */
+.h-tilt { display: inline-flex; align-items: center; min-height: 44px; margin-top: 6px; padding: 0; border: 0; background: none;
+  font: 600 14px/1 var(--sans, system-ui); letter-spacing: .01em; color: #fff; cursor: pointer; pointer-events: auto; }
+.h-tilt::after { content: "\2192"; margin-left: 8px; font-weight: 400; }
+.h-stage[data-past="1"] .f-cap-credit { visibility: hidden; }   /* the hero has scrolled on: the fixed credit goes with it */

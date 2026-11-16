@@ -142,6 +142,8 @@ export function mountDark(canvas, stage, opts = {}) {
   layout();
   return {
     setP(v) { v = clamp(v, 0, 1); if (v === p) return; p = v; on = p < .99; if (on) kick(600); else render(0, performance.now()); },
+    /** the phone's tilt (home.js): where the phone points, as fractions of the stage (like a finger) */
+    point(fx, fy) { if (REDUCE) return; ptr.tx = clamp(fx, 0, 1); ptr.ty = clamp(fy, 0, 1); if (!ptr.on) { ptr.x = ptr.tx; ptr.y = ptr.ty; } ptr.on = true; kick(1500); },
     destroy() {
       removeEventListener('pointermove', move); removeEventListener('touchstart', touch); removeEventListener('touchmove', touch);
       introT.forEach(clearTimeout); ro.disconnect();
