@@ -27,6 +27,7 @@ export const REASONS = Object.freeze({
   'old-browser': { text: 'This browser cannot show the 3-D place. This is a picture of it.' },
   'low-memory': { text: 'This device cannot show the 3-D place. This is a picture of it.' },
   'reduced-motion': { text: 'Your device asks for less motion, so this is a picture of the 3-D place.' },
+  'classic': { text: 'Phones and tablets show pictures. This is a picture of the 3-D place.', again: 'Open the 3-D place' },
   'save-data': { text: 'Your device is set to save data, so this is a picture of the 3-D place.', again: 'Open the 3-D place anyway' },
   'slow-connection': { text: 'Your connection is slow, so this is a picture of the 3-D place.', again: 'Open the 3-D place anyway' },
   'too-slow': { text: 'This device cannot show the 3-D place smoothly. This is a picture of it.', again: 'Open it again' },
@@ -100,6 +101,9 @@ export async function mountPlace(el, opts = {}) {
   document.addEventListener('v4:input', labelCanvas);
   /** Can this device run the place? Makes the canvas and its WebGL2 context when it can. Returns { gl, params } or null. */
   function probe() {
+    // owner 11-16: phones and tablets are classic and still (html.nr-still, set in the page head). The place stays its
+    // picture; the visitor can still open the 3-D place on purpose (the 'again' button sets M.forced). No WebGL probe.
+    if (!M.forced && !SWITCH.force3d && document.documentElement.classList.contains('nr-still')) { M.canvas = null; set('still', 'classic'); return null; }
     const canvas = M.canvas = document.createElement('canvas');
     canvas.className = 'pl-canvas';
     if (mode === 'full') { canvas.tabIndex = 0; labelCanvas(); }

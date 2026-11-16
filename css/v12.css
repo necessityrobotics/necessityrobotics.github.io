@@ -217,6 +217,111 @@ html:not(.v4-js) body.v12 .nr-dd:hover .nr-dd-panel, html:not(.v4-js) body.v12 .
 /* the depth model download buttons (gen:model-dl; shown only after the launch switch) */
 .v12 .dm-dl { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 
+/* ------------------------------------------------------------ still mode: classic (owner 11-16)
+   html.nr-still (the page head decides: a slow link, a weak phone or tablet, ?still=1; the home also falls back to it
+   when the device cannot keep up). No 3-D, no canvases, no motion: the site reads like a printed plate book. Warm black
+   paper, toned photographs, a still grain, double rules. Everything is static, so all of it costs one paint. */
+html.nr-still { --bg: #0d0b08; --bg-1: #12100c; --bg-2: #17140f; --bg-3: #1f1b15; scroll-behavior: auto; }
+html.nr-still body, html.nr-still body.v12 { background: #0d0b08; }
+html.nr-still *, html.nr-still *::before, html.nr-still *::after { animation: none !important; transition: none !important; }
+html.nr-still body::after { display: block !important; opacity: .07 !important; }
+/* touch: the grain only where the device can blend it cheaply (no blend mode on phones and tablets) */
+@media (hover: none), (pointer: coarse) { html.nr-still body::after { mix-blend-mode: normal; opacity: .04 !important; } }
+html.nr-still img, html.nr-still .v12 img[src*="img/places/oak_"], html.nr-still .h-place .pl-still[src*="first.jpg"] {
+  filter: sepia(.62) grayscale(.15) contrast(1.08) brightness(.93) saturate(.9) !important; }
+html.nr-still #dark, html.nr-still .h-live, html.nr-still .f-atlas-in, html.nr-still #atlas-in { display: none !important; }
+/* the first screen: a plain darkroom fade for the words, no opening in the dark */
+html.nr-still .h-veil {
+  background: linear-gradient(90deg, #0d0b08 0, rgba(13, 11, 8, .86) 36%, rgba(13, 11, 8, .18) 62%, rgba(13, 11, 8, .55) 100%) !important; }
+@media (max-width: 760px) {
+  html.nr-still .h-veil { background: linear-gradient(#0d0b08 0, rgba(13, 11, 8, .86) 46%, rgba(13, 11, 8, .22) 70%, rgba(13, 11, 8, .7) 100%) !important; }
+}
+html.nr-still .h-still img { box-shadow: inset 0 0 0 1px rgba(232, 224, 204, .2); }
+/* plates: a hairline frame and a double rule under the section heads */
+html.nr-still .v12 .v4-card, html.nr-still .v12 .v4-card-pic, html.nr-still .v12 .h4-beat-pic { border: 1px solid rgba(232, 224, 204, .26); }
+html.nr-still .v12 .h4-sec h2 { padding-bottom: .35em; border-bottom: 3px double rgba(232, 224, 204, .28); }
+html.nr-still .v12 .eyebrow, html.nr-still .v12 .v4-eyebrow, html.nr-still .v12 .h4-k { color: #b9ae96; }
+html.nr-still [style*="backdrop-filter"], html.nr-still .head, html.nr-still .v4-head, html.nr-still .c-head { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html.nr-still #hint { background: rgba(13, 11, 8, .82); padding: 10px 14px; }   /* the words stay readable over a lit plate */
+
+/* ------------------------------------------------------------ the classic hero: Plate I and the sheet of eight plates
+   Phones and tablets (html.nr-still, owner 11-16: "the second animation (park till all trajectories shown) should be
+   presented in a classic / vintage, best possible way"). The block is #ps (tools/make_still_hero.py): three figures of
+   the park in one plate window (Fig. 1 at eye level, Fig. 2 bird's-eye, Fig. 3 plan to scale), then the sheet of the
+   eight places. Every dot is a measured point; every sage line is the camera path, inked by the scroll (home.js
+   stillUi). Each figure is one engraving (WebP) contained in its window: it shrinks, never crops. */
+.ps, .h-cl { display: none; }
+html.nr-still .h-cl { display: revert; }
+html.nr-still .h-nocl { display: none !important; }
+html.nr-still { --ps-g: 16px; --ps-capb: 3vh; }
+@media (min-width: 761px) { html.nr-still { --ps-g: 40px; --ps-capb: 7vh; } }
+html.nr-still .h-stage { background: #0d0b08; }
+html.nr-still .ps { display: block; position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+html.nr-still .ps-win { position: absolute; left: var(--ps-g); right: var(--ps-g); top: calc(var(--head-h, 56px) + 12px);
+  bottom: calc(var(--ps-capb) + var(--cap-h, 210px) + 12px); container-type: size; opacity: 0; visibility: hidden; }
+html.nr-still .ps-fig { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; visibility: hidden; }
+html.nr-still .ps-box { position: relative; width: min(100cqw, calc(100cqh * var(--ar))); aspect-ratio: var(--ar); }
+html.nr-still .ps-box > img, html.nr-still .ps-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+html.nr-still .ps-box > img { filter: none !important; background: #12100c; }
+.ps-t { display: none; }
+@media (min-width: 761px) { html.nr-still .ps-p { display: none; } html.nr-still .ps-t { display: block; } }
+/* the camera path: a plate-tone halo cut through the stipple, then the sage line; both ink with --ink (0..1) */
+.ps-svg { overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ps-halo, .ps-route { stroke-dasharray: calc(var(--len) * 1px) calc(var(--len) * 1px);
+  stroke-dashoffset: calc(var(--len) * (1 - var(--ink, 1)) * 1px); }
+.ps-halo { stroke: #12100c; }
+.ps-route { stroke: var(--path, #a7bb98); }
+.ps-ring { stroke: var(--path, #a7bb98); fill: #12100c; }
+.ps-end { stroke: var(--path, #a7bb98); }
+.ps-mark { stroke: #e8e0cf; fill: #e8e0cf; opacity: var(--mk, 1); }
+/* the sheet: a neat line round the page's own caption (the cartouche) and the eight plates */
+html.nr-still .ps-frame { position: absolute; left: var(--ps-g); right: var(--ps-g); top: calc(var(--head-h, 56px) + 12px); bottom: 14px;
+  background: #12100c; border: 1px solid rgba(232, 224, 207, .45);
+  box-shadow: inset 0 0 0 4px #12100c, inset 0 0 0 5px rgba(232, 224, 207, .2); opacity: 0; visibility: hidden; }
+html.nr-still .ps-sheet { position: absolute; left: 8px; right: 8px; top: var(--cart-h, 120px); bottom: 8px; container-type: size;
+  display: grid; place-items: center; }
+html.nr-still .ps[data-sheet="1"] .ps-frame { pointer-events: auto; }
+.ps-link { position: absolute; display: block; -webkit-tap-highlight-color: transparent; }
+.ps-link:focus-visible { outline: 1px solid #e8e0cf; outline-offset: -2px; }
+.ps-link:active { background: rgba(232, 224, 207, .06); }
+/* captions: stops 1-3 at the foot (as now) in a printed card; stops 4-5 become the sheet's cartouche */
+html.nr-still .h-cap { background: rgba(13, 11, 8, .94); border: 1px solid rgba(232, 224, 207, .22); box-shadow: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none; transform: none !important; }
+html.nr-still .h-cap .c-k::after { content: ""; display: block; width: 52px; margin-top: 9px; border-top: 3px double rgba(232, 224, 207, .32); }
+html.nr-still .h-cap.h-cap--top { top: calc(var(--head-h, 56px) + 20px); left: calc(var(--ps-g) + 10px); right: calc(var(--ps-g) + 10px);
+  width: auto; margin: 0; padding: 10px 8px 0; background: transparent; border: 0; text-align: center; }
+html.nr-still .h-cap.h-cap--top .c-k::after { margin-inline: auto; }
+html.nr-still .h-cap.h-cap--top h2 { font-size: clamp(24px, 6.4vw, 34px); }
+html.nr-still .h-cap.h-cap--top p { margin-top: 8px; font-size: 14.5px; line-height: 1.5; }
+html.nr-still #go, html.nr-still .f-cap-credit { display: none !important; }
+@media (max-width: 760px) { html.nr-still .h-rail { display: none; } }
+/* tablet landscape: stops 1-3 as on desktop (caption left, the plate right); stops 4-5 a cartouche column on the left */
+@media (min-width: 761px) and (orientation: landscape) {
+  html.nr-still .h-cap:not(.h-cap--top) { width: min(420px, 38%); }
+  html.nr-still .ps-win { left: calc(var(--ps-g) + min(420px, 38%) + 24px); bottom: 24px; }
+  html.nr-still .h-cap.h-cap--top { right: auto; width: min(360px, 32%); text-align: left; top: calc(var(--head-h, 56px) + 34px); }
+  html.nr-still .h-cap.h-cap--top .c-k::after { margin-inline: 0; }
+  html.nr-still .ps-sheet { top: 8px; left: calc(min(360px, 32%) + 40px); }
+}
+/* the pick sheet (stop 5): a printed slip at the foot, no motion */
+.ps-pick[hidden] { display: none !important; }
+html.nr-still .ps-pick { position: fixed; inset: 0; z-index: 70; pointer-events: auto; }
+.ps-pick-scrim { position: absolute; inset: 0; background: rgba(13, 11, 8, .62); }
+.ps-pick-box { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 16px calc(22px + env(safe-area-inset-bottom));
+  background: #12100c; border-top: 1px solid rgba(232, 224, 207, .45); box-shadow: inset 0 4px 0 #12100c, inset 0 5px 0 rgba(232, 224, 207, .2);
+  display: grid; gap: 10px; }
+@media (min-width: 761px) { .ps-pick-box { left: 50%; right: auto; bottom: 24px; width: 440px; transform: translateX(-50%); border: 1px solid rgba(232, 224, 207, .45); } }
+.ps-pick-k { margin: 0; font: italic 400 15px/1.3 var(--display); color: #b9ae96; }
+.ps-pick-x { position: absolute; top: 8px; right: 8px; min-width: 44px; min-height: 44px; padding: 0 10px; background: none; border: 0;
+  color: #e8e0cf; font: 400 14px/1 var(--sans, system-ui); cursor: pointer; }
+.ps-pick-box h3 { margin: 0; font: 500 26px/1.15 var(--display); color: #e8e0cf; }
+.ps-pick-m { margin: 0 0 6px; font: 400 11px/1.4 var(--mono); letter-spacing: .2em; color: #9c927e; }
+.ps-pick-box .btn { display: flex; justify-content: space-between; align-items: center; min-height: 52px; }
+.ps-pick-dm { border-color: rgba(185, 166, 220, .7) !important; color: #e8e0cf; }
+/* the walk picture on touch screens is toned in its file (/img/still/*_walk.webp): no second tone from CSS */
+@media (hover: none), (pointer: coarse) { html.nr-still .h-place #still { filter: none !important; } }
+html.nr-still .h-hint { max-width: min(46ch, calc(100vw - 32px)); }   /* the plate label (nowrap) sets the box width */
+
 /* site build: the pictures are recoloured to the accent already (tools/make_site_v12.py), so no hue turn */
 :root, :root[data-acc] { --still-rot: 0deg !important; --still-sat: 1 !important; }
 /* the v4 header on the other pages, in the V11 finish */

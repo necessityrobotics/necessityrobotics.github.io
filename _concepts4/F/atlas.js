@@ -45,7 +45,8 @@ export async function mountAtlas(root, links, opts = {}) {
   const EMB = !!opts.embedded;
   const canvas = root.querySelector('.f-atlas-canvas'), layer = root.querySelector('.f-atlas-labels'), pick = root.querySelector('.f-atlas-pick');
   // transparent: during the hand-off the park shows through until it fades (the stage behind is black)
-  const AA = !matchMedia('(hover: none), (pointer: coarse)').matches;   // touch screens: no MSAA (lighter)
+  const TOUCH = matchMedia('(hover: none), (pointer: coarse)').matches;
+  const AA = !TOUCH;                                                  // touch screens: no MSAA (lighter)
   const gl = canvas.getContext('webgl2', { antialias: AA, alpha: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
   if (!gl) return null;
   const [A, P] = await Promise.all([getJSON('data/atlas.json'), loadPlaces()]);
@@ -87,10 +88,13 @@ export async function mountAtlas(root, links, opts = {}) {
   }
   // the points: atlas.bin (levels 0 and 1; 10-byte records: uint16 x, y, z over the island box, then r, g, b, pad)
   const lv = A.bin.levels, st = A.bin.stride;
-  const r = await fetch('/' + A.bin.file);
+  // touch (owner 11-16: "heavy"): level 0 only (12 000 points a place, not 36 000), and only its bytes (0.96 of 2.88 MB)
+  const r = await fetch('/' + A.bin.file, TOUCH ? { headers: { Range: `bytes=0-${lv[0].offset + lv[0].bytes - 1}` } } : undefined);
   if (!r.ok) throw new Error(`atlas.bin: HTTP ${r.status}`);
   const all = new Uint8Array(await r.arrayBuffer());
-  const n0 = lv[0].n, n1 = lv[1]?.n || 0;
+  // the range starts at byte 0, so a 206 (bytes 0..end of level 0) and a 200 (the whole file) slice the same way
+  if (all.byteLength < lv[0].offset + lv[0].bytes) throw new Error(`atlas.bin: ${all.byteLength} bytes, short`);
+  const n0 = lv[0].n, n1 = TOUCH ? 0 : lv[1]?.n || 0;
   for (const I of isl.values()) {
     const i = A.order.indexOf(I.id), rec = new Uint8Array((n0 + n1) * st);
     rec.set(all.subarray(lv[0].offset + i * n0 * st, lv[0].offset + (i + 1) * n0 * st));
@@ -119,7 +123,7 @@ export async function mountAtlas(root, links, opts = {}) {
     const w = root.clientWidth, h = root.clientHeight;
     if (!w || !h) return;
     S.W = w; S.H = h;
-    renderer.setPixelRatio(Math.min(matchMedia('(hover: none), (pointer: coarse)').matches ? (w <= 760 ? 1.25 : 1.5) : 2, devicePixelRatio || 1));   // touch: lighter
+    renderer.setPixelRatio(Math.min(TOUCH ? 1 : 2, devicePixelRatio || 1));   // touch: lighter (soft points need no more)
     renderer.setSize(w, h, false);
     cam.aspect = w / h;
     S.fov = w / h >= 1 ? 40 : 58;
@@ -242,10 +246,15 @@ export async function mountAtlas(root, links, opts = {}) {
   }, { passive: true });
 
   // ---- frames: only on change
-  let raf = 0, visible = false;
-  function draw() { if (!raf && visible) raf = requestAnimationFrame(frame); }
+  // shown: embedded, the page fades the canvas in only at the hand-off; before that nothing is drawn
+  // warm: one hidden frame at mount (the canvas is at opacity 0) links the shaders and uploads the points while the walk
+  // plays, so the first frame of the cross-fade does not pay for them
+  let raf = 0, visible = false, shown = !EMB, warm = EMB, dead = false;
+  function draw() { if (!raf && !dead && visible && (shown || warm)) raf = requestAnimationFrame(frame); }
   function frame() {
     raf = 0;
+    if (dead) return;
+    warm = false;
     const k = REDUCE ? 1 : 0.18;
     S.px += (S.tpx - S.px) * k; S.py += (S.tpy - S.py) * k;
     const more = Math.abs(S.tpx - S.px) + Math.abs(S.tpy - S.py) > 1e-3;
@@ -289,6 +298,10 @@ export async function mountAtlas(root, links, opts = {}) {
     get islands() { return [...isl.keys()]; }, choose: id => choose(id, labels.find(L => L.id === id).el), close,
     /** embedded: 0 = close on the island the page came from, 1 = all eight */
     setK(k) { k = clamp(k, 0, 1); if (k !== S.k) { S.k = k; draw(); } },
+    /** embedded: the canvas is on screen (the page's fade); hidden = no frames */
+    setShown(v) { v = !!v; if (v !== shown) { shown = v; if (v) draw(); } },
+    /** the page went to its still mode: no more frames, the GL context released */
+    destroy() { dead = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } try { renderer.dispose(); renderer.forceContextLoss(); } catch (e) { /* gone */ } },
     /** embedded: the doors (names, clicks, hover) work only when on */
     /** embedded: the page's camera to start from (atlas frame): { pos, target, fov (deg), shiftX (fraction of width) } */
     setFrom(f) { S.from = { pos: f.pos.clone(), target: f.target.clone(), fov: f.fov, shiftX: f.shiftX || 0 }; draw(); },

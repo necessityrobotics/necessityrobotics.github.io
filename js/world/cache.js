@@ -16,7 +16,8 @@ export function stableUrl(url, part = '') {
   return u.href;
 }
 // the map a key belongs to: an asset-host file (/maps/<id>/...) or a ride cut and its track on the site (/cuts/<id>.*)
-const mapOf = key => (/\/maps(?:_[a-z0-9]+)?\/([^/]+)\//.exec(key) || /\/cuts\/([^/.]+)\.[^/]*$/.exec(new URL(key).pathname) || [])[1] || key;
+const mapOf = key => (/\/maps(?:_[a-z0-9]+)?\/([^/]+)\//.exec(key) || /\/cuts\/([^/.]+)\.[^/]*$/.exec(new URL(key).pathname)
+  || /\/home\/([a-z]+_\d+)_touch[^/]*\.spz$/.exec(new URL(key).pathname) || [])[1] || key;   // + the home's touch map
 
 /** The cached bytes of a file, or null (no cache, a miss, or an error). */
 export async function cachedBytes(url, part = '') {

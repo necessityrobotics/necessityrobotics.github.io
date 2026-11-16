@@ -35,7 +35,14 @@ const TOUCH = matchMedia('(hover: none), (pointer: coarse)').matches;
 const MEM = navigator.deviceMemory, NET = navigator.connection, SAVE = NET?.saveData === true;
 const SMALL = TOUCH && Math.min(screen.width, screen.height) < 600;      // a phone, also when held sideways
 const SLOW = /(^|-)2g$|^3g$/.test(NET?.effectiveType || '');             // a slow link: about 15 MB is too much
-const LIVE_HOME = !(PHONE || SMALL) || (!SAVE && !SLOW && (MEM == null || MEM >= 4) && Q.get('phone3d') !== '0');
+// the still (classic) mode: decided in the page head (make_site_v12.py STILL_JS); no 3-D, no dark, no motion
+const STILL = document.documentElement.classList.contains('nr-still');
+let gone = false;                                         // goStill() ran: the page is in its still mode now
+// owner 11-16 (later): "bring back previous version of site deployed for phone and tablet": no automatic still mode.
+// Phones and tablets run the live place as on the live site (11-14); the still mode is a prototype behind ?still=1 only.
+const AUTO_STILL = false;
+if (STILL) document.documentElement.classList.remove('f-drift');
+const LIVE_HOME = !STILL && (!(PHONE || SMALL) || (!SAVE && !SLOW && (MEM == null || MEM >= 4) && Q.get('phone3d') !== '0'));
 const SNAP = Q.get('snap') === '1' || REDUCE;            // tests: no spring (one exact frame per scroll position)
 const STOPS = 5;
 const PLACE = 'oak_161206';
@@ -45,12 +52,13 @@ const LOOK_M = 24;                                        // the eye looks this 
 // owner 11-13: "landing page should immediately show the moving map": until the live place is ready, its picture (a frame
 // of this very view, img/first.jpg) pushes in like the walk; the live ride then starts as far along the path as the picture
 // went. The page head adds f-drift too (before this module and three.js arrive); this line is for pages without that head.
-if (RIDE && !PHONE) document.documentElement.classList.add('f-drift');
+if (RIDE && !PHONE && !STILL) document.documentElement.classList.add('f-drift');
 if (!PHONE) document.documentElement.classList.add('f-desk');
 const RIDE_TAU = 0.9;                                     // s: the live walk eases from the picture's speed to RIDE_MS
 const FADE_MS = 650;                                      // the picture and the live place cross this long (f.css 0.6 s)
 const SEAM_M = 25;                                        // the loop: the path's last metres bend onto its start
 const MOVE_M = 30;                                        // stop 1: the scroll moves the visitor this far along the path
+const FOLLOW_M = 70;                                      // stops 1-3: the camera goes on along the path this far as it rises
 const RIDE_B = 0.04;                                      // the walk runs below this beat; above it the scroll moves the visitor
 const ATLAS_B = 0.25;                                     // the eight places load once the visitor scrolls past this beat
 const RISE0 = 1.05, RISE1 = 2.6;                          // the pull-back runs between these beats
@@ -65,7 +73,7 @@ const stage = $('#stage'), hero = $('#hero'), box = $('#place');
 const first = $('#first'), veil = $('#veil'), hint = $('#hint'), hintT = $('#hint-t'), stateEl = $('#state');
 const still = $('#still'), stillP = $('#still-p'), atlasEl = $('#atlas-in'), darkEl = $('#dark');
 // the first screen: out of the dark (site v4.1, owner 11-13): the place shows where the visitor points; the scroll lights it
-const dark = LIVE_HOME && darkEl ? mountDark(darkEl, stage, PHONE ? { at: [0.5, 0.6], shape: [0.38, 0.3], light: true, intro: TOUCH }
+const dark = LIVE_HOME && darkEl ? mountDark(darkEl, stage, PHONE ? { at: [0.5, 0.56], lobes: [[0, .02, .6, .14], [-.32, .08, .36, .12], [.3, .04, .36, .13], [0, .12, .58, .1]], light: true, intro: TOUCH }
   : { at: [0.62, 0.36], light: TOUCH, intro: TOUCH }) : null;
 const caps = [...document.querySelectorAll('.h-cap')], rail = [...document.querySelectorAll('.h-rail li')];
 // phones: pictures of the same views, cut at each stop
@@ -84,6 +92,93 @@ function setLinks() {
 }
 setLinks();
 
+// ------------------------------------------------------------------ the classic hero: phones and tablets (html.nr-still)
+// Plate I (Fig. 1 at eye level, Fig. 2 bird's-eye, Fig. 3 plan to scale) and the sheet of the eight places
+// (tools/make_still_hero.py writes #ps; v12.css lays it out). The scroll is the only clock: stillUi(x) sets opacities and
+// the ink of the camera paths (--ink, stroke-dashoffset); nothing runs between scrolls, nothing is drawn by script.
+const PS = STILL ? document.getElementById('ps') : null;
+const psWin = PS?.querySelector('.ps-win'), psFrame = PS?.querySelector('.ps-frame'), psNav = PS?.querySelector('.ps-sheet');
+const psFig = PS ? [1, 2, 3].map(n => PS.querySelector(`.ps-fig[data-f="${n}"]`)) : [];
+const psR = PS ? [1, 2, 3, 4, 5, 6, 7, 8].map(i => [...PS.querySelectorAll(`.ps-r[data-i="${i}"]`)]) : [];
+const psLast = new Map();
+/** Write a style only when it changed (at most a few dozen writes per scroll frame). */
+function psPut(el, key, v, kind) {
+  if (!el) return;
+  v = Math.round(v * 1000) / 1000;
+  if (psLast.get(key) === v) return;
+  psLast.set(key, v);
+  if (kind === 'o') { el.style.opacity = String(v); el.style.visibility = v < 0.005 ? 'hidden' : 'visible'; }
+  else el.style.setProperty(kind, String(v));
+}
+function stillUi(x) {
+  if (!PS) return;
+  psPut(box, 'place', 1 - sm(0.55, 0.95, x), 'o');                                     // the full-bleed walk picture
+  psPut(psWin, 'win', sm(0.55, 0.95, x) * (1 - sm(3.25, 3.5, x)), 'o');              // the plate window
+  psPut(psFig[0], 'f1', 1 - sm(1.35, 1.75, x), 'o');
+  psPut(psFig[1], 'f2', sm(1.35, 1.75, x) * (1 - sm(2.35, 2.75, x)), 'o');
+  psPut(psFig[1], 'i2', ramp(x, 1.55, 1.95), '--ink');                                // Fig. 2: the path inks in
+  psPut(psFig[1], 'm2', sm(1.85, 1.98, x), '--mk');                                   // then "You stood here"
+  psPut(psFig[2], 'f3', sm(2.35, 2.75, x), 'o');                                     // Fig. 3: drawn already
+  const so = sm(3.25, 3.5, x);
+  psPut(psFrame, 'sheet', so, 'o');
+  const on = so > 0.5;
+  if (PS.dataset.sheet !== (on ? '1' : '0')) { PS.dataset.sheet = on ? '1' : '0'; psNav.inert = !on; if (!on) psClose(); }
+  // the second animation: plate I arrives inked (the park just seen); II-VIII ink in, in reading order
+  psR.forEach((gs, k) => {
+    const v = k === 0 ? 1 : ramp(x, 3.5 + 0.06 * (k - 1), 3.64 + 0.06 * (k - 1));
+    gs.forEach((g, j) => psPut(g, `r${k}${j}`, v, '--ink'));
+  });
+  if (psPick && !psPick.hidden && Math.abs(x - psPickAt) > 0.15) psClose();
+}
+// sizes: the tallest foot caption (stops 1-3) and the cartouche (stops 4-5) set the plate window and the sheet
+function psMeasure() {
+  if (!PS) return;
+  const capH = Math.max(...caps.filter(c => +c.dataset.cap <= 3).map(c => c.offsetHeight));
+  const top = caps.filter(c => +c.dataset.cap >= 4);
+  const cartH = Math.max(...top.map(c => c.offsetTop + c.offsetHeight)) - (psFrame ? psFrame.offsetTop : 0) + 6;
+  stage.style.setProperty('--cap-h', `${capH}px`);
+  stage.style.setProperty('--cart-h', `${Math.max(60, cartH)}px`);
+}
+// the engravings load after the first picture (the walk is the first paint); only the format this screen shows
+const psFmt = () => (matchMedia('(min-width: 761px)').matches ? 't' : 'p');
+function psLoad() {
+  if (!PS) return;
+  PS.querySelectorAll(`.ps-${psFmt()} img[data-src]`).forEach(im => { im.fetchPriority = 'low'; im.src = im.dataset.src; im.removeAttribute('data-src'); });
+}
+// the pick slip (stop 5): a plate is a door with two choices, walk in or see its depth
+const psPick = PS?.querySelector('.ps-pick');
+let psPickAt = 0, psFrom = null;
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+function psOpen(a) {
+  const id = a.dataset.open, i = +a.dataset.i;
+  const nm = (a.getAttribute('aria-label') || '').replace(/^[IVX]+\. /, '');
+  const cut = nm.lastIndexOf(', ');
+  psPick.querySelector('.ps-pick-k').textContent = `Plate ${ROMAN[i - 1]}`;
+  psPick.querySelector('#ps-pick-n').textContent = nm.slice(0, cut);
+  psPick.querySelector('.ps-pick-m').textContent = `${nm.slice(cut + 2)} \u00b7 ${id.startsWith('rosario') ? 'Argentina' : 'India'}`.toUpperCase();
+  psPick.querySelector('.ps-pick-go').href = a.href;
+  psPick.querySelector('.ps-pick-dm').href = new URL(`/depth.html?map=${id}#dm-cmp`, location.href).href;
+  psFrom = a; psPickAt = bt;
+  psPick.hidden = false;
+  psPick.querySelector('.ps-pick-go').focus();
+}
+function psClose() {
+  if (!psPick || psPick.hidden) return;
+  psPick.hidden = true;
+  try { psFrom?.focus({ preventScroll: true }); } catch (e) { /* gone */ }
+}
+if (PS) {
+  PS.querySelectorAll('.ps-link').forEach(a => a.addEventListener('click', e => { if (PS.dataset.sheet === '1') { e.preventDefault(); psOpen(a); } }));
+  psPick?.addEventListener('click', e => { if (e.target instanceof Element && e.target.closest('[data-close]')) psClose(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') psClose(); });
+  psFig[2]?.style.setProperty('--ink', '1');
+  if (document.readyState === 'complete') setTimeout(psLoad, 300);
+  else addEventListener('load', () => (window.requestIdleCallback || (f => setTimeout(f, 1)))(psLoad, { timeout: 1500 }), { once: true });
+  addEventListener('resize', () => { psMeasure(); psLoad(); });
+  psMeasure();
+  if (document.fonts?.ready) document.fonts.ready.then(psMeasure);
+}
+
 // ------------------------------------------------------------------ the scroll: beat b in 0..5 (one unit per stop)
 let bt = 0, b = 0, fixedB = null, stopNow = -1;
 function readScroll() {
@@ -101,14 +196,14 @@ function ui(x) {
   first.inert = f < 0.5;
   hint.style.opacity = (1 - sm(0.04, 0.22, x)).toFixed(3);
   // with the dark (desktop) the dark itself is the vignette, as on site v4.1: C's veil would keep a cleared area black
-  veil.style.opacity = dark ? '0' : (1 - sm(0.08, 0.5, x)).toFixed(3);
-  dark?.setP(ramp(x, 0, 1));
+  veil.style.opacity = dark && !gone ? '0' : (1 - sm(0.08, 0.5, x)).toFixed(3);
+  if (!gone) dark?.setP(ramp(x, 0, 1));
   const s = Math.round(x), on = Math.abs(x - s) < 0.3 ? s : -1;
   if (on !== stopNow) {
     stopNow = on;
     stage.dataset.stop = String(Math.max(0, on));
     caps.forEach(c => { const k = +c.dataset.cap === on; c.classList.toggle('is-on', k); c.inert = !k; });
-    if (!live.E) {
+    if (!live.E && !PS) {                                    // (the still prototype with its plates: stillUi)
       const i = clamp(s, 0, STOPS);
       if (still.src !== PICS_L[i]) still.src = PICS_L[i];
       if (new URL(stillP.getAttribute('srcset') || '', location.href).href !== new URL(PICS[i], location.href).href) stillP.srcset = PICS[i];
@@ -119,10 +214,11 @@ function ui(x) {
   // island lies exactly on the park's points; the two layers cross (no dark moment) and the view goes on out
   // no eight places (no 3-D here, or they failed): the park picture stays, and the list under the hero shows them
   const parkO = live.atlas ? 1 - sm(OUT0 + 0.05, OUT0 + 0.45, x) : 1, atlasO = live.atlas ? sm(OUT0 - 0.05, OUT0 + 0.25, x) : 0;
-  box.style.opacity = parkO.toFixed(3);
+  if (!STILL) box.style.opacity = parkO.toFixed(3);
   if (atlasEl) {
     atlasEl.style.opacity = atlasO.toFixed(3);
     atlasEl.style.visibility = atlasO < 0.01 ? 'hidden' : 'visible';
+    live.atlas?.setShown?.(atlasO >= 0.01);                 // no frames for eight places nobody sees
     live.atlas?.setK(ramp(x, OUT0 + 0.1, OUT1));
     live.atlas?.setOn(x > OUT1 - 0.1);
   }
@@ -131,6 +227,7 @@ function ui(x) {
   // the park went dark before the beat arrived (a fast fling, a jump, Back): its frames drove the beat, so the page
   // carries the last stretch itself; otherwise the eight places would stop half way out, with no names
   if (live.parkHidden && !carry && Math.abs(bt - b) > 1e-3) carry = requestAnimationFrame(carryOn);
+  if (STILL) stillUi(x);
 }
 let carry = 0;
 function carryOn() {
@@ -162,6 +259,28 @@ window.__f = {
   get E() { return live.E; },
   get look() { return live.look; },                        // tests: the drag-to-look state (yaw, pitch)
 };
+
+/** A phone or tablet that cannot keep up (a weak GPU, a frame rate at the floor, a load that does not finish): the page
+ *  goes to its still (classic) mode now, and the rest of this visit starts there (sessionStorage). */
+
+function goStill(why) {
+  if (!AUTO_STILL || gone || Q.get('force3d') === '1' || Q.get('still') === '0') return;       // tests keep the 3-D
+  gone = true;
+  console.info('[F] still mode:', why);
+  try { sessionStorage.setItem('nr-still', '1'); } catch (e) { /* private mode */ }
+  document.documentElement.classList.add('nr-still');
+  document.documentElement.classList.remove('f-drift');
+  try { dark?.destroy(); } catch (e) { /* gone */ }
+  if (darkEl) darkEl.style.display = 'none';
+  try { live.atlas?.destroy?.(); } catch (e) { /* gone */ }
+  live.atlas = null; delete stage.dataset.atlas;
+  try { (live.handle || handle)?.destroy?.(); } catch (e) { /* gone */ }
+  setState({ state: 'failed', text: '' });
+  live.E = null; live.starting = false; live.riding = false; delete box.dataset.posed; stopNow = -1;
+  stage.dataset.live = '0';
+  hintT.textContent = 'A picture of the 3‑D place. Scroll to rise above it.';
+  ui(bt);
+}
 
 function setState(d) {
   // the words: on a desktop the live versions from the start (the picture walks in, the dark answers the mouse); the
@@ -209,7 +328,16 @@ async function startLive(handle) {
   const loopX = k => ({ len: LOOP, seam: [SEAM.x, SEAM.y, SEAM.z], seamLen: SEAM_M, k });
   // the eye 1.35 m up, a little left of the path, looking 24 m ahead
   const eyeAt = at => { const p = P(at, 0.3, 1.35); return { p, q: look(p, P(at + LOOK_M, 0, 1.05)), sx: SX0 }; };
+  if (AUTO_STILL && TOUCH && E.params?.tier === 'T1') { goStill('weak device'); return; }
   if (TOUCH) E.stage.setMinFrame(33);                    // phones and tablets: 30 fps keeps the GPU and the page in step
+  // phones and tablets (owner 11-16: "still lag-ish"): the first screen sits under the dark, so fewer pixels and no
+  // screen-sized splats (the overdraw of near splats is most of a frame on a mobile GPU)
+  if (TOUCH) {
+    const st = E.stage;
+    st.maxDpr = 1; st.maxPixels = PHONE ? 0.45e6 : 0.75e6;
+    if (st.spark) st.spark.maxPixelRadius = 140;
+    if (st.size?.w > 1) st.resize(st.size.w, st.size.h);
+  }
   const at00 = wrap(E.photos[E.photos.length > 40 ? 40 : 0].at - 10.4);          // where img/first.jpg was made
   // how far the picture has walked: its push-in scale s (f.css) = LOOK_M (1 - 1 / s) metres toward the point ahead
   const pushed = RIDE && (still.currentSrc || still.src).includes('first.jpg');   // a phone shows its own portrait picture
@@ -238,11 +366,11 @@ async function startLive(handle) {
     const P1 = cap.p.clone().addScaledVector(UP, 14).addScaledVector(f, -22);
     const P2 = P1.clone().lerp(endPos, 0.5); P2.y += 0.15 * P1.distanceTo(endPos);
     const ahead = cap.p.clone().addScaledVector(f, 18); ahead.y = G(capAt, g).y;
-    live.rise = { cap, capAt, P1, P2, endPos, endTarget: mid.clone(), ahead };
+    live.rise = { cap, capAt, P1, P2, endPos, endTarget: mid.clone(), ahead, f: f.clone() };
   }
   build();
 
-  const rp = new THREE.Vector3(), T = new THREE.Vector3(), yawQ = new THREE.Quaternion();
+  const rp = new THREE.Vector3(), T = new THREE.Vector3(), yawQ = new THREE.Quaternion(), pv = new THREE.Vector3();
   const fwd = new THREE.Vector3(), right = new THREE.Vector3(), up = new THREE.Vector3(), F = new THREE.Vector3(), dir = new THREE.Vector3(), rot = new THREE.Quaternion(), dPar = new THREE.Vector3();
   const bez = (a, b1, b2, c, t, out) => {
     const u = 1 - t;
@@ -270,31 +398,54 @@ async function startLive(handle) {
       const L0 = live.look;
       if (L0.yaw || L0.pitch) {
         right.set(1, 0, 0).applyQuaternion(s.q);
-        s.q.premultiply(rot.setFromAxisAngle(UP, L0.yaw)).premultiply(yawQ.setFromAxisAngle(right, L0.pitch));
+        s.q.premultiply(yawQ.setFromAxisAngle(right, L0.pitch)).premultiply(rot.setFromAxisAngle(UP, L0.yaw));
       }
       E.setDirect({ w: 1, p: s.p, q: s.q, fov: fv(), sx: s.sx, sy: 0, ribbon: 1, route: null, dark: 0, loop: loopX(1) });
       return;
     }
-    // ---- the pull-back (the live site's rise), then the whole park from above
-    const p = ramp(x, RISE0, RISE1), e = ss(p);
-    bez(R.cap.p, R.P1, R.P2, R.endPos, e, rp);
-    T.copy(R.ahead).lerp(R.endTarget, ss(ramp(p, 0.1, 0.7)));
-    const yaw = (x > RISE1 ? Math.min(x - RISE1, 0.6) * 4 : 0) * DEG + (REDUCE ? 0 : par.x * 7 * DEG * sm(0.55, 1, p));
-    if (yaw) {
-      yawQ.setFromAxisAngle(UP, -yaw);
-      rp.sub(R.endTarget).applyQuaternion(yawQ).add(R.endTarget);
-      T.sub(R.endTarget).applyQuaternion(yawQ).add(R.endTarget);
+    // ---- the rise (owner 11-16: "as user scrolls down make sure camera stays / follows trajectory ... lock camera at
+    // trajectory path then let user rotate / explore map from that point"). The camera stays on the camera path: the
+    // scroll carries its anchor on along the path while it rises behind it, a chase view that always looks at the path.
+    // By stop 3 it is high enough to see the whole park, still over the path. A drag turns the view: at eye level in
+    // place, higher up round the anchor (the map turns under the visitor); a further scroll gives the view back to the path.
+    const e = ss(ramp(x, RISE0 + 0.08, 2.85));                                   // how far up (0 = the eye, 1 = high)
+    const a = wrap(R.capAt + FOLLOW_M * ss(ramp(x, RISE0, 3.0)) + 12 * ss(ramp(x, 3.0, OUT1)));
+    // a portrait screen sees less to the sides: the camera goes higher and further back so the whole park fits
+    const sz = E.stage.size, fitK = Math.pow(Math.max(1, 1.05 / Math.max(0.3, (sz?.w || 1) / (sz?.h || 1))), 0.85);
+    const h = 1.35 + (RAD * 2.05 * fitK - 1.35) * e, back = RAD * 1.25 * fitK * e;  // up through the canopy quickly
+    dir.copy(G(a + 14, F)).sub(G(a - 14, T)); dir.y = 0;                         // the path's heading over 28 m (smooth corners)
+    if (dir.lengthSq() < 1e-6) dir.set(0, 0, -1); else dir.normalize();
+    dir.lerp(R.f, ss(ramp(e, 0.3, 0.9))).normalize();                            // high up: one steady heading
+    rp.copy(P(a, 0.3 * (1 - e), h)).addScaledVector(dir, -back);
+    T.copy(P(a + LOOK_M * (1 - e) + 6 * e, 0, 1.05 * (1 - e))).lerp(mid, 0.85 * Math.pow(e, 1.6));   // high up: the whole park
+    R.endTarget.copy(T);                                                          // the eight places start from this view
+    // the pointer (desktop): a little parallax round the target, more as the view rises
+    if (!REDUCE && (par.x || par.y)) {
+      yawQ.setFromAxisAngle(UP, -par.x * 6 * DEG * e);
+      rp.sub(T).applyQuaternion(yawQ).add(T);
+      rp.y += -par.y * 3 * e;
     }
-    rp.y += REDUCE ? 0 : -par.y * 4 * sm(0.55, 1, p);
-    const q = new THREE.Quaternion().slerpQuaternions(R.cap.q, look(rp, T), ss(ramp(p, 0, 0.3)));
-    const L1 = live.look, lf = 1 - ss(ramp(x, RISE0, RISE0 + 0.3));      // a turned look fades out as the view rises (no jump)
-    if (lf > 0 && (L1.yaw || L1.pitch)) q.premultiply(rot.setFromAxisAngle(UP, L1.yaw * lf));
-    const alt = rp.y - R.cap.p.y, kr = easeOutCubic(ramp(p, 0.35, 0.85));
-    E.S.at = R.capAt;
+    let q = look(rp, T);
+    if (x < RISE0 + 0.3) q = new THREE.Quaternion().slerpQuaternions(R.cap.q, q, ss(ramp(x, RISE0, RISE0 + 0.3)));
+    const L1 = live.look;
+    if (L1.yaw || L1.pitch) {
+      // the pivot moves from the eye (look round) to the target on the path (turn round it) as the camera rises
+      pv.copy(rp).lerp(T, sm(3, 18, h - 1.35));
+      right.set(1, 0, 0).applyQuaternion(q);
+      rot.setFromAxisAngle(UP, L1.yaw).multiply(yawQ.setFromAxisAngle(right, L1.pitch));   // yaw . pitch . view (as at eye level)
+      rp.sub(pv).applyQuaternion(rot).add(pv);
+      q.premultiply(rot);
+      const gy = G(a, F).y + 1.2;
+      if (rp.y < gy) rp.y = gy;                                                   // never under the ground
+    }
+    const p = ramp(x, RISE0, RISE1), kr = easeOutCubic(ramp(p, 0.35, 0.85));
+    hereAt = a;
+    E.S.at = a;                                                                   // the path's window follows the anchor
     E.setDirect({
       w: 1, p: rp, q, fov: fv() + (46 * DEG - fv()) * e, sx: R.cap.sx * (1 - e) + END_SX * e, sy: 0,
-      ribbon: 1, dark: sm(2, 12, alt), loop: loopX(1 - sm(0.4, 0.85, p)),
-      route: { back: 10 + kr * L, ahead: 45 + kr * L, far: 60 + kr * 2 * L, minPx: 2.2, maxPx: 1e6 },
+      ribbon: 1, dark: sm(2, 12, h - 1.35), loop: loopX(1),
+      route: e < 0.002 ? null : { back: 10 + kr * L, ahead: 45 + kr * L, far: 60 + kr * 2 * L, minPx: 1.4 + 0.8 * sm(3, 15, h - 1.35),
+        maxPx: 12 + 1e6 * sm(3, 15, h - 1.35) },
     });
   }
   // the stage's own frame loop: runs while the scroll, the pointer or the first screen's ride moves something
@@ -335,12 +486,21 @@ async function startLive(handle) {
       R0.at = R0.at0; R0.at0 = null;                        // back on the first screen: the walk goes on from here
     }
     const lk = live.look, kl = REDUCE ? 1 : 1 - Math.exp(-dt * 6);
-    if (b > RISE0 - 0.01 && !lk.drag) { lk.tyaw = 0; lk.tpitch = 0; }        // back to the path as the pull-back starts
+    // the visitor's turn stays while the page is still; a scroll of more than 0.08 beat (or the eight places) gives the
+    // view back to the path
+    if (!lk.drag && lk.at != null) {
+      const k = (1 - ramp(Math.abs(bt - lk.at), 0.08, 0.4)) * (1 - ramp(b, OUT0 - 0.4, OUT0 - 0.05));
+      lk.tyaw = (lk.endYaw || 0) * k; lk.tpitch = (lk.endPitch || 0) * k;
+      if (k <= 0) lk.at = null;
+    }
+    // the doors open the 3-D view where the camera is now (not where the last scroll event left it)
+    if (Math.round(hereAt) !== live.linkAt) { live.linkAt = Math.round(hereAt); setLinks(); }
     lk.yaw += (lk.tyaw - lk.yaw) * kl; lk.pitch += (lk.tpitch - lk.pitch) * kl;
     if (Math.abs(lk.tyaw - lk.yaw) + Math.abs(lk.tpitch - lk.pitch) < 1e-4) { lk.yaw = lk.tyaw; lk.pitch = lk.tpitch; } else more = true;
     pose(b); ui(b);
     if (!box.dataset.posed) { box.dataset.posed = '1'; live.posedAt = now; }   // this frame shows the page's own view: the picture may go
     if (b > ATLAS_B) loadAtlas();
+    if (TOUCH && b > RIDE_B) askPts();                     // the first scroll
     if (live.atlas && b > OUT0 - 0.6 && !live.parkHidden) heroToAtlas();
     return more;
   });
@@ -360,12 +520,13 @@ async function startLive(handle) {
   // them (b > ATLAS_B): nothing extra runs on the main thread while the walk starts
   let atlasP = null;
   function loadAtlas() {
-    if (atlasP || !atlasEl) return;
+    if (atlasP || !atlasEl || gone) return;
     const links = { open: id => openHref(null, id), depth: id => new URL(`/depth.html?map=${id}#dm-cmp`, location.href).href };
     atlasP = import('./atlas.js')
       .then(({ mountAtlas }) => mountAtlas(atlasEl, links, { embedded: true, close: PLACE, shiftX: -0.03, shiftY: 0.09 }))   // the names sit right of each shape: the group moves left a little
       .then(h => {
         if (!h) throw new Error('no WebGL2 context for the eight places');
+        if (gone) { try { h.destroy?.(); } catch (e) { /* gone */ } return; }
         const late = b > OUT0 + 0.05;                      // the visitor is already where they show: cross, do not cut
         if (late) for (const el of [box, atlasEl]) { el.style.transition = 'opacity .6s linear'; setTimeout(() => { el.style.transition = ''; }, 700); }
         live.atlas = h; stage.dataset.atlas = '1'; ui(b);   // the shapes are the choices now: f.css makes the last words short
@@ -374,6 +535,25 @@ async function startLive(handle) {
       .catch(e => { console.warn('[F] atlas', e); document.documentElement.classList.add('f-noatlas'); ui(b); });
   }
   live.loadAtlas = loadAtlas;
+  // touch: the measured points (shown from above) load once the place is live and settled, or when the visitor scrolls
+  function askPts() {
+    if (live.ptsAsked || !live.E) return;
+    live.ptsAsked = true;
+    live.E.loadMeasured?.()?.catch?.(e => console.warn('[F] points', e));
+  }
+  if (TOUCH) setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(askPts, { timeout: 2000 }), 6000);
+  // touch: the adaptive resolution at its floor for 5 s in a row = this device cannot hold even 30 fps: still mode
+  if (AUTO_STILL && TOUCH) {
+    let low = 0;
+    const iv = setInterval(() => {
+      const st = live.E?.stage;
+      if (!st || gone) { clearInterval(iv); return; }
+      if (b > RISE0 || document.hidden) { low = 0; return; }
+      const fps = st.fps();
+      low = st.maxScale > st.minScale + 1e-3 && st.scale <= st.minScale + 1e-3 && fps != null && fps < 20 ? low + 1 : 0;
+      if (low >= 5) { clearInterval(iv); goStill('frame rate at the floor'); }
+    }, 1000);
+  }
   if (bt > ATLAS_B) loadAtlas();
   else setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(loadAtlas, { timeout: 2000 }), TOUCH ? 9000 : 4000);
   // (touch: later, so its download and shader compile land while the walk plays, not in the first scroll)
@@ -381,20 +561,30 @@ async function startLive(handle) {
   E.stage.invalidate();
 }
 
-let handle = null;
+let handle = null, slowT = 0;
 if (LIVE_HOME) {
   mountPlace(box, {
     id: PLACE, mode: 'lift', kf: 40, allowReduced: true, tierPref: 'lite',
     ribbon: { color: ACC.path || ACC.hex, rim: ACC.pathRim || ACC.rim },          // the camera's path
+    // touch (owner 11-16: "still heavy"): the touch map (200 000 of Lite's 600 000 splats, 3.6 MB of 11 MB) and the
+    // measured points only when the visitor scrolls towards the rise
     engine: { aboveEl: 40, shiftX: 0, ovMargin: 1.1, dolly: false, youLabel: '', cone: false, marks: false, pointsAbove: true,
+      ...(TOUCH && PLACE === 'oak_161206' ? { liteUrl: new URL('/data/home/oak_161206_touch_200k.spz', location.href).href, liteBytes: 3624763, pointsLazy: true } : {}),
       lift: 0, accent: ACC.path || ACC.hex, accentRim: ACC.pathRim || ACC.rim },
     onEvent(type, d) {
+      if (AUTO_STILL && TOUCH && handle?.engine?.params?.tier === 'T1') { goStill('weak device'); return; }
+      if (type === 'state' && d.state === 'loading' && TOUCH && !slowT) {
+        slowT = setTimeout(() => { if (!live.E && !gone && !document.hidden) goStill('slow load'); }, 45000);
+      }
       if (type === 'state') { setState(d); if (d.state === 'live') startLive(handle).catch(e => console.warn('[F]', e)); }
     },
-  }).then(h => { handle = h; if (h.live && !live.E) startLive(h).catch(e => console.warn('[F]', e)); });
+  }).then(h => { handle = h; if (gone) { try { h.destroy?.(); } catch (e) { /* gone */ } return; } if (h.live && !live.E) startLive(h).catch(e => console.warn('[F]', e)); });
+  // touch on a slow link: no live place after 25 s = the pictures stay (the download stops)
+  // (touch on a slow link: no live place 45 s after it started loading = the pictures stay; onEvent above)
 } else {
   stage.dataset.live = '0';
-  hintT.textContent = 'On a phone you see pictures. Tap Walk into the place to move in 3‑D.';
+  if (STILL) document.documentElement.classList.add('f-noatlas', 'f-still');
+  hintT.textContent = STILL ? 'A picture of the 3‑D place. Scroll to rise above it.' : 'On a phone you see pictures. Tap Walk into the place to move in 3‑D.';
 }
 
 // the pointer: parallax (mouse); a drag looks around at eye level (owner 11-13: "make it interactive with mouse so user can
@@ -406,9 +596,10 @@ const dragEls = TOUCH && hId ? [box, hId] : [box];
 if (TOUCH) for (const el of dragEls) el.style.touchAction = 'pan-y pinch-zoom';
 const onDown = e => {
   const mouse = e.pointerType !== 'touch';                // a pen drags like the mouse
-  if ((mouse && e.button !== 0) || !live.E || b > RISE0 - 0.01 || live.look.drag) return;
+  if ((mouse && e.button !== 0) || !live.E || b > OUT0 - 0.05 || live.look.drag) return;
   if (e.target instanceof Element && e.target.closest('a, button')) return;
   live.look.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, yaw: live.look.tyaw, pitch: live.look.tpitch, touch: !mouse };
+  live.look.at = bt;
   stage.dataset.drag = '1';
   try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
 };
@@ -416,16 +607,21 @@ const onMove = e => {
   const d = live.look.drag;
   if (!d || e.pointerId !== d.id) return;
   const k = d.touch ? 0.0034 : 0.0024;                    // a finger moves less far than a mouse for the same turn
-  live.look.tyaw = clamp(d.yaw - (e.clientX - d.x) * k, -0.75, 0.75);           // a 300 px drag turns about 40 degrees; at most +-43
-  if (!d.touch) live.look.tpitch = clamp(d.pitch - (e.clientY - d.y) * 0.0024, -0.28, 0.22);   // a finger's up/down is the scroll
+  const lim = b <= RISE0 ? 0.75 : Math.PI;                 // eye level: at most 43 degrees (as before); from the rise on: all round
+  live.look.tyaw = clamp(d.yaw - (e.clientX - d.x) * k, -lim, lim);             // a 300 px drag turns about 40 degrees
+  if (!d.touch) live.look.tpitch = clamp(d.pitch - (e.clientY - d.y) * 0.0024, -0.45, 0.3);    // a finger's up/down is the scroll
   live.E?.stage.invalidate();
 };
-const endDrag = e => { if (live.look.drag && e.pointerId === live.look.drag.id) { live.look.drag = null; delete stage.dataset.drag; } };
+const endDrag = e => {
+  const L = live.look;
+  if (L.drag && e.pointerId === L.drag.id) { L.drag = null; L.at = bt; L.endYaw = L.tyaw; L.endPitch = L.tpitch; delete stage.dataset.drag; }
+};
 for (const el of dragEls) {
   el.addEventListener('pointerdown', onDown);
   el.addEventListener('pointermove', onMove, { passive: true });
   el.addEventListener('pointerup', endDrag);
   el.addEventListener('pointercancel', endDrag);
+  el.addEventListener('lostpointercapture', endDrag);
 }
 addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse' || !live.E || REDUCE) return;
