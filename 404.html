@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="css/x.css">
   <script type="module" src="js/v4/common.js"></script>
   <script type="module" src="js/x.js"></script>
-<script>document.documentElement.dataset.acc = 'trio';</script>
+<script>document.documentElement.dataset.acc = 'trio';(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=navigator,c=n.connection||{},s=q.get('still'),k=null;try{k=sessionStorage.getItem('nr-still');}catch(e){}var t=matchMedia('(hover: none), (pointer: coarse)').matches,ios=/iPhone|iPad|iPod/.test(n.userAgent)||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var et=c.effectiveType||'',slow=c.saveData===true||/(^|-)2g$/.test(et)||(t&&(et==='3g'||(c.downlink>0&&c.downlink<1)));var weak=t&&((n.deviceMemory>0&&n.deviceMemory<=3)||(!ios&&n.hardwareConcurrency>0&&n.hardwareConcurrency<=4));if(s==='1'){d.classList.add('nr-still');d.classList.remove('f-drift');}}catch(e){}})();</script>
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
 <link rel="stylesheet" href="css/accent.css">

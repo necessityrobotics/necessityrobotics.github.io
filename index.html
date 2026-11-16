@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="A street in India as a 3-D place, built from camera photos by our software. Not a video.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e8e0cf' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2f5fa'/%3E%3C/svg%3E">
-<script>document.documentElement.dataset.acc = 'trio';</script>
+<script>document.documentElement.dataset.acc = 'trio';(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=navigator,c=n.connection||{},s=q.get('still'),k=null;try{k=sessionStorage.getItem('nr-still');}catch(e){}var t=matchMedia('(hover: none), (pointer: coarse)').matches,ios=/iPhone|iPad|iPod/.test(n.userAgent)||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var et=c.effectiveType||'',slow=c.saveData===true||/(^|-)2g$/.test(et)||(t&&(et==='3g'||(c.downlink>0&&c.downlink<1)));var weak=t&&((n.deviceMemory>0&&n.deviceMemory<=3)||(!ios&&n.hardwareConcurrency>0&&n.hardwareConcurrency<=4));if(s==='1'){d.classList.add('nr-still');d.classList.remove('f-drift');}}catch(e){}})();</script>
 <script>document.documentElement.classList.add('js'); window.__fOpen = '/explore.html'; window.__noAccentBar = true;</script>
 <script>/* before any other script: f-desk (desktop), f-drift (the first picture walks in from the first paint), f-hidden (a background tab holds it). Scroll: the page restores positions itself (manual): each history entry keeps its own position (history.state.fy, saved as the visitor scrolls), so Back and Forward return there, also inside the page; a reload restores nothing and starts at the top, where the first screen walks. */(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),m=function(x){return matchMedia(x).matches;};if(!m('(max-width: 760px)')){d.classList.add('f-desk');if(!m('(prefers-reduced-motion: reduce)')&&q.get('snap')!=='1'&&q.get('ride')!=='0')d.classList.add('f-drift');}var h=function(){d.classList.toggle('f-hidden',document.visibilityState==='hidden');};h();document.addEventListener('visibilitychange',h);if(!('scrollRestoration' in history))return;history.scrollRestoration='manual';var sv=function(){try{var s=history.state;s=s&&typeof s==='object'?Object.assign({},s):{};s.fy=Math.round(scrollY);history.replaceState(s,'');}catch(e){}},tm=0;addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(sv,250);},{passive:true});addEventListener('pagehide',sv);var go=function(){var s=history.state;if(s&&typeof s.fy==='number')scrollTo(0,s.fy);};addEventListener('popstate',go);var n=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];if(n&&n.type==='back_forward'){addEventListener('DOMContentLoaded',go);addEventListener('load',go);}}catch(e){}})();</script>
 <script type="importmap">
@@ -121,24 +121,26 @@
       <div class="h-cap" data-cap="2">
         <p class="c-k">II &middot; Pull back</p>
         <h2>A video cannot leave its camera. This place can.</h2>
-        <p>Scroll to rise out of the path.</p>
+        <p><span class="h-nocl">Scroll to rise above the path. <span class="h-live"><span class="when-fine">Drag to look around.</span><span class="when-touch">Drag sideways to look around.</span></span></span><span class="h-cl">This is the same place, seen from 64 m above the path.</span></p>
       </div>
       <div class="h-cap" data-cap="3">
         <p class="c-k">III &middot; The whole place</p>
         <h2>227 m of a real park, in 3&#8209;D.</h2>
-        <p>Every point comes from the camera's photos. <b>The line is the path xclean tracked.</b></p>
+        <p><span class="h-cl">Seen from straight above, to scale. </span>Every point comes from the camera's photos. <b>The line is the path xclean tracked.</b> <span class="h-live"><span class="when-fine">Drag to turn the view.</span><span class="when-touch">Drag sideways to turn the view.</span></span></p>
       </div>
       <div class="h-cap h-cap--top" data-cap="4">
         <p class="c-k">IV &middot; Eight places</p>
         <h2 class="h-live">Eight real paths, floating in the dark.</h2>
         <p class="h-live">Each shape is a real place: its 3&#8209;D points and its camera path. Not to scale.</p>
         <h2 class="h-still">Eight real places.</h2>
-        <p class="h-still">Seen from far above. The list of all eight is below.</p>
+        <p class="h-still h-nocl">Seen from far above. The list of all eight is below.</p>
+        <p class="h-cl">Each plate shows one place from above. The line is its camera path.</p>
       </div>
       <div class="h-cap h-cap--go h-cap--top" data-cap="5">
         <h2 class="f-go-h">Pick one.</h2>
         <p class="h-live"><span class="when-fine">Click</span><span class="when-touch">Tap</span> a shape: walk in, or compare its depth, classic vs ML.</p>
-        <p class="h-still">Scroll on and pick one.</p>
+        <p class="h-still h-nocl">Scroll on and pick one.</p>
+        <p class="h-cl">Tap a plate. Walk in, or see its depth.</p>
         <div class="h-cap-cta">
           <a class="btn btn--acc" id="go" href="explore.html?map=oak_161206&amp;at=117" data-open="">Walk into the park <span aria-hidden="true">&rarr;</span></a>
         </div>

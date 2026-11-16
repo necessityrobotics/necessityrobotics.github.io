@@ -30,7 +30,9 @@ function profile(d) {
  */
 export function mountDark(canvas, stage, opts = {}) {
   const VP = opts.at || [0.62, 0.36];
-  const SH = opts.shape || [0.2, 0.41];               // the opening's half width and half height, as fractions of the stage
+  // the opening (owner 11-16: no single tall oval): a wide, uneven clearing like lifting fog, made of a few soft lobes
+  // [dx, dy, rx, ry] round the centre, as fractions of the stage's width / height
+  const LOBES = opts.lobes || [[0, .02, .27, .2], [.24, -.02, .26, .25], [-.17, .08, .16, .14], [.1, .17, .22, .12], [.32, .14, .2, .22]];   // open to the right edge
   const LIGHT = !!opts.light;                          // phones and tablets: fewer pixels and fewer points of light
   const ctx = canvas.getContext('2d');
   const mem = document.createElement('canvas'), mctx = mem.getContext('2d', { willReadFrequently: true });
@@ -43,7 +45,7 @@ export function mountDark(canvas, stage, opts = {}) {
     const r = stage.getBoundingClientRect();
     W = r.width; H = r.height;
     if (!W || !H) return;
-    q = Math.min(window.devicePixelRatio || 1, LIGHT ? 1 : 1.5, Math.sqrt((LIGHT ? 0.9e6 : 2.4e6) / (W * H)));   // at most 2.4 (touch: 0.9) megapixels
+    q = Math.min(window.devicePixelRatio || 1, LIGHT ? 1 : 1.5, Math.sqrt((LIGHT ? 0.45e6 : 2.4e6) / (W * H)));   // at most 2.4 (touch: 0.45: the dark is soft) megapixels
     canvas.width = Math.round(W * q); canvas.height = Math.round(H * q);
     MW = Math.max(64, Math.round(W / 6)); MH = Math.max(64, Math.round(H / 6)); mem.width = MW; mem.height = MH;
     const rnd = rng(20261110), n = LIGHT ? 420 : 1000; dust = [];
@@ -51,8 +53,8 @@ export function mountDark(canvas, stage, opts = {}) {
     render(0, performance.now());
   }
   function pool(e0) {
-    const grow = 1 + e0 * e0 * 9;
-    return { cx: VP[0] * W, cy: VP[1] * H + .075 * H, rx: SH[0] * W * grow, ry: SH[1] * H * grow };
+    const grow = 1 + e0 * e0 * 9, cx = VP[0] * W, cy = VP[1] * H + .075 * H;
+    return LOBES.map(([dx, dy, rx, ry]) => ({ cx: cx + dx * W * grow, cy: cy + dy * H * grow, rx: rx * W * grow, ry: ry * H * grow }));
   }
   function render(dt, now) {
     if (!W) return;
@@ -77,7 +79,7 @@ export function mountDark(canvas, stage, opts = {}) {
     if (D <= .004) return;
     ctx.fillStyle = `rgba(0,0,0,${D.toFixed(4)})`; ctx.fillRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'destination-out';
-    blob(ctx, P.cx, P.cy, P.rx, P.ry, 1);
+    for (const L of P) blob(ctx, L.cx, L.cy, L.rx, L.ry, 1);
     if (!REDUCE) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low'; ctx.drawImage(mem, 0, 0, MW, MH, 0, 0, W, H); }
     // 3. points of light on the edge of the known area (the path colour and white)
     ctx.globalCompositeOperation = 'source-over';
@@ -87,8 +89,8 @@ export function mountDark(canvas, stage, opts = {}) {
       ctx.fillStyle = pass ? '#ffffff' : dustCol;
       for (const d of dust) {
         if (d.b !== pass) continue;
-        const ex = (d.x - P.cx) / P.rx, ey = (d.y - P.cy) / P.ry;
-        const b = profile(Math.sqrt(ex * ex + ey * ey));
+        let b = 0;
+        for (const L of P) { const ex = (d.x - L.cx) / L.rx, ey = (d.y - L.cy) / L.ry; const v = profile(Math.sqrt(ex * ex + ey * ey)); if (v > b) b = v; }
         const m = md ? md[(Math.min(MH - 1, d.y / H * MH | 0) * MW + Math.min(MW - 1, d.x / W * MW | 0)) * 4 + 3] / 255 : 0;
         const k = 1 - (1 - b) * (1 - m), e = 4 * k * (1 - k);
         if (e < .1) continue;
@@ -143,6 +145,7 @@ export function mountDark(canvas, stage, opts = {}) {
     destroy() {
       removeEventListener('pointermove', move); removeEventListener('touchstart', touch); removeEventListener('touchmove', touch);
       introT.forEach(clearTimeout); ro.disconnect();
+      on = false; if (raf) { cancelAnimationFrame(raf); raf = 0; }
     },
   };
 }

@@ -225,7 +225,7 @@ export class PlaceEngine {
     if (this.dead) return false;
     this.live = true;
     this.steps.setLive(true);
-    if (this.o.pointsAbove) this.loadMeasured().catch(e => console.warn('[F] points', e));
+    if (this.o.pointsAbove && !this.o.pointsLazy) this.loadMeasured().catch(e => console.warn('[F] points', e));   // lazy: the page asks
     stage.invalidate();
     this._upgrade(first).catch(e => { if (e?.name !== 'AbortError') console.warn('[place] upgrade', e); });
     if (!pin && !soft) this._floor();
@@ -253,9 +253,12 @@ export class PlaceEngine {
   async _load(tier) {
     if (this.tiers[tier]) return;
     const id = this.place.id, file = tier === 'cut' ? 'cut.spz' : PlaceEngine.FILES[tier];
-    const url = tier === 'cut' ? this.cut.url : asset(id, file, this.folder);
-    const onProgress = (l, t) => { this.loads[tier] = { loaded: l, total: t || this.place.map?.files?.[file] || 0 }; this.emit('progress', { tier, loaded: l, total: t }); };
-    this.loads[tier] = { loaded: 0, total: tier === 'cut' ? this.cut.bytes : this.place.map?.files?.[file] || 0 };
+    // o.liteUrl: the home's touch map (a byte-exact subset of Lite, same origin; tools/build_home_touch.py) in place of Lite
+    const own = tier === 'lite' && this.o.liteUrl;
+    const url = tier === 'cut' ? this.cut.url : own ? this.o.liteUrl : asset(id, file, this.folder);
+    const size0 = tier === 'cut' ? this.cut.bytes : own ? this.o.liteBytes || 0 : this.place.map?.files?.[file] || 0;
+    const onProgress = (l, t) => { this.loads[tier] = { loaded: l, total: t || size0 }; this.emit('progress', { tier, loaded: l, total: t }); };
+    this.loads[tier] = { loaded: 0, total: size0 };
     // Lite, Standard and the cut: our own fetch (bytes from, and to, the shared map cache). Full streams inside Spark.
     const src = tier === 'full' ? url : { bytes: await mapBytes(url, { onProgress, keep: tier !== 'standard' }), fileName: file };
     if (this.dead) throw Object.assign(new Error('gone'), { name: 'AbortError' });
@@ -319,7 +322,8 @@ export class PlaceEngine {
   }
   get settled() {
     const st = this.stage, sp = st?.spark;
-    return !!sp && !st.busy && !st._dirty && !sp.sorting && !sp.sortDirty && sp.activeSplats > 0;
+    // (splats faded out on purpose, camera above: none are active, and that is settled)
+    return !!sp && !st.busy && !st._dirty && !sp.sorting && !sp.sortDirty && (sp.activeSplats > 0 || (!!this.o.pointsAbove && this._kSplat <= 0.004));
   }
   /** A device that draws the place at under about 5 frames per second while the visitor moves it gets the still back. */
   _floor() {
@@ -524,6 +528,10 @@ export class PlaceEngine {
       const ks = 1 - smooth((alt - 3) / 10), kp = smooth((alt - 2) / 9);       // F: splats 3 -> 13 m, points 2 -> 11 m
       this._kSplat = ks; this._kPts = kp;
       for (const m of Object.values(this.splats?.meshes || {})) if (m.opacity !== ks) { m.opacity = ks; m.updateVersion?.(); }
+      // faded out = not drawn and not sorted (owner 11-16: the rise was heavy on phones and tablets); only the tier on
+      // screen, and only as far as the layer itself wants it (SplatLayer owns the other tiers' visibility)
+      const am = this.splats?.mesh;
+      if (am) { const v = !!this.splats.on && ks > 0.004; if (am.visible !== v) am.visible = v; }
       if (this.mp) { this.mp.uniforms.uOpacity.value = kp; this.mpts.holder.visible = kp > 0.004; }
     }
     if (this.o.marks === false && t.uOpacity) t.uOpacity.value = 0;

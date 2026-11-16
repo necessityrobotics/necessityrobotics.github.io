@@ -55,7 +55,7 @@
 /* phones: the dark too (owner 11-14); home.js mounts it where the live place may come. Before it draws, the veil has
    the same opening (centre, low), so the first screen does not jump when the dark takes over. */
 @media (max-width: 760px) {
-  .h-veil { background: radial-gradient(38% 30% at 50% 67.5%, #0000 0, rgba(0,0,0,.14) 42%, rgba(0,0,0,.64) 72%, rgba(0,0,0,.92) 90%, #000 100%); }
+  .h-veil { background: radial-gradient(75% 22% at 50% 71%, #0000 0, rgba(0,0,0,.14) 42%, rgba(0,0,0,.64) 72%, rgba(0,0,0,.92) 90%, #000 100%); }
 }
 
 /* the last two stops: the words at the top centre, the eight places in the middle under them */
@@ -83,9 +83,9 @@ html.f-hidden .h-place .pl-still[src*="first.jpg"], html.f-still .h-place .pl-st
 .h-place .pl-still { transition: opacity .6s linear; }
 .h-place[data-state="live"]:not([data-posed="1"]) .pl-still { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .h-place .pl-still { transition: none; } }
-/* before any script: the veil is the dark's own first picture (dark.js: a soft opening 20 % x 41 % at 62 % / 43.5 %), so
-   the dark takes over with no change (desktop; phones keep the veil) */
-html.f-desk .h-veil { background: radial-gradient(20% 41% at 62% 43.5%, #0000 0, rgba(0, 0, 0, .14) 42%, rgba(0, 0, 0, .64) 72%, rgba(0, 0, 0, .92) 90%, #000 100%); }
+/* before any script: the veil is close to the dark's own first picture (dark.js: a wide clearing of soft lobes round
+   62 % / 43.5 %), so the dark takes over with little change (desktop; phones keep the veil) */
+html.f-desk .h-veil { background: radial-gradient(44% 30% at 74% 47%, #0000 0, rgba(0, 0, 0, .14) 42%, rgba(0, 0, 0, .64) 72%, rgba(0, 0, 0, .92) 90%, #000 100%); }
 .h-place .pl-still[src*="first.jpg"] { filter: none !important; }   /* already in the final colours: no tint, no contrast change */
 
 /* the last stop, with the eight places live: short words at the top, the shapes are the choices; the credit at the foot */

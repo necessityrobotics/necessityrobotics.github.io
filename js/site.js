@@ -11,7 +11,9 @@ if (CODE_PUBLIC) {
   document.querySelectorAll('a[data-code-href]').forEach(a => { a.href = LINKS.repo; });
   document.querySelectorAll('[data-code-repo]').forEach(e => { e.textContent = LINKS.repo; });
 }
-export const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// still (classic) mode: every phone and tablet (owner 11-16; the page head sets html.nr-still) has no motion either:
+// sections show at once, numbers show their value, the xclean point field is one still figure
+export const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('nr-still');
 const SAVE = navigator.connection?.saveData === true || /(^|-)2g$/.test(navigator.connection?.effectiveType || '');
 
 /** Run fn once the page is shown: at once, or when a prerendered page is activated (no animation runs unseen). */
