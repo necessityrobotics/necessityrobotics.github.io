@@ -15,6 +15,7 @@
 // Reduced motion: no ride, the stage cuts from stop to stop. Test shots (?snap=1) and ?ride=0: no ride. Phones: pictures.
 import { mountPlace, SWITCH } from './place/mount.js';
 import { mountDark } from './dark.js';
+import { canTilt, askTilt, startTilt, IOS as TILT_ASKS } from '/js/place/tilt.js';
 import { current as accent, picker } from './accent.js';
 
 performance.mark('f-mod');                                // timing marks (a test reads them; they cost nothing)
@@ -195,6 +196,7 @@ function ui(x) {
   first.style.visibility = f < 0.01 ? 'hidden' : 'visible';
   first.inert = f < 0.5;
   hint.style.opacity = (1 - sm(0.04, 0.22, x)).toFixed(3);
+  hint.inert = x > 0.15;                                   // a faded hint takes no taps (its tilt link on an iPhone)
   // with the dark (desktop) the dark itself is the vignette, as on site v4.1: C's veil would keep a cleared area black
   veil.style.opacity = dark && !gone ? '0' : (1 - sm(0.08, 0.5, x)).toFixed(3);
   if (!gone) dark?.setP(ramp(x, 0, 1));
@@ -257,7 +259,8 @@ window.__f = {
   walk(at) { return live.walkFrom ? live.walkFrom(at) : false; },
   get rideState() { const r = live.ride; return r ? { at: r.at, v: r.v, lock: r.lock, on: r.on } : null; },
   get E() { return live.E; },
-  get look() { return live.look; },                        // tests: the drag-to-look state (yaw, pitch)
+  get look() { return live.look; },
+  get tilt() { return live.tilt || null; },                // tests: the phone's turn (tilt.js), or null                        // tests: the drag-to-look state (yaw, pitch)
 };
 
 /** A phone or tablet that cannot keep up (a weak GPU, a frame rate at the floor, a load that does not finish): the page
@@ -395,10 +398,11 @@ async function startLive(handle) {
         dir.subVectors(F, s.p).normalize();
         s.q.premultiply(rot.setFromUnitVectors(fwd, dir));
       }
-      const L0 = live.look;
-      if (L0.yaw || L0.pitch) {
+      const L0 = live.look, TL = live.tilt, kt = TL ? 1 - ss(ramp(x, RISE0 - 0.25, RISE0)) : 0;
+      const ly = L0.yaw + (kt ? clamp(TL.yaw, -0.45, 0.45) * kt : 0), lp = L0.pitch + (kt ? clamp(TL.pitch, -0.22, 0.22) * kt : 0);
+      if (ly || lp) {
         right.set(1, 0, 0).applyQuaternion(s.q);
-        s.q.premultiply(yawQ.setFromAxisAngle(right, L0.pitch)).premultiply(rot.setFromAxisAngle(UP, L0.yaw));
+        s.q.premultiply(yawQ.setFromAxisAngle(right, lp)).premultiply(rot.setFromAxisAngle(UP, ly));
       }
       E.setDirect({ w: 1, p: s.p, q: s.q, fov: fv(), sx: s.sx, sy: 0, ribbon: 1, route: null, dark: 0, loop: loopX(1) });
       return;
@@ -542,6 +546,32 @@ async function startLive(handle) {
     live.E.loadMeasured?.()?.catch?.(e => console.warn('[F] points', e));
   }
   if (TOUCH) setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(askPts, { timeout: 2000 }), 6000);
+  // ---- look with your phone (owner 11-16: "ar\vr features ... phone and tablet ... imu ... amaze users"): on the first
+  // screen and at stop 1 the phone's turn turns the view a little (at most 26 degrees) and the dark clears where it points
+  if (TOUCH && !REDUCE && canTilt()) {
+    const begin = () => {
+      if (live.tiltH) return;
+      performance.mark('f-tilt');
+      // the dark's centre (dark.js: VP + 7.5 % of the height): where the phone points at rest
+      const cx = PHONE ? 0.5 : 0.62, cy = PHONE ? 0.635 : 0.435;
+      live.tiltH = startTilt(d => {
+        live.tilt = d;
+        if (d && b < 0.35) dark?.point?.(cx - d.yaw / 0.9, cy - d.pitch / 0.7);
+        if (b < RISE0) E.stage.invalidate();                // past the rise the tilt has no effect: no frame for it
+      }, { range: { yaw: 0.45, pitch: 0.22 } });
+      hintT.textContent = 'Tilt your phone, or touch the dark: it hides a real place. Scroll to light it.';
+    };
+    if (TILT_ASKS && typeof window.DeviceOrientationEvent?.requestPermission === 'function') {
+      // iPhone / iPad: the system asks once, and only from a tap
+      const t = document.createElement('button');
+      t.type = 'button'; t.className = 'h-tilt'; t.textContent = 'Tilt your phone to look';
+      t.addEventListener('click', () => askTilt().then(r => { t.remove(); if (r === 'granted') begin(); }));
+      hint.append(t);
+    } else askTilt({ prompt: false }).then(r => { performance.mark('f-tilt-' + r); if (r === 'granted') begin(); });
+    addEventListener('pagehide', () => { live.tiltH?.stop(); live.tiltH = null; live.tilt = null; });
+    // Back / Forward from the page cache: the look comes back (Android needs no prompt; an iPhone keeps its answer)
+    addEventListener('pageshow', e => { if (e.persisted && !live.tiltH) askTilt({ prompt: false }).then(r => { if (r === 'granted') begin(); }); });
+  }
   // touch: the adaptive resolution at its floor for 5 s in a row = this device cannot hold even 30 fps: still mode
   if (AUTO_STILL && TOUCH) {
     let low = 0;
@@ -633,6 +663,9 @@ document.addEventListener('pointerleave', () => { live.par.tx = live.par.ty = 0;
 
 function onScroll() {
   readScroll();
+  // the stop-5 credit is fixed to the screen's foot: it goes once the stage itself scrolls away (it lay over later sections)
+  const past = hero.getBoundingClientRect().bottom < innerHeight - 8 ? '1' : '0';
+  if (stage.dataset.past !== past) stage.dataset.past = past;
   if (live.E && !live.parkHidden) live.E.stage.invalidate();
   else { b = bt; ui(bt); }                               // the park is hidden (no frames): the words and the islands follow directly
   if (live.E) setLinks();

@@ -98,7 +98,7 @@ export function attachFull(E) {
   L.on(c, 'pointerup', end);
   L.on(c, 'pointercancel', end);
   L.on(c, 'pointerleave', () => leavePath(E));
-  const recentre = () => { if (S.above.on) return; S.tyaw = Math.round(S.tyaw / (2 * Math.PI)) * 2 * Math.PI; S.tpitch = 0; E.stage.invalidate(); };
+  const recentre = () => { if (S.above.on) return; S.tyaw = Math.round(S.tyaw / (2 * Math.PI)) * 2 * Math.PI; S.tpitch = 0; E.onRecentre?.(); E.stage.invalidate(); };
   L.on(c, 'dblclick', recentre);
   L.on(c, 'wheel', e => {
     if (!E.live) return;

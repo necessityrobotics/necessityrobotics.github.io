@@ -421,3 +421,27 @@ html.xp-bare body.xp { grid-template-rows: minmax(0, 1fr); }
   .xp-speed-l { display: none; }
   .xp-foot .xp-honest { display: none; }                               /* the top line already says "Not a video." */
 }
+
+/* look with your phone (js/place/tilt.js): a glass square in the top bar, touch + HTTPS only; pressed = bone */
+.xp-tilt { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; height: 44px; padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, .3); border-radius: 0; background: rgba(0, 0, 0, .86); color: #f3f5f6;
+  font: 600 14px/1 var(--sans, system-ui); letter-spacing: .01em; cursor: pointer; }
+.xp-tilt[hidden] { display: none; }
+.xp-tilt svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.xp-tilt[aria-pressed="true"] { background: var(--acc, #e8e0cf); border-color: var(--acc, #e8e0cf); color: var(--on-acc, #1a1712); }
+@media (max-width: 759px) { .xp-tilt-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+/* its place (touch only; a desktop never shows it, so its bar is untouched): its own column in the bar */
+@media (hover: none), (pointer: coarse) {
+  @media (max-width: 759px) {
+    .xp-top { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "back . switch switch" "title title title tilt"; }
+    .xp-tilt { grid-area: tilt; align-self: start; }
+  }
+  @media (min-width: 760px) and (max-width: 1040px) {
+    .xp-top { grid-template-columns: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "back . switch about tilt" "title title title title title"; }
+    .xp-tilt { grid-area: tilt; }
+  }
+  @media (min-width: 1041px) {
+    .xp-top { grid-template-columns: auto auto minmax(0, 1fr) auto auto auto; grid-template-areas: "back wm title switch about tilt"; }
+    .xp-tilt { grid-area: tilt; }
+  }
+}

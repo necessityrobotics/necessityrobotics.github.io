@@ -33,6 +33,7 @@
   <script type="module" src="js/site.js"></script>
   <script type="module" src="js/copy.js"></script>
   <script type="module" src="js/xclean.js"></script>
+  <script type="module">if (window.isSecureContext && navigator.xr && matchMedia('(pointer: coarse)').matches) navigator.xr.isSessionSupported('immersive-ar').then(ok => ok && import('./js/xr/walk.js').then(m => m.mountWalk(document.getElementById('xr-walk')))).catch(e => console.warn('[xr]', e));</script>
 <script>document.documentElement.dataset.acc = 'trio';(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=navigator,c=n.connection||{},s=q.get('still'),k=null;try{k=sessionStorage.getItem('nr-still');}catch(e){}var t=matchMedia('(hover: none), (pointer: coarse)').matches,ios=/iPhone|iPad|iPod/.test(n.userAgent)||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var et=c.effectiveType||'',slow=c.saveData===true||/(^|-)2g$/.test(et)||(t&&(et==='3g'||(c.downlink>0&&c.downlink<1)));var weak=t&&((n.deviceMemory>0&&n.deviceMemory<=3)||(!ios&&n.hardwareConcurrency>0&&n.hardwareConcurrency<=4));if(s==='1'){d.classList.add('nr-still');d.classList.remove('f-drift');}}catch(e){}})();</script>
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
@@ -104,6 +105,8 @@
         <span data-code-when="pending" hidden><span class="btn btn--ion btn--static" aria-disabled="true">Code: coming soon</span></span><span data-code-when="public"><a class="btn btn--ion" href="https://github.com/necessityrobotics/xclean/archive/refs/tags/v0.3.0.zip">Download xclean 0.3.0 <span class="arr" aria-hidden="true">↓</span></a> <a class="btn" data-code-href href="https://github.com/necessityrobotics/xclean">View on GitHub <span class="arr" aria-hidden="true">→</span></a></span>
         <a class="btn" href="results.html">Results</a>
       </div>
+      <!-- phones with AR (js/xr/walk.js): the visitor walks and sees their own path on the floor, as a robot camera's path -->
+      <p class="xr-walk-cta" hidden><button class="btn" id="xr-walk" type="button" hidden>Walk your own path (AR) <span class="arr" aria-hidden="true">→</span></button><span class="xr-walk-n">Your phone draws where you walk.</span></p>
       </div>
       <figure class="phead-fig">
         <div class="field-box frame"><canvas class="field-canvas" aria-hidden="true"></canvas></div>

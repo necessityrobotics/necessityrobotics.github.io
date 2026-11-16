@@ -322,6 +322,249 @@ html.nr-still .ps-pick { position: fixed; inset: 0; z-index: 70; pointer-events:
 @media (hover: none), (pointer: coarse) { html.nr-still .h-place #still { filter: none !important; } }
 html.nr-still .h-hint { max-width: min(46ch, calc(100vw - 32px)); }   /* the plate label (nowrap) sets the box width */
 
+/* ============================================================ BUTTONS v1 for PHONES AND TABLETS ONLY (owner 11-16: "re work
+   buttons only for phone and tablet"). Design: the button audit (scratchpad plan2/BUTTONS.md). Every rule sits inside one
+   touch query, so a desktop (fine pointer that hovers) sees no change at all.
+   Kinds: PRIMARY filled accent, one per group; SECONDARY 1 px hairline box; TEXT words + arrow (a phone turns every
+   action after a group's first box into this); TOGGLE one joined strip, one row, scrolls sideways; ICON 44 x 44; GLASS
+   controls over a picture or the 3-D view; FIELD 44 px. Square, hairline, no glow, no scale on press, one focus ring. */
+@media (hover: none), (pointer: coarse) {
+  :root {
+    --b-h: 44px;                 /* md: every format */
+    --b-h-lg: 50px;              /* lg: the hero action on a desktop (the approved home hero is 50 px); 48 px below 1200 px */
+    --b-h-sm: 36px;              /* sm: toggles with a fine pointer; 44 px on touch */
+    --b-px: 20px; --b-px-lg: 24px; --b-px-sm: 14px;
+    --b-gap: 10px;               /* words to arrow */
+    --b-row: 12px;               /* box to box */
+    --b-type: 600 15px/1 var(--sans);
+    --b-type-sm: 600 14px/1 var(--sans);
+    --b-ls: .02em;
+    --b-line: rgba(255, 255, 255, .4);          /* secondary hairline (the bar's Contact uses the same) */
+    --b-line-q: rgba(255, 255, 255, .22);       /* toggles, fields */
+    --b-hover: rgba(255, 255, 255, .06);
+    --b-press: rgba(255, 255, 255, .12);
+    --b-glass: rgba(0, 0, 0, .86);
+    --b-glass-line: rgba(255, 255, 255, .3);
+    --b-ring: #f3f5f6;
+  }
+  @media (max-width: 1199px) { :root { --b-h-lg: 48px; } }
+  @media (max-width: 760px) { :root { --b-px: 18px; --b-px-lg: 20px; --b-row: 10px; } }
+  @media (pointer: coarse) { :root { --b-h-sm: 44px; } }
+
+  /* ------------------------------------------------------------ one focus ring for every control */
+  body.v12 :focus-visible { outline: 2px solid var(--b-ring); outline-offset: 3px; border-radius: 0; }
+  body.v12 :is(.xp, .h-stage, .f-atlas-stage) :focus-visible { outline-offset: 2px; box-shadow: 0 0 0 5px #000; }   /* over a picture: a black halo keeps the ring visible on a light picture */
+  body.v12 :is(.nr-nav .nr-a, .nr-dd-btn, .nr-cta, .v4-menu-btn):focus-visible { outline: 2px solid var(--b-ring); outline-offset: -2px; }
+
+  /* ------------------------------------------------------------ the box: one geometry, one type */
+  body.v12 .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--b-gap);
+    width: auto; max-width: 100%; min-height: var(--b-h); padding: 0 var(--b-px);
+    border: 1px solid var(--b-line); border-radius: 0; background: transparent; box-shadow: none;
+    font: var(--b-type); letter-spacing: var(--b-ls); color: var(--fg); text-decoration: none; text-align: center;
+    white-space: nowrap; cursor: pointer; transform: none; transition: background-color .18s, border-color .18s, color .18s; }
+  body.v12 .btn:active { background: var(--b-press); transform: none; }
+  body.v12 .btn--lg { min-height: var(--b-h-lg); padding: 0 var(--b-px-lg); font: var(--b-type); letter-spacing: var(--b-ls); }
+  body.v12 .btn--sm { min-height: var(--b-h-sm); padding: 0 var(--b-px-sm); font: var(--b-type-sm); }
+  body.v12 .btn--wide { width: auto; }
+  /* primary: the accent (bone; lilac inside ML areas, by the colour roles of v12.css) */
+  body.v12 :is(.btn--acc, .btn--ion) { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
+  body.v12 :is(.btn--acc, .btn--ion):focus-visible { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }   /* focus never looks like hover */
+  body.v12 :is(.btn--acc, .btn--ion):active { background: var(--acc-rim); border-color: var(--acc-rim); }
+  /* not available yet: a dashed box, no fill, no hover */
+  body.v12 :is(.btn--static, .btn[aria-disabled="true"], button.btn:disabled) {
+    background: transparent !important; border: 1px dashed var(--b-line) !important; color: var(--fg-3) !important; cursor: not-allowed; }
+  /* the arrow: one glyph per job; regular weight; a small nudge where a mouse hovers */
+  body.v12 :is(.btn, .btn--text) :is(.arr, [aria-hidden="true"]:last-child) { font-weight: 400; transition: transform .2s var(--ease); }
+  @media (hover: hover) {
+    body.v12 .btn:hover { background: var(--b-hover); border-color: #fff; color: #fff; }
+    body.v12 :is(.btn--acc, .btn--ion):hover { background: #fff; border-color: #fff; color: #000; }
+    body.v12 :is(.btn, a.more):hover .arr { transform: translateX(3px); }
+    body.v12 :is(.btn, a.more):hover .arr--down { transform: translateY(2px); }
+    body.v12 :is(.btn, a.more):hover .arr--ext { transform: translate(2px, -2px); }
+  }
+  /* groups: one gap; a wrapper span never adds its own gap (xclean: Download sat 4 px from GitHub, 0 px on a phone) */
+  body.v12 :is(.btns, .h-cta, .h-cap-cta, .d-cap-cta, .dm-cta, .dm-dl, .ab-mail, .pl-acts) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-row); }
+  body.v12 .btns > span[data-code-when] { display: contents; }
+  body.v12 .dm-cta + .dm-dl { margin-top: var(--b-row); }
+
+  /* ------------------------------------------------------------ text actions: words and an arrow, no box */
+  body.v12 :is(a.more, .btn--text) {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 0; margin: 0; padding: 10px 0; border: 0; background: none;
+    font: var(--b-type); letter-spacing: .01em; color: #fff; text-decoration: none; }
+  @media (hover: hover) { body.v12 :is(a.more, .btn--text):hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; } }
+  @media (pointer: coarse) { body.v12 :is(a.more, .btn--text) { min-height: 44px; padding: 0; } }
+
+  /* ------------------------------------------------------------ PHONE: buttons that do not eat the screen
+     1 one box per group (its primary); every other action of the group is a text action beside it or under it;
+     2 44 px (md) and 48 px (lg) only, 15 px words, the box is as wide as its words (never 100 %);
+     3 filters and toggles: one sideways-scrolling row, never two to four wrapped rows;
+     4 a list of cards shows its action as words ("Walk in ->"), not eight filled boxes. */
+  @media (max-width: 760px) {
+    body.v12 :is(.btns, .h-cta, .h-cap-cta, .d-cap-cta, .dm-cta, .dm-dl, .ab-mail, .pl-acts) { gap: 0 24px; }
+    body.v12 :is(.btns, .h-cta, .h-cap-cta, .d-cap-cta, .dm-cta, .ab-mail) > .btn:not(.btn--acc):not(.btn--ion),
+    body.v12 .btns > span[data-code-when] > .btn:not(.btn--ion), body.v12 .pl-acts > .btn, body.v12 .h-more {
+      min-height: 44px; padding: 0; border: 0; background: none; font: var(--b-type); font-style: normal; letter-spacing: .01em; color: #fff; text-decoration: none; }
+  }
+  /* safety net: a demoted action without an arrow gets one (fix the markup too: tools/build_static.py, about.html, xclean.html) */
+  @media (max-width: 760px) {
+    body.v12 :is(.btns, .ab-mail) > .btn:not(.btn--acc):not(.btn--ion):not(:has(.arr, [aria-hidden="true"]))::after { content: "\2192"; font-weight: 400; }
+  }
+  /* the depth model's downloads go to other sites: one quiet row of text actions on every format, not three boxes */
+  body.v12 .dm-dl { gap: 0 26px; }
+  body.v12 .dm-dl > .btn { min-height: 44px; padding: 0; border: 0; background: none; color: #fff; }
+  @media (hover: hover) { body.v12 .dm-dl > .btn:hover { background: none; text-decoration: underline; text-underline-offset: 6px; } }
+  /* the place cards on the 3-D places page: a secondary box (desktop, tablet), words on a phone; the bone fill stays for the page's one main action */
+  body.v12 .pl-acts > .btn--ion { background: transparent; border-color: var(--b-line); color: var(--fg); }
+  @media (hover: hover) { body.v12 .pl-acts > .btn--ion:hover { background: var(--b-hover); border-color: #fff; color: #fff; } }
+
+  /* ------------------------------------------------------------ toggles: one joined hairline strip, one row */
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) {
+    display: flex; flex-wrap: nowrap; gap: 0; padding: 0; border: 0; border-radius: 0; background: none;
+    max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x proximity; }
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed)::-webkit-scrollbar { display: none; }
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) > button {
+    flex: none; position: relative; display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; min-height: var(--b-h-sm); margin: 0 0 0 -1px; padding: 0 var(--b-px-sm);
+    border: 1px solid var(--b-line-q); border-radius: 0; background: #000; box-shadow: none;
+    font: var(--b-type-sm); letter-spacing: .01em; color: var(--fg-2); white-space: nowrap; cursor: pointer; scroll-snap-align: start; }
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) > button:first-of-type { margin-left: 0; }
+  @media (hover: hover) { body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) > button:hover { z-index: 1; color: #fff; border-color: rgba(255, 255, 255, .55); } }
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) > button[aria-pressed="true"] { z-index: 2; background: #f3f5f6; border-color: #f3f5f6; color: #000; }
+  body.v12 :is(.seg, .dm-routes, .dm-switch, .dm-same-views, .xp-speed) > button:focus-visible { z-index: 3; outline: 2px solid #000; outline-offset: -4px; box-shadow: inset 0 0 0 4px #f3f5f6; }
+  body.v12 .xp-speed .xp-speed-l { flex: none; align-self: center; margin-right: 10px; }
+  body.v12 .dm-photo-btn { min-height: var(--b-h-sm); padding: 0 var(--b-px-sm); border: 1px solid var(--b-line-q); border-radius: 0; font: var(--b-type-sm); }
+  body.v12 .dm-photo-btn[aria-pressed="true"] { background: #f3f5f6; border-color: #f3f5f6; color: #000; }
+  /* a phone: the strip runs to the screen edge and fades there, so it reads as "more to the side" */
+  @media (max-width: 760px) {
+    body.v12 :is(.seg, .dm-routes) { margin-inline: calc(-1 * var(--gutter, 16px)); padding-inline: var(--gutter, 16px); scroll-padding-inline: var(--gutter, 16px);
+      -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), #0000); mask-image: linear-gradient(90deg, #000 calc(100% - 36px), #0000); }
+  }
+  /* photo thumbnails: square; the chosen one has the white ring (no lilac glow); a phone scrolls them in one row */
+  body.v12 .dm-thumbs button { border-radius: 0; border: 1px solid var(--b-line-q); box-shadow: none; }
+  body.v12 .dm-thumbs button[aria-pressed="true"] { border-color: #f3f5f6; box-shadow: inset 0 0 0 1px #f3f5f6; }
+  @media (max-width: 760px) {
+    body.v12 .dm-thumbs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter, 16px)); padding-inline: var(--gutter, 16px); }
+    body.v12 .dm-thumbs button { flex: none; width: 76px; }
+  }
+
+  /* ------------------------------------------------------------ fields */
+  body.v12 :is(select.sel, input.search) { height: var(--b-h); padding: 0 14px; border: 1px solid var(--b-line-q); border-radius: 0; background-color: #000; font: 400 15px/1 var(--sans); }
+  @media (hover: hover) { body.v12 :is(select.sel, input.search):hover { border-color: rgba(255, 255, 255, .55); } }
+
+  /* ------------------------------------------------------------ icon buttons: 44 x 44 square, no box on the bar */
+  body.v12 .v4-menu-btn { height: 44px; min-width: 44px; padding: 0 12px; border-color: transparent; border-radius: 0; background: none; font: 500 14.5px/1 var(--sans); }
+  @media (hover: hover) { body.v12 .v4-menu-btn:hover { border-color: transparent; background: var(--b-hover); } }
+  body.v12 :is(.f-pick-x, .xp-hint-x, .mx-card-x, .ps-pick-x) { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; border-radius: 0; }
+  body.v12 .code .copy { border-radius: 0; }
+
+  /* ------------------------------------------------------------ the bar's Contact: a secondary, quiet hover */
+  @media (hover: hover) { body.v12 .nr-cta:hover { background: var(--b-hover); border-color: #fff; color: #fff; } }
+  @media (pointer: coarse) { body.v12 .nr-cta { min-height: 44px; } }
+
+  /* ------------------------------------------------------------ chips: labels, not buttons */
+  body.v12 .v4-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 11px; border-radius: 0;
+    background: var(--b-glass); border-color: var(--b-glass-line); font: 600 13.5px/1 var(--sans); letter-spacing: .01em; }
+  body.v12 .chip--warn { border-color: var(--b-line); border-style: dashed; color: var(--fg-2); }
+  body.v12 :is(.v4-tag, .dm-rel, .pl-step-label, .pl-you span, .pl-pick span) { border-radius: 0 !important; }
+
+  /* ------------------------------------------------------------ glass: the controls and panels over the 3-D view, square */
+  body.v12 :is(.xp-panel, .xp-hint, .xp-you, .xp-photo figcaption, .xp-said, .xp-cannot, .xp-above-t, .xp-eng, .xp-eng-ask,
+    .xp-noscript, .xp-move, .xp-dock, .xp-sheet, .xp-map, .xp-ride-t, .xp-print) { border-radius: 0 !important; }
+  body.v12 :is(.xp-nav, .xp-about, .xp-help, .xp-keep, .xp-center, .xp-x, .xp-back, .xp-pill) {
+    border-radius: 0 !important; background: var(--b-glass); border: 1px solid var(--b-glass-line); }
+  body.v12 :is(.xp-about, .xp-help, .xp-keep, .xp-center, .xp-x, .xp-back) { font: var(--b-type-sm); letter-spacing: .01em; }
+  @media (hover: hover) { body.v12 :is(.xp-nav, .xp-about, .xp-above, .xp-help, .xp-keep, .xp-center, .xp-x, .xp-back, .xp-pill):hover { border-color: #fff; background: #111; } }
+  body.v12 .xp-nav { width: 44px; height: 44px; }
+  @media (min-width: 761px) {
+    body.v12 .xp-above { min-height: 40px; padding: 0 12px; border-radius: 0 !important; background: var(--b-glass); border: 1px solid var(--b-glass-line); font: var(--b-type-sm); }
+  }
+  /* the ride dock: Step and Back are 44 px keys (they were 34 px; 30 px on a phone) */
+  body.v12 .xp-dock .xp-steps .xp-key { height: 44px !important; min-width: 92px; border-radius: 0 !important; border-color: var(--b-glass-line); font: var(--b-type-sm); }
+  @media (max-width: 760px) {
+    body.v12 .xp-dock .xp-steps { grid-auto-flow: column; }
+    body.v12 .xp-dock .xp-steps .xp-key { min-width: 48px; width: 48px; height: 48px !important; padding: 0; flex-direction: column; gap: 3px;
+      font: 500 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    body.v12 .xp-dock .xp-steps .xp-key svg { width: 18px; height: 18px; }
+    body.v12 .xp-auto { min-height: 48px; }
+  }
+  /* the home stage: the pick card of the eight places */
+  body.v12 .f-atlas-pick { gap: var(--b-row); }
+  body.v12 .f-atlas-pick .btn { justify-content: space-between; }
+
+  /* ------------------------------------------------------------ cards and doors: square */
+  body.v12 :is(.v4-placerow-item, .v4-placerow-item:focus-visible, .pl-item, .pl-pic, .h4-frame, .h4-door, .h4-door:focus-visible, .h4-beat-pic,
+    .h4-engdoor, .mx-card, .v4-tip, .v4-tip img, .dm-stage, .dm-frame, .dm-step, .dm-next-card, .dm-same-pic, .dm-specs) { border-radius: 0 !important; }
+  body.v12 .pl-eng > summary::before { border-radius: 0; }
+
+  /* ------------------------------------------------------------ the home hero keeps its approved size: the one lg action (50 px desktop, 48 px below) */
+  body.v12 :is(.h-cta, .h-cap-cta) > .btn:is(.btn--acc, .btn--ion) { min-height: var(--b-h-lg); padding: 0 var(--b-px-lg); }
+  @media (min-width: 761px) { body.v12 .h-cta > .h-more { min-height: var(--b-h-lg); padding: 0 var(--b-px-lg); } }
+  /* the 3-D view's place switch on a phone: the word "change" is the cue; the chevron had no room and was cut in half */
+  @media (max-width: 760px) { body.v12 .xp-pill-v { display: none; } }
+  /* the eight places as a list (phones; desktops without 3-D): the two actions were 23 px underlined words that wrapped
+     unevenly; now one row of two text actions, 44 px each, under the name */
+  body.v12 .f-atlas-list li { align-items: center; gap: 0 24px; }
+  body.v12 .f-al-l { flex: 1 0 auto; }
+  body.v12 .f-atlas-list a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: var(--b-type); letter-spacing: .01em; color: #fff; text-decoration: none; }
+  body.v12 .f-atlas-list a::after { content: "\2192"; font-weight: 400; }
+  @media (max-width: 760px) { body.v12 .f-al-l { flex-basis: 100%; margin: 2px 0 0; } }
+}
+
+/* ------------------------------------------------------------ AR (js/xr/table.js, js/xr/walk.js): the WebXR DOM overlay, square and
+   quiet, over the camera view; the end sheet of a walk */
+.xr-canvas { position: fixed; inset: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.xr-ui { position: fixed; inset: 0; z-index: 100; pointer-events: auto; touch-action: none; color: #f3f5f6; font: 500 15px/1.4 var(--sans, system-ui); }
+.xr-top { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: max(10px, env(safe-area-inset-top)) 12px 10px 16px; background: rgba(0, 0, 0, .72); border-bottom: 1px solid rgba(255, 255, 255, .22); }
+.xr-t { margin: 0; font: 500 11px/1.3 var(--mono, ui-monospace, monospace); letter-spacing: .18em; color: #e8e0cf; }
+.xr-x, .xr-move { min-height: 44px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, .4); border-radius: 0; background: rgba(0, 0, 0, .86);
+  color: #f3f5f6; font: 600 15px/1 var(--sans, system-ui); }
+.xr-move[hidden] { display: none; }
+.xr-say { position: absolute; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); margin: 0; padding: 10px 14px;
+  background: rgba(0, 0, 0, .72); border: 1px solid rgba(255, 255, 255, .22); text-align: center; }
+.xr-foot { position: absolute; left: 0; right: 0; bottom: calc(20px + env(safe-area-inset-bottom)); display: flex; justify-content: center; }
+.xp-link--ar[hidden], .xr-walk-cta[hidden], #xr-walk[hidden] { display: none; }
+.xr-walk-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 14px 0 0; }
+.xr-walk-n { font: 400 14px/1.4 var(--sans, system-ui); color: var(--fg-2, #c9c9c9); }
+.xr-end { position: fixed; inset: 0; z-index: 100; display: grid; align-items: end; background: rgba(0, 0, 0, .62); }
+.xr-end-box { display: grid; gap: 10px; padding: 22px 16px calc(22px + env(safe-area-inset-bottom)); background: #0b0b0c;
+  border-top: 1px solid rgba(255, 255, 255, .45); color: #f3f5f6; font: 400 15px/1.5 var(--sans, system-ui); }
+.xr-end-box p { margin: 0; }
+.xr-end-k { font: 500 11px/1 var(--mono, ui-monospace, monospace) !important; letter-spacing: .2em; color: #e8e0cf; }
+.xr-end-box h3 { margin: 0; font: 500 28px/1.15 var(--display, Georgia, serif); }
+.xr-end-acts { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; margin-top: 6px; }
+@media (min-width: 761px) { .xr-end { align-items: center; justify-items: center; } .xr-end-box { width: 460px; border: 1px solid rgba(255, 255, 255, .45); } }
+.xr-toast { position: fixed; z-index: 120; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); margin: 0; padding: 12px 14px;
+  background: #0b0b0c; border: 1px solid rgba(255, 255, 255, .45); color: #f3f5f6; font: 500 15px/1.4 var(--sans, system-ui); text-align: center; }
+
+/* ============================================================ BUTTONS v1.1 (phones and tablets only): fixes from the review */
+@media (hover: none), (pointer: coarse) {
+  /* iOS zooms into a field under 16 px */
+  body.v12 :is(select.sel, input.search) { font-size: 16px; }
+  /* the classic | ML switch only works below 900 px (two places side by side above) */
+  @media (min-width: 900px) { body.v12 .dm-switch { display: none; } }
+  /* a strip on a phone: the fade leaves the next item half seen, so the row reads as "more to the side" */
+  @media (max-width: 760px) {
+    body.v12 :is(.seg, .dm-routes) { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 64px), rgba(0, 0, 0, .3)); mask-image: linear-gradient(90deg, #000 calc(100% - 64px), rgba(0, 0, 0, .3)); }
+  }
+  /* no hover sticks after a tap (two page rules outside the system had unguarded hovers) */
+  body.v12 :is(.btn--acc, .btn--ion):hover { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
+  body.v12 .nr-cta:hover { background: none; border-color: var(--b-line); color: var(--fg); }
+  @media (hover: hover) {
+    body.v12 :is(.btn--acc, .btn--ion):hover { background: #fff; border-color: #fff; color: #000; }
+    body.v12 .nr-cta:hover { background: var(--b-hover); border-color: #fff; color: #fff; }
+  }
+  /* 44 px for every control */
+  body.v12 .xp-above { min-height: var(--b-h); }
+  /* the plain pages' text action: the same type as every other text action */
+  body.v12 .pg-plain .v4-plain .more { font: var(--b-type); margin-top: 0; }
+  /* a box in a group without an arrow gets one on every touch width (fix the markup too) */
+  body.v12 :is(.btns, .ab-mail) > .btn:not(.btn--acc):not(.btn--ion):not(:has(.arr, [aria-hidden="true"]))::after { content: "92"; margin-left: 2px; font-weight: 400; }
+  /* round markers keep their shape with the focus ring */
+  body.v12 :is(.pl-step, .pl-ring, .xp-auto-ic):focus-visible { border-radius: 999px; }
+}
+
 /* site build: the pictures are recoloured to the accent already (tools/make_site_v12.py), so no hue turn */
 :root, :root[data-acc] { --still-rot: 0deg !important; --still-sat: 1 !important; }
 /* the v4 header on the other pages, in the V11 finish */
