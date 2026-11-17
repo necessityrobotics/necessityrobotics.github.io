@@ -168,6 +168,49 @@ async function pair() {
     }
   }));
   go.addEventListener('click', open);
+  // phones and tablets (owner 11-17: "same ar\vr feature ... all 3d maps"): both 3-D views turn with the phone; and this
+  // place on a real table (AR). Each door shows only where it works.
+  const dmTilt = $('#dm-tilt'), dmAr = $('#dm-ar');
+  let dtilt = null, dRefused = false, dSeen = true, dLast = null;
+  const tiltOff = () => { dtilt?.stop(); dtilt = null; dLast = null; dmTilt?.setAttribute('aria-pressed', 'false'); };
+  // the two views draw for the phone only while they are on screen (the visitor may read the rest of the page)
+  const vis = new Map();
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => vis.set(e.target, e.isIntersecting));
+    dSeen = [...vis.values()].some(Boolean);
+    if (dSeen && dLast) H.forEach(h => h?.engine?.setDeviceLook?.(dLast));
+  });
+  frames.forEach(f => io.observe(f));
+  const note = $('#dm-pair-note'), noteT0 = note?.textContent || '';
+  let noteTimer = 0;
+  const tell = t => { if (!note) return; note.textContent = t; clearTimeout(noteTimer); noteTimer = setTimeout(() => { note.textContent = noteT0; }, 6000); };
+  if (dmTilt) import('./place/tilt.js').then(({ canTilt, askTilt, startTilt }) => {
+    if (!canTilt()) return;
+    const sync = () => { dmTilt.hidden = dRefused || !root.dataset.live; if (!root.dataset.live) tiltOff(); };
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-live'] });
+    sync();
+    let asking = false;
+    dmTilt.addEventListener('click', () => {
+      if (dtilt) { tiltOff(); return; }
+      if (asking) return;
+      asking = true;
+      askTilt().then(r => {                                  // (inside the tap: an iPhone asks once)
+        asking = false;
+        if (r !== 'granted') {
+          tell(r === 'denied' ? 'Motion access is not allowed. Drag to look.' : 'This device gives no motion data. Drag to look.');
+          if (r === 'denied') { dRefused = true; dmTilt.hidden = true; }
+          return;
+        }
+        dtilt = startTilt(d => { dLast = d; if (dSeen || !d) H.forEach(h => h?.engine?.setDeviceLook?.(d)); }, { absPitch: true });
+        dmTilt.setAttribute('aria-pressed', 'true');
+      });
+    });
+    addEventListener('pagehide', tiltOff);
+  });
+  if (dmAr) import('./xr/entry.js').then(({ arDoors }) => arDoors([dmAr], {
+    before: b => { b.dataset.ar = id; b.dataset.name = byId[id].name; b.dataset.len = byId[id].length || ''; tiltOff(); H.forEach(h => h?.engine?.setOffscreen?.(true)); },
+    after: () => H.forEach(h => { h?.engine?.setOffscreen?.(false); h?.engine?.stage?.invalidate?.(); }),
+  }));
   stills();
   // test hook: both views' spot and look (the CPU tests compare them)
   window.__dmState = () => H.map(h => { const e = state(h); return e ? { at: +e.S.at.toFixed(2), yaw: +e.S.yaw.toFixed(3), pitch: +e.S.pitch.toFixed(3), live: !!e.live, folder: e.folder } : null; });

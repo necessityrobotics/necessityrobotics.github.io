@@ -41,7 +41,7 @@ function sheetHTML(p) {
     <div class="pl-body">
       <p class="pl-lim" id="lim-${id}"><b class="pl-lim-h">Where it is not perfect</b> ${esc(p.limits_plain)}</p>
       <p class="v4-credit">${esc(p.credit_plain)}</p>
-      <div class="pl-acts"><a class="btn btn--ion" href="${href}"><span>Walk in<span class="v4-sr">: ${esc(p.name)}</span></span> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+      <div class="pl-acts"><a class="btn btn--ion" href="${href}"><span>Walk in<span class="v4-sr">: ${esc(p.name)}</span></span> <span class="arr" aria-hidden="true">&rarr;</span></a><button class="btn pl-ar" type="button" data-ar="${id}" data-name="${esc(p.name)}" data-len="${esc(p.length || '')}" hidden>See it on your table (AR)<span class="v4-sr">: ${esc(p.name)}</span></button></div>
       <details class="pl-eng" data-eng="${id}"><summary>For engineers<span class="v4-sr">: the technical facts of this place (${esc(p.name)})</span></summary><div class="pl-eng-in"></div></details>
     </div>
   </article>`;
@@ -130,3 +130,16 @@ async function build() {
 }
 
 build().catch((e) => { S.error = String(e); console.warn('[places] the engineer facts did not load', e); }).finally(() => { S.ready = true; });
+
+// phones and tablets with AR (js/xr/entry.js): each place on a real table. The cards are static HTML: the door is added to
+// each card's actions only where AR can start (nothing changes elsewhere)
+import('./xr/entry.js').then(async ({ arReady, arDoors }) => {
+  if (!(await arReady())) return;
+  const P = await loadPlaces();
+  for (const p of P.places) {
+    const acts = document.getElementById(p.id)?.querySelector('.pl-acts');
+    if (!acts || acts.querySelector('.pl-ar')) continue;
+    acts.insertAdjacentHTML('beforeend', `<button class="btn pl-ar" type="button" data-ar="${p.id}" data-name="${esc(p.name)}" data-len="${esc(p.length || '')}" hidden>See it on your table (AR)<span class="v4-sr">: ${esc(p.name)}</span></button>`);
+  }
+  arDoors(document.querySelectorAll('.pl-ar[hidden]'));
+}).catch(e => console.warn('[xr]', e));

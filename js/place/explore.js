@@ -97,7 +97,7 @@ function hintDone(what) {
   }
 }
 // phone: the tips are two short lines; after the first swipe they fold into "How to move" at once (the place is small)
-const hintFold = () => { if (PHONE.matches && body.dataset.hint === 'open') setHint(false); };
+const hintFold = () => { if ((PHONE.matches || isTouch()) && body.dataset.hint === 'open') setHint(false); };   // (touch: the place keeps the screen)
 $('xp-hint-x').addEventListener('click', () => { setHint(false); $('xp-help').focus(); });
 $('xp-help').addEventListener('click', () => { setHint(true); $('xp-hint-x').focus(); });
 
@@ -157,6 +157,7 @@ function onState(d) {
     b.hidden = !d.again; b.textContent = d.again || 'Open it again';
   }
   if (d.state === 'live') {
+    if (isTouch()) setTimeout(hintFold, 8000);                 // touch: the words fold away by themselves
     let seen = false;
     try { seen = sessionStorage.getItem('xp-hint') === 'done'; } catch (e) { /* private mode */ }
     setHint(!seen);
@@ -221,6 +222,11 @@ function openPanel(name, from, focusId) {
   }
   opener = from || null;
   view?.keys(!name);                                   // the arrow keys belong to the open panel
+  // touch: the places sheet covers the screen; the 3-D place rests and hides under it, and its pictures load now
+  const places = name === 'places' && isTouch();
+  body.toggleAttribute('data-places-open', places);
+  view?.engine?.setOffscreen?.(places);
+  if (name === 'places') for (const im of panels.places.el.querySelectorAll('img[loading="lazy"]')) im.loading = 'eager';
   if (name) {
     const target = (focusId && $(focusId)) || panels[name].head;
     if (focusId) { target.tabIndex = -1; target.scrollIntoView({ block: 'start' }); }
@@ -293,9 +299,11 @@ if (arBtn && window.isSecureContext && navigator.xr && matchMedia('(pointer: coa
     const { openTable } = m;
     arBtn.hidden = false;
     arBtn.addEventListener('click', () => {
+      if (window.__xrBusy) return;                         // one AR session at a time
+      window.__xrBusy = true;
       tiltOff();
       view?.engine?.setOffscreen?.(true);                    // the place rests while AR runs
-      openTable({ id: place.id, name: place.name, len: place.length || '', onEnd: () => { view?.engine?.setOffscreen?.(false); view?.engine?.stage?.invalidate?.(); } });
+      openTable({ id: place.id, name: place.name, len: place.length || '', onEnd: () => { window.__xrBusy = false; view?.engine?.setOffscreen?.(false); view?.engine?.stage?.invalidate?.(); } });
     });
   }).catch(e => console.warn('[xr]', e));
 }

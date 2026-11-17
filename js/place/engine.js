@@ -436,8 +436,8 @@ export class PlaceEngine {
   /** Look with your phone (tilt.js): d = { yaw, pitch } in radians added to the look, or null to stop. */
   setDeviceLook(d) {
     const v = this.dev, S = this.S;
-    if (!d && v.on) {
-      // off: the phone's turn becomes the swipe look, so the view does not jump back
+    if (!d && v.on && this.rest != null) {
+      // off: the phone's turn becomes the swipe look, so the view does not jump back (only after start: rest is known)
       S.yaw += v.yaw; S.tyaw += v.yaw;
       S.tpitch = S.pitch = clamp(S.pitch + v.pitch, -38 * DEG - this.rest, 32 * DEG - this.rest);
     }

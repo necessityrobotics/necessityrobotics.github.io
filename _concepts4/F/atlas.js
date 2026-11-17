@@ -40,6 +40,10 @@ const FRAG = /* glsl */`
  * root: the section's stage element, holding canvas.f-atlas-canvas, .f-atlas-labels and .f-atlas-pick.
  * links: { open(id) -> url of the 3-D view, depth(id) -> url of the depth comparison }
  */
+// AR on a phone or tablet (js/xr/entry.js): the pick card offers the place on a real table, where AR can start
+let AR = null;
+import('/js/xr/entry.js').then(m => m.arReady()).then(mod => { AR = mod; }).catch(() => {});
+
 export async function mountAtlas(root, links, opts = {}) {
   // embedded (in the home stage): the page sets k (0 = close on one island, 1 = all eight) and turns the doors on
   const EMB = !!opts.embedded;
@@ -206,11 +210,17 @@ export async function mountAtlas(root, links, opts = {}) {
     pick.innerHTML = `<p class="f-pick-n">${pl.name}</p>
       <a class="btn btn--acc f-pick-go" href="${links.open(id)}">Walk in (3-D) <span aria-hidden="true">&rarr;</span></a>
       <a class="btn f-pick-depth" href="${links.depth(id)}">Its depth: classic vs ML <span aria-hidden="true">&rarr;</span></a>
+      ${AR ? '<button type="button" class="btn f-pick-ar">See it on your table (AR)</button>' : ''}
       <button type="button" class="f-pick-x" aria-label="Close">&times;</button>`;
+    pick.querySelector('.f-pick-ar')?.addEventListener('click', () => {
+      if (window.__xrBusy) return;
+      window.__xrBusy = true;
+      close(); AR.openTable({ id, name: pl.name, len: pl.length || '', onEnd: () => { window.__xrBusy = false; } });   // (inside the tap)
+    });
     pick.hidden = false;
     pick.setAttribute('aria-label', `${pl.name}: choose`);
     const r = from.getBoundingClientRect(), R = root.getBoundingClientRect();
-    const x = clamp(r.left - R.left, 8, R.width - 290), y = clamp(r.bottom - R.top + 8, 8, R.height - 170);
+    const x = clamp(r.left - R.left, 8, R.width - 290), y = clamp(r.bottom - R.top + 8, 8, R.height - (pick.offsetHeight || 170) - 8);
     pick.style.left = `${x.toFixed(0)}px`; pick.style.top = `${y.toFixed(0)}px`;   // plain position (no transform layer over WebGL)
     pick.querySelector('.f-pick-x').addEventListener('click', close);
     pick.querySelector('.f-pick-go').focus({ preventScroll: true });     // never scroll the page under the stage

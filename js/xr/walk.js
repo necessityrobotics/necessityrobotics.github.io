@@ -65,6 +65,7 @@ export function startWalk() {
   const say = t => { ui.querySelector('.xr-say').textContent = t; };
   const sessionP = navigator.xr.requestSession('immersive-ar', { optionalFeatures: ['local-floor', 'dom-overlay'], domOverlay: { root: ui } });
   return sessionP.then(async sess => {
+    if (ended) { sess.end().catch(() => {}); return null; }   // closed while the browser still asked: no AR after it
     session = sess;
     session.addEventListener('end', finish);
     const hide = () => { if (document.hidden) session.end().catch(() => {}); };
@@ -146,6 +147,7 @@ export function startWalk() {
     });
     return session;
   }, e => {
+    if (ended) return null;                                  // closed already: no words about it
     console.warn('[xr] walk', e);
     finish();
     const nm = String(e?.name || '');
