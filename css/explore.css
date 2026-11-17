@@ -445,3 +445,159 @@ html.xp-bare body.xp { grid-template-rows: minmax(0, 1fr); }
     .xp-tilt { grid-area: tilt; }
   }
 }
+
+/* ============================================================ MAP FIRST on phones and tablets (owner 11-17: "the buttons still take up
+   more space than the map itself ... can barely see map in phone \ tablet, make buttons smaller or come up with best idea").
+   Touch only (a desktop never matches), after every other rule: the bar is one row, the controls are small glass pieces at
+   the edges, the words fold away, the 3-D place gets the screen. */
+@media (hover: none), (pointer: coarse) {
+  /* ---- the bar: one row on a phone (the back link is its arrow; the title is the name only) */
+  @media (max-width: 759px) {
+    html body .xp-top { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "back . switch tilt" "title title title title"; gap: 4px 6px; padding: 6px 8px 6px; }
+    html body .xp-tilt { grid-area: tilt; align-self: center; width: 40px; min-width: 40px; height: 40px; padding: 0; }
+    html body.v12 .xp-back { width: 40px; min-height: 40px; height: 40px; padding: 0; justify-content: center; font-size: 0 !important; gap: 0; overflow: hidden; }
+    html body.v12 .xp-back .xp-arr { font-size: 19px; }
+    html body.v12 .xp-nav { width: 40px; height: 40px; }
+    html body.v12 .xp-pill { min-height: 40px; padding: 0 8px; }
+    html body .xp-pill-pic { display: none; }
+    html body .xp-line { display: none; }
+    html body .xp-name { font-size: 15.5px; line-height: 1.25; }
+  }
+  /* ---- the words: small, and they fold away */
+  html body.xp .xp-hint { padding: 7px 34px 8px 10px; gap: 3px; max-width: min(330px, calc(100% - 20px)); }
+  html body.xp .xp-hint-h { font-size: 13.5px; line-height: 1.3; }
+  html body.xp .xp-hint-rows { font-size: 13px; line-height: 1.3; gap: 2px; }
+  html body.xp .xp-hint-rows li { gap: 8px; }
+  html body.xp .xp-hint-x { min-width: 36px; min-height: 36px; }
+  html body.v12 .xp-help { min-height: 36px; padding: 0 12px; font-size: 13px; }
+  html body.xp .xp-said, html body.xp[data-state="live"] .xp-said, html body.xp[data-state="live"][data-hint="open"] .xp-said { font-size: 14px; padding: 8px 12px; max-width: min(420px, calc(100% - 20px)); }
+  /* ---- "You are here": a small map card (the map is the button: tap the path) */
+  html body.xp .xp-you { left: 8px; bottom: 8px; width: 112px; padding: 5px; gap: 4px; }
+  html body.xp .xp-you-h { font-size: 11px; gap: 4px; }
+  html body.xp .xp-you-h b { display: none; }
+  html body.xp .xp-map { height: 56px; }
+  html body.xp .xp-map-note { display: none; }
+  html body.v12 .xp-above { min-height: 34px; padding: 0 8px; justify-content: center; font-size: 12px; gap: 6px; }
+  html body.v12 .xp-above span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  html body.v12 .xp-above::after { content: "From above"; content: "From above" / ""; }
+  /* ---- the camera's photo: a small print; it opens on a tap */
+  html body.xp .xp-photo:not(.is-open) { width: 66px; }
+  html body.xp .xp-photo:not(.is-open) .xp-photo-s, html body.xp .xp-photo:not(.is-open) figcaption { display: none; }
+  /* ---- the ride dock: one small glass strip (Ride + Step + Back), not a big block */
+  html body.v12 .xp-dock { right: 8px; bottom: 8px; left: auto; gap: 4px; padding: 4px; grid-template-columns: none; grid-auto-flow: column; align-items: center; }
+  html body.v12 .xp-auto { min-height: 44px; padding: 0 14px 0 4px; gap: 8px; }
+  html body.v12 .xp-auto-ic { width: 36px; height: 36px; }
+  html body.v12 .xp-auto-t i { display: none; }
+  html body.v12 .xp-auto-t b { font: 600 15px/1 var(--sans); letter-spacing: .01em; }
+  html body.v12 .xp-dock .xp-steps { display: flex; gap: 4px; }
+  html body.v12 .xp-dock .xp-steps .xp-key { width: 44px !important; min-width: 44px !important; height: 44px !important; padding: 0; flex-direction: column; gap: 2px;
+    font: 500 9px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  html body.v12 .xp-dock .xp-steps .xp-key svg { width: 16px; height: 16px; }
+  /* ---- the foot: one small line */
+  html body.xp .xp-foot { padding: 4px 10px; padding-bottom: max(4px, env(safe-area-inset-bottom)); gap: 0; font-size: 12px; line-height: 1.35; }
+  html body.xp .xp-foot .xp-link { font-size: 12.5px; min-height: 32px; }
+  html body.xp .xp-foot-r { gap: 0 14px; }
+  /* ---- a tablet: the same pieces, a little larger */
+  @media (min-width: 760px) {
+    html body.xp .xp-you { left: 12px; bottom: 12px; width: 200px; padding: 7px; }
+    html body.xp .xp-you-h { font-size: 12.5px; }
+    html body.xp .xp-you-h b { display: inline; }
+    html body.xp .xp-map { height: 96px; }
+    html body.xp .xp-photo:not(.is-open) { left: auto; right: 12px; width: 120px; bottom: calc(24px + var(--xp-move-h, 56px)); }
+    html body.v12 .xp-dock { right: 12px; bottom: 12px; }
+    html body.xp .xp-hint { max-width: 360px; }
+    html body.xp .xp-foot { flex-direction: row; align-items: center; gap: 4px 18px; min-height: 0; }
+  }
+}
+@media (hover: none) and (max-width: 759px), (pointer: coarse) and (max-width: 759px) {
+  /* a phone: "Ride" / "Stop" (the button's own label keeps the full words for screen readers) */
+  html body.v12 .xp-auto-t b { display: none; }
+  html body.v12 .xp-auto-t::after { content: "Ride"; font: 600 15px/1 var(--sans); letter-spacing: .01em; }
+  html body.v12 .xp-auto[aria-pressed="true"] .xp-auto-t::after { content: "Stop"; }
+}
+
+/* ============================================================ CHANGE PLACE on phones and tablets (owner 11-17: "make sure user can easily
+   switch maps ... both for ios and android (in ios map switch panel from top not seen / not works)"). A full-screen sheet
+   above everything (the 3-D view rests and hides under it, so no WebGL layer can paint over it on iOS), big picture
+   cards, the current place marked. Pictures load when the sheet opens (iOS often never loads lazy images in a scroller). */
+@media (hover: none), (pointer: coarse) {
+  html body .xp-places { position: fixed; inset: 0; z-index: 200; max-height: none; height: 100vh; height: 100dvh;
+    overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    padding: max(10px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom)); background: #000; border: 0; box-shadow: none; }
+  html body .xp-places[hidden] { display: none; }
+  html body .xp-places-head { position: sticky; top: 0; z-index: 2; margin: 0 -12px 12px; padding: 6px 12px 10px; background: #000; border-bottom: 1px solid rgba(255, 255, 255, .2); }
+  html body .xp-places h2 { font-size: 22px; }
+  html body .xp-places .v4-placerow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  html body .xp-places .v4-placerow-item { border-radius: 0; border: 1px solid rgba(255, 255, 255, .22); background: #0b0b0c; min-height: 44px; }
+  html body .xp-places .v4-placerow-item img { aspect-ratio: 4 / 3; }
+  html body .xp-places .v4-placerow-item span { padding: 8px 10px 10px; font: 600 15px/1.25 var(--sans); }
+  html body .xp-places .v4-placerow-item[aria-current] { border-color: var(--acc, #e8e0cf); box-shadow: inset 0 0 0 1px var(--acc, #e8e0cf); }
+  html body .xp-places .v4-placerow-item[aria-current] span::after { content: "You are here"; display: block; margin-top: 4px; font: 500 11px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--acc, #e8e0cf); }
+  html body .xp-places .v4-placerow-credit { margin-top: 12px; font-size: 12px; }
+  @media (min-width: 760px) { html body .xp-places .v4-placerow { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; } }
+  html body.xp[data-places-open] #pl, html body.xp[data-places-open] .xp-foot { visibility: hidden; }
+  /* the switch in the bar reads as a button to change place */
+  html body .xp-pill-t i::before { content: "\21C6\00a0"; font-style: normal; }
+}
+/* review fixes (touch only) */
+@media (hover: none), (pointer: coarse) {
+  html body.v12 .xp-dock .xp-speed { display: none !important; }       /* after a ride: no third item that widens the dock */
+  @media (min-width: 760px) {
+    html body.xp .xp-photo.is-open { left: auto; right: 12px; bottom: calc(24px + var(--xp-move-h, 56px)); }   /* clear of Ride */
+    html body.xp .xp-you-h { flex-wrap: wrap; white-space: normal; }
+    html body.xp .xp-foot .xp-link { min-height: 28px; }
+  }
+  @media (max-width: 759px) {
+    /* the bar's line is gone on a phone: the name says it */
+    html body .xp-name::after { content: " \00b7  Not a video";   /* two spaces: the first one ends the escape */ font: 500 12px/1 var(--sans); color: var(--fg-3, #9a9a9a); white-space: nowrap; }
+  }
+}
+/* a phone held sideways (wide, but short; any width): the bar is one short row and the foot is one line, so the place gets
+   the height. Touch only; a tablet (taller than 540 px) and a desktop never match. */
+@media (hover: none) and (orientation: landscape) and (max-height: 540px), (pointer: coarse) and (orientation: landscape) and (max-height: 540px) {
+  html body .xp-top { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "back title switch tilt"; gap: 6px; min-height: 0; padding: 4px 8px; }
+  html body .xp-title { border-left: 0; padding: 0 4px; min-width: 0; }
+  html body .xp-name { font-size: 15px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .xp-name::after { content: " \00b7  Not a video"; font: 500 12px/1 var(--sans); color: var(--fg-3, #9a9a9a); }
+  html body .xp-line, html body .xp-about, html body .xp-pill-pic, html body .xp-wm { display: none; }
+  html body .xp-link--about { display: inline-flex; }
+  html body.v12 .xp-back { width: 40px; min-height: 40px; height: 40px; padding: 0; justify-content: center; font-size: 0 !important; gap: 0; overflow: hidden; }
+  html body.v12 .xp-back .xp-arr { font-size: 19px; }
+  html body.v12 .xp-nav { width: 40px; height: 40px; }
+  html body.v12 .xp-pill { min-height: 40px; padding: 0 8px; }
+  html body .xp-tilt { grid-area: tilt; width: 40px; min-width: 40px; height: 40px; padding: 0; }
+  html body .xp-tilt-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  html body.xp .xp-foot .xp-honest { display: none; }
+  html body.xp .xp-foot { flex-direction: row; flex-wrap: nowrap; align-items: center; min-height: 30px; padding: 1px 10px; padding-bottom: max(1px, env(safe-area-inset-bottom)); font-size: 11.5px; }
+  html body.xp .xp-foot .xp-link { min-height: 28px; font-size: 12px; }
+  html body.xp .xp-foot-r { flex-wrap: nowrap; min-width: 0; }
+  html body.xp .xp-foot .xp-credit { flex-basis: auto; font-size: inherit; min-width: 0; }   /* it may wrap inside itself; it is never cut */
+  html body.xp .xp-you { left: 8px; bottom: 8px; width: 120px; padding: 5px; }
+  html body.xp .xp-you.xp-live { bottom: max(8px, env(safe-area-inset-bottom)) !important; }      /* (a phone's own rule stacks it above the dock) */
+  /* the hint: the phone's short one-paragraph form, so it does not reach down to the map card */
+  html body.xp .xp-hint { top: 8px; }
+  html body.xp .xp-hint-rows { display: block; }
+  html body.xp .xp-hint-rows li { display: inline; }
+  html body.xp .xp-hint .xp-ic, html body.xp .xp-hint .xp-wide { display: none; }
+  html body.xp .xp-hint .xp-narrow { display: inline; }
+  /* the camera's photo, opened: a small print with no caption, above the dock */
+  html body.xp .xp-photo.is-open { left: auto; width: 180px; bottom: calc(16px + var(--xp-move-h, 56px)); }
+  html body.xp .xp-photo.is-open figcaption { display: none; }
+  html body.xp .xp-you-h b { display: none; }
+  html body.xp .xp-map { height: 56px; }
+  html body.v12 .xp-dock { right: 8px; bottom: 8px; }
+  /* an iPhone held sideways (viewport-fit=cover): keep every piece clear of the notch and the round corners */
+  html body .xp-top { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+  html body.xp .xp-foot { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  html body.xp .xp-you { left: max(8px, env(safe-area-inset-left)); }
+  html body.xp .xp-hint, html body.v12 .xp-help { left: max(10px, env(safe-area-inset-left)); }
+  html body.v12 .xp-dock { right: max(8px, env(safe-area-inset-right)); }
+  html body.xp .xp-photo:not(.is-open), html body.xp .xp-photo.is-open { right: max(12px, env(safe-area-inset-right)); }
+  html body .xp-places { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  html body .xp-sheet-head { padding-right: max(14px, env(safe-area-inset-right)); }
+  html body .xp-sheet-body { padding-right: max(18px, env(safe-area-inset-right)); }
+}
+/* tablets and sideways phones: "Back to the camera's path" sits above the dock, not on Ride */
+@media (hover: none) and (min-width: 760px), (pointer: coarse) and (min-width: 760px) {
+  html body.xp .xp-center { bottom: calc(var(--xp-move-h, 56px) + 20px); }
+}

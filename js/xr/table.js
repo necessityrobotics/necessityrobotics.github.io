@@ -6,7 +6,7 @@
 //
 //   openTable({ id, name, len, onEnd })   MUST be called from a tap: the session is requested before anything awaits
 // (the page checks navigator.xr.isSessionSupported('immersive-ar') before it loads this module)
-import * as THREE from 'three';
+import * as THREE from '/vendor/three/three.module.js';   // (absolute: also on pages without an import map; the same URL as 'three')
 
 const SAGE = 0xa7bb98, BONE = 0xe8e0cf;
 const TARGET = 0.5;                    // the model's longest side on the table, about this many metres
@@ -87,6 +87,7 @@ export function openTable({ id, name = '', len = '', onEnd = () => {} }) {
   const dataP = islandData(id);
   dataP.catch(() => {});                                      // (handled below)
   return sessionP.then(async sess => {
+    if (ended) { sess.end().catch(() => {}); return null; }   // closed while the browser still asked: no AR after it
     session = sess;
     session.addEventListener('end', finish);
     const hide = () => { if (document.hidden) session.end().catch(() => {}); };
@@ -199,6 +200,7 @@ export function openTable({ id, name = '', len = '', onEnd = () => {} }) {
     return session;
   }, e => {
     // the request itself was refused: no AR on the screen, so the words go on the page
+    if (ended) return null;                                  // closed already: no words about it
     console.warn('[xr] session', e);
     finish();
     const nm = String(e?.name || '');

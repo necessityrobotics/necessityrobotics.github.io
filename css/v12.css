@@ -560,10 +560,11 @@ html.nr-still .h-hint { max-width: min(46ch, calc(100vw - 32px)); }   /* the pla
   /* the plain pages' text action: the same type as every other text action */
   body.v12 .pg-plain .v4-plain .more { font: var(--b-type); margin-top: 0; }
   /* a box in a group without an arrow gets one on every touch width (fix the markup too) */
-  body.v12 :is(.btns, .ab-mail) > .btn:not(.btn--acc):not(.btn--ion):not(:has(.arr, [aria-hidden="true"]))::after { content: "92"; margin-left: 2px; font-weight: 400; }
+  body.v12 :is(.btns, .ab-mail) > .btn:not(.btn--acc):not(.btn--ion):not(:has(.arr, [aria-hidden="true"]))::after { content: "\2192"; margin-left: 2px; font-weight: 400; }
   /* round markers keep their shape with the focus ring */
   body.v12 :is(.pl-step, .pl-ring, .xp-auto-ic):focus-visible { border-radius: 999px; }
 }
+@media (hover: none), (pointer: coarse) { html body.v12 .dm-tilt[aria-pressed="true"] { background: var(--acc, #e8e0cf); border-color: var(--acc, #e8e0cf); color: var(--on-acc, #1a1712); } }
 
 /* site build: the pictures are recoloured to the accent already (tools/make_site_v12.py), so no hue turn */
 :root, :root[data-acc] { --still-rot: 0deg !important; --still-sat: 1 !important; }
