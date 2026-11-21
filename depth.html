@@ -84,7 +84,7 @@
         <p class="eyebrow">Depth model &middot; zero-shot ML</p>
         <h1 id="dm-h1"><span>Zero-shot depth</span> <span>from two cameras.</span></h1>
         <p class="dm-lead">Two cameras, like two eyes. This ML model (machine learning, a kind of AI) works out <b>how far away each point is</b>. It learned only from computer-made images. We tested it on real photos from cameras it never saw. We trained it from scratch. The network design, DLNR, is from another team.</p>
-        <p class="dm-name"><b><!-- gen:val:model.name -->nrs-large<!-- /gen:val:model.name --></b> <span>version <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></span> <span class="dm-rel"><!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short --></span> <span>Paper: not released yet. Author: Sumedh</span></p>
+        <p class="dm-name"><b><!-- gen:val:model.name -->nrs-large<!-- /gen:val:model.name --></b> <span>version <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></span> <span class="dm-rel"><!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short --></span> <span>Paper: <a href="papers/nrs_large_paper.pdf">PDF</a>. Author: Sumedh Bouddh</span></p>
         <div class="dm-cta">
           <a class="btn btn--ion btn--lg" href="#see">See the difference <span aria-hidden="true">&darr;</span></a>
           <a class="btn btn--lg" href="explore.html">Walk into a place it helped build <span class="arr" aria-hidden="true">&rarr;</span></a>
@@ -94,6 +94,7 @@
           <a class="btn btn--ion" href="https://github.com/necessityrobotics/nrs-large" rel="noopener">Code on GitHub <span class="arr" aria-hidden="true">&rarr;</span></a>
           <a class="btn" href="https://huggingface.co/Pyassahu/nrs-large" rel="noopener">Weights on Hugging Face <span class="arr" aria-hidden="true">&rarr;</span></a>
           <a class="btn" href="https://github.com/necessityrobotics/nrs-large/blob/main/ANY_STEREO_RIG.md" rel="noopener">Any stereo rig: the guide <span class="arr" aria-hidden="true">&rarr;</span></a>
+          <a class="btn" href="papers/nrs_large_paper.pdf">Paper (PDF) <span class="arr" aria-hidden="true">&darr;</span></a>
         </div>
         <!-- /gen:model-dl -->
       </div>
@@ -292,6 +293,7 @@
         <div><dt>Size</dt><dd><!-- gen:val:model.params_m -->57.4<!-- /gen:val:model.params_m --> M parameters. FP32 inference, TF32 off.</dd></div>
         <div><dt>Training</dt><dd>Random initialisation; WMGStereo-150k only (BSD-3-Clause tag on its dataset card); the authors' recipe (AdamW, OneCycle, batch 8, crop 384×736) with our listed changes: bf16 mixed precision with FP32 correlation and loss; micro-batch 2 with 4-step gradient accumulation; <!-- gen:val:model.steps -->200,000<!-- /gen:val:model.steps --> steps, <!-- gen:val:model.gpu_hours -->92<!-- /gen:val:model.gpu_hours --> GPU-hours (RTX 5090).</dd></div>
         <div><dt>Evaluation</dt><dd>Zero-shot, WMG protocol, our harness (it reproduces the published RAFT-Stereo numbers). Release gate fixed before training (pre-registered): <!-- gen:val:model.gate -->4 of 4<!-- /gen:val:model.gate --> passed.</dd></div>
+        <div><dt>Paper</dt><dd><a href="papers/nrs_large_paper.pdf">nrs-large: retraining the DLNR stereo network from scratch on synthetic data, with open weights for commercial use</a> (PDF, version 1.1, 22 November 2026). It gives the full recipe, every declared deviation, the test protocol, all results and the limits.</dd></div>
         <div><dt>In our maps</dt><dd>Our map builder, xclean-maps, with nrs-large depth: a version not released yet (the released xclean-maps 0.1.0 uses 32-path SGM only). The same poses, keyframes and recipe as the earlier maps; only the depth changed.</dd></div>
       </dl>
     </div>

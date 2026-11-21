@@ -203,6 +203,11 @@ html:not(.v4-js) body.v12 .nr-dd:hover .nr-dd-panel, html:not(.v4-js) body.v12 .
 .v12 .ab-prod-t { color: var(--fg-2); font-size: 16px; line-height: 1.5; }
 .v12 .ab-prod-s { margin-top: auto; padding-top: 6px; font-size: 14px; color: var(--fg-3); }
 .v12 .ab-mail { display: flex; flex-wrap: wrap; gap: 12px; }
+/* the founders' email and phone */
+.v12 .ab-team .ab-contact { display: flex; flex-wrap: wrap; gap: 4px 24px; margin-top: 8px; font-size: 15px; color: var(--fg-3, #9a9a9a); }
+.v12 .ab-team .ab-contact a { color: var(--fg); text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .35); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.v12 .ab-team .ab-contact a:hover { text-decoration-color: currentColor; }
+@media (max-width: 760px) { .v12 .ab-team .ab-contact { flex-direction: column; gap: 0; } .v12 .ab-team .ab-contact a { display: inline-block; padding: 10px 0; } }
 @media (max-width: 760px) { .v12 .ab-products { grid-template-columns: minmax(0, 1fr); } }
 /* the five layers on the About page: the home's small chip row (css/dark.css, not loaded here), in the V12 finish */
 .v12 .ab-stack .x-stack-l { margin: 0 0 12px; font: 400 17px/1.5 var(--sans); color: var(--fg-2); max-width: 36em; }

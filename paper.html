@@ -7,13 +7,13 @@
        incoming page can be styled before site.css arrives, and Chrome aborts the transition with an uncaught InvalidStateError -->
   <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>Paper · Necessity Robotics</title>
-  <meta name="description" content="Technical paper on xclean, in preparation: a summary of the method, the live evaluation protocol and the final board, with the final numbers.">
+  <meta name="description" content="Technical paper on xclean: the method, the live evaluation protocol and the final board. Read the summary or download the full paper (PDF).">
   <!-- sharing: absolute URLs (GitHub Pages); the card image is the home page's poster (our recording, CC BY 4.0) -->
   <link rel="canonical" href="https://necessityrobotics.github.io/paper.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Necessity Robotics">
   <meta property="og:title" content="Paper · Necessity Robotics">
-  <meta property="og:description" content="Technical paper on xclean, in preparation: a summary of the method, the live evaluation protocol and the final board, with the final numbers.">
+  <meta property="og:description" content="Technical paper on xclean: the method, the live evaluation protocol and the final board. Read the summary or download the full paper (PDF).">
   <meta property="og:url" content="https://necessityrobotics.github.io/paper.html">
   <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
   <meta property="og:image:type" content="image/jpeg">
@@ -87,7 +87,7 @@
   <div class="wrap pg-plain">
     <aside class="v4-plain" aria-label="In plain words">
       <p class="v4-plain-h">In plain words</p>
-      <p>This page is for engineers. It is the summary of a technical paper about xclean, our robot software. The paper is not released yet.</p>
+      <p>This page is for engineers. It is the summary of a technical paper about xclean, our robot software. The full paper is free to download on this page.</p>
       <p>The software tells a robot where it is while it moves. We tested it on <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> recorded routes, played back at real speed. Every run of record is published, also where another system did better.</p>
       <a class="more" href="maps.html">See the 3-D places</a>
     </aside>
@@ -95,10 +95,11 @@
   <header class="phead phead--poster" data-head-over>
     <div class="phead-bg" aria-hidden="true"><img src="img/maps/oak_161206.webp" alt="" width="1280" height="800" decoding="async" fetchpriority="high"></div>
     <div class="wrap">
-      <p class="eyebrow">Technical paper · in preparation</p>
+      <p class="eyebrow">Technical paper · version 1.1 · 22 November 2026</p>
       <h1>xclean, scored on what it publishes live.</h1>
       <p class="lead">A stereo visual-inertial SLAM system, and an evaluation that scores what it published live: latency at every frame, accuracy at its keyframes, never a trajectory refined after the run.</p>
-      <div class="status-line"><span class="chip chip--warn">Not yet released</span><span class="chip">Paper author: Sumedh</span><span class="chip">Final numbers: board of 2026-10-30</span></div>
+      <div class="btns"><a class="btn btn--ion" href="papers/xclean_paper.pdf">Download the paper (PDF) <span class="arr" aria-hidden="true">↓</span></a></div>
+      <div class="status-line"><span class="chip">Released 22 November 2026</span><span class="chip">Paper author: Sumedh Bouddh</span><span class="chip">Final numbers: board of 2026-10-30</span></div>
       <p class="phead-cap"><b>Behind this text</b> A park path under trees (oak_161206), rendered from the map. Our own recording.</p>
     </div>
   </header>
@@ -112,7 +113,7 @@
       <div class="prose">
         <h2 id="summary">Summary</h2>
         <p class="abstract js-abstract">Robots act on the pose their state estimator gives them at each frame. We present xclean, a stereo visual-inertial SLAM system whose GPU code is written in CuPy, with no learned networks in its SLAM pipeline. It uses the IMU while a built-in consistency check accepts it and otherwise runs as stereo visual odometry with loop closure (the IMU stayed in use to the end on 50 of 216 board runs). We score it on exactly what it publishes live: runs paced at the sensors' real rate and the poses it published live, with rules written down before the runs (amendments made during the board are disclosed). On a final board of 72 routes and 216 real-time replays, its median frame-to-pose latency is 20.4 ms (p95 26.4 ms) on one desktop computer (AMD Ryzen 9 9950X, NVIDIA RTX 5090), and no run of record was lost on the 38 routes held out from xclean's development (10 of them were run in a first launch that we set aside; we read no accuracy number from it) (robustness was not perfect: see the limitations). It is not more accurate than the systems we compared it with: against offline ORB-SLAM3 on those 38 routes it wins 10, ties 2 and loses 26. We report every loss.</p>
-        <p class="muted">This page is a summary. The full paper is being revised to the final board; until it is released, the numbers here and on the <a href="results.html">results</a> page are the reference.</p>
+        <p class="muted">This page is a summary. The full paper has the complete method, the protocol, every table, the figures and the limits: <a href="papers/xclean_paper.pdf">xclean_paper.pdf</a>. The per-route numbers are on the <a href="results.html">results</a> page.</p>
 
         <h2 id="why">Why score the live output</h2>
         <p>A humanoid handing someone a cup, or a mobile robot opening a door, acts on its estimate of where it is at the moment it acts. That estimate sees each frame once, must answer before the next frame arrives, and can never revise an answer it already gave. Published SLAM accuracy is usually measured on the trajectory saved at the end of the run, after global optimisation has revised every pose with hindsight, and often with the data fed slower than real time. That number can be far from what the robot received.</p>
@@ -153,14 +154,24 @@
         <ul class="ticks">
           <li>Not more accurate than ORB-SLAM3 or OKVIS2-X on our board.</li>
           <li>The engine was frozen with its last pre-registered kill test (K14: no unflagged map jumps, and loop closure paying where routes revisit) failed on two routes (madmax_E0, kitti_02); on a third, kitti_09, no loop was fused and it passed only through the no-harm clause. The board ran on a twin build with identical engine code.</li>
-          <li>Robustness: no run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung; the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults).</li>
+          <li>Robustness: no run of record was lost on the 38 held-out routes, but on 2 of them a lock-step replay attempt was classed as a crash after a power outage (both routes have a valid re-run); the unsupported-frames check passed on 9, failed on 4 and is pending on 25 (all MADMAX, whose ground truth has known faults).</li>
           <li>One machine: all timings come from one desktop with an RTX 5090. Version 0.2.0 installs on NVIDIA Jetson Orin and Thor, but we have not run it on a Jetson; its speed and accuracy there are not measured.</li>
           <li>Some datasets have known faults: MADMAX's ground-truth heading departs from its own antenna track for long stretches, and Rosario v1's ground truth is position-only; these affect every system scored. On 4Seasons, the stereo images' metric scale disagrees with the RTK-GNSS ground truth per recording (by -11 to +5 %), for both stereo systems; the cause is open; it is not the ground truth (the camera calibration is suspected). (An earlier 2-11 % scale error was our own converter's bug, fixed on 2026-10-04 before any final score.)</li>
           <li>Our own OAK-D-Lite routes were recorded on the camera and replayed in real time; they have no ground truth (latency, drops and visual inspection only). The release has since run live on the camera, so far only with the camera standing still on a tripod.</li>
         </ul>
 
         <h2 id="cite">Citation</h2>
-        <p>The paper is not released yet. Until it is, please cite the software<span data-code-when="pending" hidden> (its repository goes public with the code release)</span>:</p>
+        <p>Please cite the paper:</p>
+        <div class="code"><button class="copy" type="button">Copy</button><pre><code>@techreport{bouddh2026xclean,
+  title        = {xclean: a stereo visual-inertial {SLAM} system, scored on what it publishes live},
+  author       = {Bouddh, Sumedh},
+  institution  = {Necessity Robotics},
+  year         = {2026},
+  month        = nov,
+  note         = {Version 1.1},
+  url          = {https://necessityrobotics.github.io/papers/xclean_paper.pdf}
+}</code></pre></div>
+        <p>To cite the software<span data-code-when="pending" hidden> (its repository goes public with the code release)</span>:</p>
         <div class="code" data-code-when="pending" hidden><button class="copy" type="button">Copy</button><pre><code>@software{xclean2026,
   title        = {xclean: real-time stereo visual-inertial SLAM},
   author       = {{Necessity Robotics}},

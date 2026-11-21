@@ -131,7 +131,7 @@
             <li><strong>A first launch was set aside.</strong> <span class="js-launch1"></span></li>
             <li><strong>The IMU was often not in use.</strong> In the final board it stayed in use to the end on only 50 of 216 runs (mostly EuRoC and 4Seasons); on MADMAX, Rosario and our own OAK-D-Lite recordings xclean's consistency check dropped or refused it, and KITTI has no IMU. <a href="#imu">Per dataset</a>.</li>
             <li><strong>The protocol was amended during the board.</strong> No accuracy number of any board run was read before an amendment, but validity outcomes (void and incomplete runs, feeder timing) were read and drove 8.36 and 8.40-8.44. They are <a href="#prereg">listed below</a>.</li>
-            <li><strong>Robustness is not perfect.</strong> No run of record was lost on the 38 held-out routes, but on 2 of them a replay attempt crashed or hung, and the unsupported-frames check passed on <span class="js-c3b-p">9</span>, failed on <span class="js-c3b-f">4</span> and is pending on <span class="js-c3b-n">25</span> (all MADMAX, whose ground truth has known faults).</li>
+            <li><strong>Robustness is not perfect.</strong> No run of record was lost on the 38 held-out routes, but on 2 of them a lock-step replay attempt was classed as a crash after a power outage (both routes have a valid re-run), and the unsupported-frames check passed on <span class="js-c3b-p">9</span>, failed on <span class="js-c3b-f">4</span> and is pending on <span class="js-c3b-n">25</span> (all MADMAX, whose ground truth has known faults).</li>
             <li><strong>Some wins are against a failed baseline.</strong> <span class="js-flagged"></span> <a href="#forfeit">How forfeits are counted</a>.</li>
             <li><strong>Our runs were real-time replays, on a loaded desktop.</strong> <span class="js-load"></span> The other systems ran in other configurations, named beside each comparison.</li>
           </ul>
@@ -150,7 +150,7 @@
         <h2 id="robustness">Robustness</h2>
         <div class="specs specs--3" data-reveal>
           <div class="spec"><div class="v"><span class="js-h" data-k="lost">0</span><small>lost</small></div><div class="k">lost runs of record on the <span class="js-h" data-k="unseen">38</span> held-out routes</div></div>
-          <div class="spec"><div class="v"><span class="js-ch-n">2</span><small>routes</small></div><div class="k">with a crashed or hung replay attempt</div></div>
+          <div class="spec"><div class="v"><span class="js-ch-n">2</span><small>routes</small></div><div class="k">with a lock-step attempt classed as a crash (power outage)</div></div>
           <div class="spec"><div class="v"><span class="js-us-n">4</span><small>routes</small></div><div class="k">failed the unsupported-frames check; <span class="js-c3b-p">9</span> passed, <span class="js-c3b-n">25</span> pending</div></div>
         </div>
         <p class="note js-rob-note"></p>
@@ -218,7 +218,7 @@
           <tbody class="js-rows"><tr><td colspan="9">Loading the board…</td></tr></tbody>
         </table>
       </div>
-      <p class="note">ATE: median of the runs; below it the range (lowest – highest) when the runs differ, and the number of runs used. OKVIS2-X ratio: our frame-level ATE divided by OKVIS2-X's (both shown under the ratio); above 1.05 means OKVIS2-X was more accurate. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level. Latency: median of the runs' p50, with their p95 below. <span class="js-identical"></span> Flags: <span class="flag">crash/hang</span> a replay attempt crashed or hung; <span class="flag">unsupported</span> failed the unsupported-frames check; <span class="flag">pending</span> that check awaits a decision because the route's ground truth has known faults.</p>
+      <p class="note">ATE: median of the runs; below it the range (lowest – highest) when the runs differ, and the number of runs used. OKVIS2-X ratio: our frame-level ATE divided by OKVIS2-X's (both shown under the ratio); above 1.05 means OKVIS2-X was more accurate. The OKVIS2-X comparison uses frame-level ATE (each pose held until the next frame), as pre-registered; the table's xclean ATE is keyframe-level. Latency: median of the runs' p50, with their p95 below. <span class="js-identical"></span> Flags: <span class="flag">crash/hang</span> a lock-step replay attempt was classed as a crash after a power outage (a later attempt is valid); <span class="flag">unsupported</span> failed the unsupported-frames check; <span class="flag">pending</span> that check awaits a decision because the route's ground truth has known faults.</p>
 
       <h2 id="definitions">Definitions</h2>
       <dl class="kv defs">
