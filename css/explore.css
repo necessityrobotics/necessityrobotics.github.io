@@ -601,3 +601,26 @@ html.xp-bare body.xp { grid-template-rows: minmax(0, 1fr); }
 @media (hover: none) and (min-width: 760px), (pointer: coarse) and (min-width: 760px) {
   html body.xp .xp-center { bottom: calc(var(--xp-move-h, 56px) + 20px); }
 }
+/* ============================================================ the Phone / Touch switch (owner 11-21: the phone look is the
+   default, "option to toggle to touch"). One glass piece in the bar's tilt place, two halves; the lit half is what runs.
+   Touch devices only (the switch never shows on a desktop). */
+.xp-tilt.xp-look { gap: 0; padding: 0; min-width: 0; width: auto; overflow: hidden; }
+.xp-tilt.xp-look[hidden] { display: none; }
+.xp-look-b { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; height: 100%; padding: 0 11px;
+  border: 0; background: transparent; color: #f3f5f6; font: 600 13.5px/1 var(--sans, system-ui); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.xp-look-b + .xp-look-b { border-left: 1px solid rgba(255, 255, 255, .3); }
+.xp-look-b svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.xp-look-b[aria-pressed="true"] { background: var(--acc, #e8e0cf); color: var(--on-acc, #1a1712); }
+.xp-look-b:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+@media (hover: none), (pointer: coarse) {
+  html body .xp-tilt.xp-look { width: auto; min-width: 0; padding: 0; }
+  @media (max-width: 759px) {
+    html body .xp-look-b { min-width: 40px; padding: 0 9px; }
+    html body .xp-look-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+}
+@media (hover: none) and (orientation: landscape) and (max-height: 540px), (pointer: coarse) and (orientation: landscape) and (max-height: 540px) {
+  html body .xp-tilt.xp-look { width: auto; min-width: 0; height: 40px; }
+  html body .xp-look-b { min-width: 40px; padding: 0 9px; }
+  html body .xp-look-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

@@ -28,7 +28,7 @@ export function askTilt({ prompt = true } = {}) {
   let ask;
   try { ask = prompt && typeof D?.requestPermission === 'function' ? D.requestPermission() : Promise.resolve('granted'); }   // iOS 13+: a prompt
   catch (e) { ask = Promise.resolve('denied'); }
-  return ask.then(r => (r === 'granted' ? probe() : 'denied'), () => 'denied');
+  return ask.then(r => (r === 'granted' ? probe() : 'denied'), () => 'blocked');   // rejected = no gesture, not a "no"
 }
 
 /** 'granted' when a real reading arrives within 1.2 s, else 'unavailable' (a desktop, a phone without the sensor). */
@@ -75,12 +75,13 @@ export function startTilt(cb, { gain = 1, deadband = 0.25 * DEG, smooth = 0.35, 
     const [x, y, z] = forward(e.alpha || 0, e.beta || 0, e.gamma || 0);
     const h = Math.atan2(-x, -z), el = Math.asin(Math.max(-1, Math.min(1, y)));
     if (baseH == null && Math.abs(el) < 65 * DEG) baseH = h - out.yaw / gain;          // continue from the current turn
-    if (baseEl == null) baseEl = absPitch ? 0 : Math.max(-25 * DEG, Math.min(0, el));
+    if (baseEl == null) baseEl = absPitch ? 0 : Math.max(-25 * DEG, Math.min(0, el));   // (recentre() re-takes it: level again)
     const k = smooth;
     let ty = out.yaw;
     if (baseH != null && Math.abs(el) < 80 * DEG) ty = out.yaw + wrapPi(wrapPi(h - baseH) * gain - out.yaw);   // unbounded, continuous
     let yaw = out.yaw + (ty - out.yaw) * (1 - k);
-    let pitch = out.pitch + ((el - baseEl) * gain - out.pitch) * (1 - k);
+    // a phone lying flat (or held straight up or down) has no useful elevation: the pitch holds, as the heading does
+    let pitch = Math.abs(el) >= 65 * DEG ? out.pitch : out.pitch + ((el - baseEl) * gain - out.pitch) * (1 - k);
     if (range) {                                                   // slide the base: the edge follows the phone
       if (Math.abs(yaw) > range.yaw) { const ex = yaw - Math.sign(yaw) * range.yaw; if (baseH != null) baseH += ex / gain; yaw -= ex; }
       if (Math.abs(pitch) > range.pitch) { const ex = pitch - Math.sign(pitch) * range.pitch; baseEl += ex / gain; pitch -= ex; }
@@ -95,5 +96,91 @@ export function startTilt(cb, { gain = 1, deadband = 0.25 * DEG, smooth = 0.35, 
     stop() { if (!on) return; on = false; removeEventListener('deviceorientation', onOri); cb(null); },
     /** "ahead" is where the phone points now */
     recentre() { baseH = null; baseEl = null; out = { yaw: 0, pitch: 0 }; last = null; cb({ yaw: 0, pitch: 0 }); },
+  };
+}
+
+// ------------------------------------------------------------------ the visitor's choice: Phone (the default) or Touch
+// Owner 2026-11-21: "make the ar\vr feature as default, option to toggle to touch". The choice is the same on every page
+// (localStorage 'nr-look'); touch dragging works in both modes, "Touch" only turns the phone's motion off.
+const KEY = 'nr-look';
+let memPref = null;                                         // the choice on this page (also when storage is blocked)
+export function lookPref() { if (memPref) return memPref; try { return localStorage.getItem(KEY) === 'touch' ? 'touch' : 'phone'; } catch (e) { return 'phone'; } }
+export function setLookPref(v) { memPref = v === 'touch' ? 'touch' : 'phone'; try { localStorage.setItem(KEY, memPref); } catch (e) { /* blocked: memPref keeps it */ } }
+
+/**
+ * A Phone / Touch switch for a page's 3-D view. el holds two buttons, [data-look="phone"] and [data-look="touch"].
+ *   start()   begin the phone look (called after the motion is allowed); stop() end it; say(text) a short message
+ * Returns { live(on), stop(), running }. Call live(true) when the 3-D view is ready: with the choice "phone" the look
+ * starts then. Android: at once (no prompt). iPhone / iPad: Safari asks only from a tap, so the visitor's first tap on the
+ * page (not on a link or a button) asks once; after a "yes" the look comes back by itself (AR, Back / Forward).
+ * The switch shows what really runs: "Phone" while the look runs or waits for that first tap, else "Touch".
+ */
+export function lookSwitch(el, { start, stop, say = () => {} }) {
+  const btns = [...el.querySelectorAll('[data-look]')];
+  const needsTap = IOS && typeof window.DeviceOrientationEvent?.requestPermission === 'function';
+  let running = false, asking = false, granted = false, isLive = false, unarm = null;
+  // an iPhone's "no" is kept for this visit, so the pages do not ask again on every tap (the Phone button still asks)
+  let refused = false;
+  try { refused = sessionStorage.getItem('nr-look-refused') === '1'; } catch (e) { /* blocked */ }
+  const show = () => {
+    const mode = running || asking || unarm ? 'phone' : 'touch';
+    for (const b of btns) b.setAttribute('aria-pressed', String(b.dataset.look === mode));
+  };
+  const disarm = () => { unarm?.(); unarm = null; };
+  const off = () => { disarm(); asking = false; if (running) { running = false; stop(); } show(); };
+  const ask = prompt => {
+    if (asking || running) return;
+    disarm(); asking = true; show();
+    askTilt({ prompt }).then(r => {                        // (with prompt: called inside the visitor's tap)
+      asking = false;
+      if (r === 'granted') {
+        granted = true;
+        if (lookPref() === 'phone' && isLive && !running) { running = true; start(); }
+      } else if (r === 'blocked') {
+        // the browser wanted a real tap: wait for the next one (no message, no "no")
+        if (needsTap && lookPref() === 'phone' && isLive && !running) { show(); arm(true); return; }
+      } else if (prompt || r === 'denied') {
+        if (r === 'denied') { refused = true; try { sessionStorage.setItem('nr-look-refused', '1'); } catch (e) { /* blocked */ } }
+        say(r === 'denied' ? 'This page has no motion access. Drag to look.' : 'This device gives no motion data. Drag to look.');
+      }
+      show();
+    });
+  };
+  // an iPhone: the first tap on the page asks (Safari allows the question only inside a tap)
+  const arm = (quiet = false) => {
+    if (unarm) return;
+    let t0 = null;
+    const onStart = e => { const p = e.changedTouches && e.changedTouches[0]; t0 = p ? { x: p.clientX, y: p.clientY, t: e.timeStamp } : null; };
+    const onTap = e => {
+      const p = e.changedTouches && e.changedTouches[0];
+      if (!t0 || !p || Math.hypot(p.clientX - t0.x, p.clientY - t0.y) > 10 || e.timeStamp - t0.t > 500) return;   // a scroll, a drag, a long press
+      if (e.target instanceof Element && e.target.closest('a, button, input, select, textarea, label, summary, [role="button"], [role="dialog"], #xp-places, #xp-sheet')) return;
+      disarm();
+      if (lookPref() === 'phone' && isLive && !running) ask(true);
+    };
+    addEventListener('touchstart', onStart, { capture: true, passive: true });
+    addEventListener('touchend', onTap, true);
+    unarm = () => { removeEventListener('touchstart', onStart, true); removeEventListener('touchend', onTap, true); };
+    show();
+    if (!quiet) say('Tap the place once to look with your phone. Or tap the hand button to use touch only.');
+  };
+  for (const b of btns) b.addEventListener('click', () => {
+    const v = b.dataset.look;
+    setLookPref(v);
+    if (v === 'touch') { const was = running || asking || !!unarm; off(); if (was) say('Phone look is off. Drag to look.'); return; }
+    if (!running) ask(true);                               // (inside this tap: an iPhone asks once)
+    else show();
+  });
+  return {
+    live(v) {
+      isLive = !!v; el.hidden = !isLive;
+      if (!isLive) { off(); return; }
+      if (lookPref() !== 'phone' || running || asking) { show(); return; }
+      if (needsTap && !granted) { if (!refused) arm(); else show(); } else ask(false);
+    },
+    /** call inside the tap that opens the 3-D view: an iPhone asks then (not on a later tap); the look starts at live() */
+    prime() { if (lookPref() === 'phone' && needsTap && !granted && !running) ask(true); },
+    stop: off,
+    get running() { return running; },
   };
 }
