@@ -7,7 +7,7 @@
 import { loadPlaces, fmtOf, fmtLen, exploreHref, getJSON, esc, isTouch } from '../v4/common.js';
 import { routeDoor } from '../v4/route-door.js';
 import { mountPlace, SWITCH } from './mount.js';
-import { canTilt, askTilt, startTilt } from './tilt.js';
+import { canTilt, startTilt, lookSwitch } from './tilt.js';
 
 const $ = id => document.getElementById(id);
 const html = document.documentElement, body = document.body;
@@ -260,34 +260,28 @@ document.addEventListener('pointerdown', e => {         // a tap outside an open
 view = await mountPlace($('pl'), { id: place.id, mode: 'full', at: atQ, onEvent });
 
 // ------------------------------------------------------------------ look with your phone (tilt.js; touch + HTTPS only)
-const tiltBtn = $('xp-tilt');
-let tilt = null, tiltAsking = false, tiltRefused = false;
+// Owner 11-21: the phone look is the default; the Phone / Touch switch in the bar turns it off (the choice is kept on every
+// page). Dragging works in both modes.
+const lookEl = $('xp-tilt');
+let tilt = null;
 var tiltOnState;                                            // (var: onState may run before this line)
-const tiltOff = () => { tilt?.stop(); tilt = null; tiltBtn?.setAttribute('aria-pressed', 'false'); };
-if (tiltBtn && canTilt()) {
+const look = lookEl && canTilt() ? lookSwitch(lookEl, {
+  start: () => {
+    // a window into the place: the phone's turn = the view's turn
+    tilt = startTilt(d => view?.engine?.setDeviceLook?.(d));   // the pitch from how the phone is held now: a level first view
+    if (view?.engine) view.engine.onRecentre = () => tilt?.recentre();      // double-tap: ahead is where the phone points
+    said('Turn your phone to look around. Dragging still works. Tap the hand button to turn this off.', 6500);
+  },
+  stop: () => { tilt?.stop(); tilt = null; },
+  say: t => said(t, 5000),
+}) : null;
+const tiltOff = () => look?.stop();
+if (look) {
   // only while the place is live (as the dock); a place that fails stops the phone look
-  tiltOnState = d => { tiltBtn.hidden = tiltRefused || d.state !== 'live'; if (d.state === 'failed') tiltOff(); };
-  tiltBtn.hidden = tiltRefused || !view?.engine?.live;
-  tiltBtn.addEventListener('click', () => {
-    if (tilt) { tiltOff(); said('Phone look is off. Swipe to look.', 3500); return; }
-    if (tiltAsking || !view?.engine?.live) return;
-    tiltAsking = true;
-    askTilt().then(r => {                                   // (the request runs inside this tap: iPhone asks once)
-      tiltAsking = false;
-      if (tilt) return;
-      if (r !== 'granted') {
-        said(r === 'denied' ? 'Motion access is not allowed. Swipe to look.' : 'This device gives no motion data. Swipe to look.', 5000);
-        if (r === 'denied') { tiltRefused = true; tiltBtn.hidden = true; }
-        return;
-      }
-      // a magic window: phone upright = the horizon, turn = the view's turn
-      tilt = startTilt(d => view?.engine?.setDeviceLook?.(d), { absPitch: true });
-      if (view?.engine) view.engine.onRecentre = () => tilt?.recentre();      // double-tap: ahead is where the phone points
-      tiltBtn.setAttribute('aria-pressed', 'true');
-      said('Turn your phone to look around. Swipe still works. Tap the phone button again to stop.', 6500);
-    });
-  });
-  addEventListener('pagehide', tiltOff);
+  tiltOnState = d => { if (d.state === 'live') look.live(true); else { lookEl.hidden = true; if (d.state === 'failed') look.live(false); } };
+  if (view?.engine?.live) look.live(true);
+  addEventListener('pagehide', () => look.stop());
+  addEventListener('pageshow', e => { if (e.persisted && view?.engine?.live) look.live(true); });   // Back / Forward: the look comes back
 }
 
 // ------------------------------------------------------------------ see it on your table (WebXR AR, js/xr/table.js; Android ARCore)
@@ -303,7 +297,7 @@ if (arBtn && window.isSecureContext && navigator.xr && matchMedia('(pointer: coa
       window.__xrBusy = true;
       tiltOff();
       view?.engine?.setOffscreen?.(true);                    // the place rests while AR runs
-      openTable({ id: place.id, name: place.name, len: place.length || '', onEnd: () => { window.__xrBusy = false; view?.engine?.setOffscreen?.(false); view?.engine?.stage?.invalidate?.(); } });
+      openTable({ id: place.id, name: place.name, len: place.length || '', onEnd: () => { window.__xrBusy = false; view?.engine?.setOffscreen?.(false); view?.engine?.stage?.invalidate?.(); if (view?.engine?.live) look?.live(true); } });
     });
   }).catch(e => console.warn('[xr]', e));
 }

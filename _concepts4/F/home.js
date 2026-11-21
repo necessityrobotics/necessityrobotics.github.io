@@ -15,7 +15,7 @@
 // Reduced motion: no ride, the stage cuts from stop to stop. Test shots (?snap=1) and ?ride=0: no ride. Phones: pictures.
 import { mountPlace, SWITCH } from './place/mount.js';
 import { mountDark } from './dark.js';
-import { canTilt, askTilt, startTilt, IOS as TILT_ASKS } from '/js/place/tilt.js';
+import { canTilt, startTilt, lookSwitch } from '/js/place/tilt.js';
 import { current as accent, picker } from './accent.js';
 
 performance.mark('f-mod');                                // timing marks (a test reads them; they cost nothing)
@@ -64,6 +64,10 @@ const RIDE_B = 0.04;                                      // the walk runs below
 const ATLAS_B = 0.25;                                     // the eight places load once the visitor scrolls past this beat
 const RISE0 = 1.05, RISE1 = 2.6;                          // the pull-back runs between these beats
 const OUT0 = 3.25, OUT1 = 4.15;                           // the view goes out to all eight places between these beats
+// owner 11-21: "limit how much user can look around with ar/vr feature in second animation so camera angle stays in
+// center". From the first scroll to the eight places the phone's turn moves the view about a third as far, and at most
+// TILT2_Y to each side and TILT2_P up or down. The first screen keeps its full look.
+const TILT2_G = 0.35, TILT2_Y = 5 * DEG, TILT2_P = 3 * DEG;
 const END_SX = PHONE ? 0 : -0.22;                         // the whole park sits right of the caption cards (a phone: centred)
 const SX0 = PHONE ? 0 : -0.24;                            // the walk's view centre: 62 % of the width (a phone: the middle)
 const HERE = (p) => new URL(p, import.meta.url).href;      // this folder (the page may live elsewhere: the V12 mix)
@@ -245,7 +249,7 @@ function carryOn() {
 const live = { E: null, handle: null, atlas: null, par: { x: 0, y: 0, tx: 0, ty: 0 }, look: { yaw: 0, pitch: 0, tyaw: 0, tpitch: 0, drag: null },
   // the phone's turn (tilt.js) is used relative to a zero: a scroll moves the zero onto the phone, so the view goes back to
   // the path (owner 11-17: after a scroll "camera pov side ways ... when moved phone to left can see path")
-  tz: { yaw: 0, pitch: 0 }, tzGo: false, tzBt: 0, tzT: null, tLimL: 0.45, tLimR: 0.45 };
+  tz: { yaw: 0, pitch: 0 }, tzGo: false, tzBt: 0, tzT: null, tLimL: 0.45, tLimR: 0.45, tLimP: 0.22, tGain: 1 };
 window.__f = {
   get b() { return b; }, get bt() { return bt; }, get live() { return !!live.E; },
   get handle() { return handle; },                         // tests: the place loader (its engine before it is live)
@@ -296,6 +300,7 @@ function setState(d) {
   const liveish = d.state === 'live' || (dark && (d.state === 'loading' || (d.state === 'still' && !d.text)));
   stage.dataset.live = liveish ? '1' : '0';
   if (d.state === 'failed' && live.E) {
+    live.lookSw?.live(false);                               // no place: no phone look, no switch
     // the place died after it was live (too slow, context lost): the page goes back to its pictures for every stop
     live.E = null; live.starting = false; live.riding = false; delete box.dataset.posed; stopNow = -1; ui(bt);
   }
@@ -390,18 +395,26 @@ async function startLive(handle) {
   // picture. So the path 8 m ahead may move at most to 75 % of the way to either edge, from where it really is (b0: its
   // bearing, + = right of the view's axis; the eye stands 0.3 m beside the path) and with the view's centre shift sx
   // (tablets: the axis sits at 62 % of the width). On screen x = tan(bearing) / tan(half width) - sx. Higher up the view
-  // turns round the path itself (the pivot moves to it), so there both sides blend (w) to the full turn.
+  // turns round the path itself (the pivot moves to it), so there both sides blend (w) to the full turn. From the first
+  // scroll on (x), the second animation's small turn caps all of this (TILT2_*), so the view stays on the path.
   const qInv = new THREE.Quaternion(), vB = new THREE.Vector3(), gB = new THREE.Vector3();
   const bearing = (at, p, q) => { G(at + 8, gB); vB.copy(gB).sub(p).applyQuaternion(qInv.copy(q).invert()); return Math.atan2(vB.x, -vB.z); };
-  const setLims = (sx, fov, w, b0 = 0) => {
+  const setLims = (sx, fov, w, b0 = 0, x = 0) => {
     const sz = E.stage.size, t = Math.tan(fov / 2) * ((sz?.w || 1) / (sz?.h || 1));
     const l = clamp(Math.atan((0.75 + sx) * t) - b0, 0.12, 0.45), r = clamp(Math.atan((0.75 - sx) * t) + b0, 0.12, 0.45);
-    live.tLimL = l + (0.45 - l) * w; live.tLimR = r + (0.45 - r) * w;
+    const k2 = sm(RIDE_B, 0.3, x), c = 0.45 + (TILT2_Y - 0.45) * k2;   // 0 = the first screen, 1 = the second animation
+    live.tLimL = Math.min(l + (0.45 - l) * w, c); live.tLimR = Math.min(r + (0.45 - r) * w, c);
+    const g1 = 1 + (TILT2_G - 1) * k2, g0 = live.tGain, Tt = live.tilt;
+    if (Tt && g1 !== g0) {                                   // a new gain keeps the view where it is (no swing out)
+      live.tz.yaw = Tt.yaw - (Tt.yaw - live.tz.yaw) * g0 / g1; live.tz.pitch = Tt.pitch - (Tt.pitch - live.tz.pitch) * g0 / g1;
+    }
+    live.tLimP = 0.22 + (TILT2_P - 0.22) * k2; live.tGain = g1;
   };
   live.tiltEff = () => {
     const T = live.tilt;
     if (!T) return null;
-    return { yaw: clamp(T.yaw - live.tz.yaw, -live.tLimR, live.tLimL), pitch: clamp(T.pitch - live.tz.pitch, -0.22, 0.22) };
+    const g = live.tGain;
+    return { yaw: clamp((T.yaw - live.tz.yaw) * g, -live.tLimR, live.tLimL), pitch: clamp((T.pitch - live.tz.pitch) * g, -live.tLimP, live.tLimP) };
   };
   function pose(x) {
     const par = live.par, R = live.rise;
@@ -421,7 +434,7 @@ async function startLive(handle) {
         dir.subVectors(F, s.p).normalize();
         s.q.premultiply(rot.setFromUnitVectors(fwd, dir));
       }
-      setLims(s.sx || 0, fv(), 0, bearing(at, s.p, s.q));   // (before the turn is applied to s.q)
+      setLims(s.sx || 0, fv(), 0, bearing(at, s.p, s.q), x);   // (before the turn is applied to s.q)
       const L0 = live.look, TT = live.tiltEff(), kt = TT ? 1 : 0;
       const ly = L0.yaw + (kt ? TT.yaw * kt : 0), lp = L0.pitch + (kt ? TT.pitch * kt : 0);
       if (ly || lp) {
@@ -456,7 +469,7 @@ async function startLive(handle) {
     let q = look(rp, T);
     if (x < RISE0 + 0.3) q = new THREE.Quaternion().slerpQuaternions(R.cap.q, q, ss(ramp(x, RISE0, RISE0 + 0.3)));
     // the visitor's drag + the phone's tilt (as on the first screen), until the eight places come
-    setLims(R.cap.sx * (1 - e) + END_SX * e, fv() + (46 * DEG - fv()) * e, sm(3, 18, h - 1.35), bearing(a, rp, q));   // the sx and fov this frame uses; w = the pivot's weight below
+    setLims(R.cap.sx * (1 - e) + END_SX * e, fv() + (46 * DEG - fv()) * e, sm(3, 18, h - 1.35), bearing(a, rp, q), x);   // the sx and fov this frame uses; w = the pivot's weight below
     const L1 = live.look, TT = live.tiltEff(), kt = TT ? 1 - ss(ramp(x, OUT0 - 0.4, OUT0 - 0.05)) : 0;
     const ly = L1.yaw + (kt ? TT.yaw * kt : 0), lp = L1.pitch + (kt ? TT.pitch * kt : 0);
     if (ly || lp) {
@@ -479,6 +492,8 @@ async function startLive(handle) {
         maxPx: 12 + 1e6 * sm(3, 15, h - 1.35) },
     });
   }
+  // "Touch" (the phone look off): the view is back on the path, so the held reading goes
+  const offDone = () => { live.tiltOff = false; live.tilt = null; live.tz.yaw = live.tz.pitch = 0; };
   // the stage's own frame loop: runs while the scroll, the pointer or the first screen's ride moves something
   let last = performance.now();
   E.stage.hooks.add(() => {
@@ -500,6 +515,7 @@ async function startLive(handle) {
       if (live.tzGo) {
         if (Math.min(b, bt) >= OUT0 - 0.05) {               // the turn has no effect here: settle at once, no frames for it
           live.tz.yaw = TLt.yaw; live.tz.pitch = TLt.pitch; live.tzGo = false; live.tzT = null;
+          if (live.tiltOff) offDone();
         } else {
           const moving = Math.abs(bt - b) >= 1e-3;
           if (moving || !live.tzT) live.tzT = { yaw: TLt.yaw, pitch: TLt.pitch };
@@ -507,6 +523,7 @@ async function startLive(handle) {
           live.tz.yaw += (T.yaw - live.tz.yaw) * kz; live.tz.pitch += (T.pitch - live.tz.pitch) * kz;
           if (!moving && Math.abs(T.yaw - live.tz.yaw) + Math.abs(T.pitch - live.tz.pitch) < 1e-3) {   // within 0.06 degree (< 1 px): done
             live.tz.yaw = T.yaw; live.tz.pitch = T.pitch; live.tzGo = false; live.tzT = null;
+            if (live.tiltOff) offDone();
           } else more = true;
         }
       }
@@ -595,23 +612,27 @@ async function startLive(handle) {
   }
   if (TOUCH) setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 1)))(askPts, { timeout: 2000 }), 6000);
   // ---- look with your phone (owner 11-16: "ar\vr features ... phone and tablet ... imu ... amaze users"): on the first
-  // screen and at stop 1 the phone's turn turns the view a little (at most 26 degrees) and the dark clears where it points
+  // screen the phone's turn turns the view (at most 26 degrees) and the dark clears where it points; from the first scroll
+  // to the eight places a small turn only (TILT2_*)
   if (TOUCH && !REDUCE && canTilt()) {
     const begin = () => {
       if (live.tiltH) return;
       performance.mark('f-tilt');
       // the dark's centre (dark.js: VP + 7.5 % of the height): where the phone points at rest
       const cx = PHONE ? 0.5 : 0.62, cy = PHONE ? 0.635 : 0.435;
+      live.tiltOff = false;                                 // (a "Touch" still easing back: the new look starts from the path)
+      live.tz.yaw = live.tz.pitch = 0; live.tzGo = false; live.tzT = null;
       live.tiltH = startTilt(d => {
+        if (!d && live.tiltOff) return;                     // "Touch": the last reading stays until the view is back
         live.tilt = d;
         if (!d) { live.tz.yaw = live.tz.pitch = 0; live.tzGo = false; live.tzT = null; }
         else {
           // past the limit the zero slides along with the phone, so a turn back acts at once (no dead zone); a slide places
           // the zero itself on that axis, so a chase in progress is done on that axis (the other one finishes as usual)
-          const ey = d.yaw - live.tz.yaw, ep = d.pitch - live.tz.pitch;
+          const g = live.tGain, ey = (d.yaw - live.tz.yaw) * g, ep = (d.pitch - live.tz.pitch) * g;   // (as the view uses them)
           let slidY = false, slidP = false;
-          if (ey > live.tLimL) { live.tz.yaw = d.yaw - live.tLimL; slidY = true; } else if (ey < -live.tLimR) { live.tz.yaw = d.yaw + live.tLimR; slidY = true; }
-          if (Math.abs(ep) > 0.22) { live.tz.pitch = d.pitch - Math.sign(ep) * 0.22; slidP = true; }
+          if (ey > live.tLimL) { live.tz.yaw = d.yaw - live.tLimL / g; slidY = true; } else if (ey < -live.tLimR) { live.tz.yaw = d.yaw + live.tLimR / g; slidY = true; }
+          if (Math.abs(ep) > live.tLimP) { live.tz.pitch = d.pitch - Math.sign(ep) * live.tLimP / g; slidP = true; }
           if ((slidY || slidP) && live.tzGo && Math.abs(bt - b) < 1e-3) {
             const T = live.tzT || (live.tzT = { yaw: d.yaw, pitch: d.pitch });
             if (slidY) T.yaw = live.tz.yaw;
@@ -623,18 +644,30 @@ async function startLive(handle) {
         if (b < OUT0) E.stage.invalidate();                 // with the eight places the tilt has no effect: no frame for it
       });                                                   // no range here: the page's own zero and limit (live.tz, live.tLimL/R) do it,
                                                             // so after a scroll a further turn the same way still looks round
-      hintT.textContent = 'Tilt your phone, or touch the dark: it hides a real place. Scroll to light it.';
+      hintT.textContent = 'Turn your phone, or touch the dark: it hides a real place. Scroll to light it.';
     };
-    if (TILT_ASKS && typeof window.DeviceOrientationEvent?.requestPermission === 'function') {
-      // iPhone / iPad: the system asks once, and only from a tap
-      const t = document.createElement('button');
-      t.type = 'button'; t.className = 'h-tilt'; t.textContent = 'Tilt your phone to look';
-      t.addEventListener('click', () => askTilt().then(r => { t.remove(); if (r === 'granted') begin(); }));
-      hint.append(t);
-    } else askTilt({ prompt: false }).then(r => { performance.mark('f-tilt-' + r); if (r === 'granted') begin(); });
-    addEventListener('pagehide', () => { live.tiltH?.stop(); live.tiltH = null; live.tilt = null; });
-    // Back / Forward from the page cache: the look comes back (Android needs no prompt; an iPhone keeps its answer)
-    addEventListener('pageshow', e => { if (e.persisted && !live.tiltH) askTilt({ prompt: false }).then(r => { if (r === 'granted') begin(); }); });
+    // owner 11-21: the phone look is the default; the Phone / Touch switch in the hint turns it off (kept on every page).
+    // Android starts at once; an iPhone asks on the visitor's first tap (tilt.js lookSwitch)
+    const lookEl = document.getElementById('h-look');
+    const look = lookEl && (live.lookSw = lookSwitch(lookEl, {   // (live.look is the drag-to-look state: not this)
+      start: begin,
+      stop: () => {
+        // the view eases back to the path (the zero chases the last reading), then the phone look is off (offDone)
+        const last = live.E && !live.parkHidden && b < OUT0 && live.tilt;
+        live.tiltOff = !!last;
+        live.tiltH?.stop(); live.tiltH = null;
+        if (last) { live.tilt = last; live.tzT = { yaw: last.yaw, pitch: last.pitch }; live.tzGo = true; }
+        else { live.tilt = null; live.tz.yaw = live.tz.pitch = 0; live.tzGo = false; live.tzT = null; }
+        hintT.textContent = 'Touch the dark: it hides a real place. Drag sideways to look. Scroll to light it.';
+        E.stage.invalidate();
+      },
+      say: t => { hintT.textContent = t.replace('Drag to look.', 'Drag sideways to look.') + ' Scroll to light it.'; },
+    }));
+    if (look) {
+      look.live(true);
+      addEventListener('pagehide', () => look.stop());
+      addEventListener('pageshow', e => { if (e.persisted && live.E) look.live(true); });   // Back / Forward: the look comes back
+    }
   }
   // touch: the adaptive resolution at its floor for 5 s in a row = this device cannot hold even 30 fps: still mode
   if (AUTO_STILL && TOUCH) {

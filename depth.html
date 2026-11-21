@@ -84,7 +84,7 @@
         <p class="eyebrow">Depth model &middot; zero-shot ML</p>
         <h1 id="dm-h1"><span>Zero-shot depth</span> <span>from two cameras.</span></h1>
         <p class="dm-lead">Two cameras, like two eyes. This ML model (machine learning, a kind of AI) works out <b>how far away each point is</b>. It learned only from computer-made images. We tested it on real photos from cameras it never saw. We trained it from scratch. The network design, DLNR, is from another team.</p>
-        <p class="dm-name"><b><!-- gen:val:model.name -->nrs-large<!-- /gen:val:model.name --></b> <span>version <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></span> <span class="dm-rel"><!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short --></span></p>
+        <p class="dm-name"><b><!-- gen:val:model.name -->nrs-large<!-- /gen:val:model.name --></b> <span>version <!-- gen:val:model.version -->0.1.0<!-- /gen:val:model.version --></span> <span class="dm-rel"><!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short --></span> <span>Paper: not released yet. Author: Sumedh</span></p>
         <div class="dm-cta">
           <a class="btn btn--ion btn--lg" href="#see">See the difference <span aria-hidden="true">&darr;</span></a>
           <a class="btn btn--lg" href="explore.html">Walk into a place it helped build <span class="arr" aria-hidden="true">&rarr;</span></a>
@@ -161,7 +161,7 @@
             <button type="button" data-folder="maps" aria-pressed="true">ML depth</button>
           </div>
           <button class="btn btn--ion dm-go" id="dm-go" type="button">Open both in 3-D</button>
-          <button class="btn dm-tilt" id="dm-tilt" type="button" aria-pressed="false" hidden>Look with your phone</button>
+          <span class="dm-look" id="dm-tilt" role="group" aria-label="How to look around" hidden><button class="dm-look-b" type="button" data-look="phone" aria-pressed="false" aria-label="Look by moving your phone"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7.5" y="3" width="9" height="18" rx="1.2"/><path d="M4 9.2a7 7 0 0 0 0 5.6M20 9.2a7 7 0 0 1 0 5.6"/></svg><span>Phone</span></button><button class="dm-look-b" type="button" data-look="touch" aria-pressed="false" aria-label="Look by touch only"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 11.5V5a1.5 1.5 0 0 1 3 0v5.5m0-1a1.5 1.5 0 0 1 3 0v1.5m0-.5a1.5 1.5 0 0 1 3 0v4a6.5 6.5 0 0 1-6.5 6.5h-.4a6.5 6.5 0 0 1-5-2.4L4.4 15a1.5 1.5 0 0 1 2.3-1.9l2.8 2.6"/></svg><span>Touch</span></button></span>
           <button class="btn dm-ar" id="dm-ar" type="button" hidden>See it on your table (AR)</button>
         </div>
         <p class="dm-pair-note" id="dm-pair-note" aria-live="polite">Drag in either view to look around. Use the arrow keys to walk.</p>

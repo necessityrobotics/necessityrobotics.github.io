@@ -53,7 +53,7 @@
   </nav>
   <button class="xp-about" id="xp-about" type="button" aria-expanded="false" aria-controls="xp-sheet">About this place</button>
   <!-- phones and tablets with a motion sensor (js/place/tilt.js): the phone's turn turns the view -->
-  <button class="xp-tilt" id="xp-tilt" type="button" aria-pressed="false" aria-label="Look with your phone" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7.5" y="3" width="9" height="18" rx="1.2"/><path d="M4 9.2a7 7 0 0 0 0 5.6M20 9.2a7 7 0 0 1 0 5.6"/></svg><span class="xp-tilt-t">Look with your phone</span></button>
+  <div class="xp-tilt xp-look" id="xp-tilt" role="group" aria-label="How to look around" hidden><button class="xp-look-b" type="button" data-look="phone" aria-pressed="false" aria-label="Look by moving your phone"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7.5" y="3" width="9" height="18" rx="1.2"/><path d="M4 9.2a7 7 0 0 0 0 5.6M20 9.2a7 7 0 0 1 0 5.6"/></svg><span class="xp-look-t">Phone</span></button><button class="xp-look-b" type="button" data-look="touch" aria-pressed="false" aria-label="Look by touch only"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 11.5V5a1.5 1.5 0 0 1 3 0v5.5m0-1a1.5 1.5 0 0 1 3 0v1.5m0-.5a1.5 1.5 0 0 1 3 0v4a6.5 6.5 0 0 1-6.5 6.5h-.4a6.5 6.5 0 0 1-5-2.4L4.4 15a1.5 1.5 0 0 1 2.3-1.9l2.8 2.6"/></svg><span class="xp-look-t">Touch</span></button></div>
 </header>
 
 <main id="main" class="xp-stage">

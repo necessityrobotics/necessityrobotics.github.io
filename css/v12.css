@@ -566,6 +566,38 @@ html.nr-still .h-hint { max-width: min(46ch, calc(100vw - 32px)); }   /* the pla
 }
 @media (hover: none), (pointer: coarse) { html body.v12 .dm-tilt[aria-pressed="true"] { background: var(--acc, #e8e0cf); border-color: var(--acc, #e8e0cf); color: var(--on-acc, #1a1712); } }
 
+/* the company's goal (owner 11-21): the home's own About section, and the About page's ecosystem list */
+.v12 .h4-about .eyebrow { margin-bottom: 14px; }
+.v12 .h4-about .h4-goal { margin-top: 0; }
+.v12 .h4-about .h4-status { margin-top: clamp(28px, 4vw, 52px); }
+.v12 .h4-about-who { margin: clamp(22px, 3vw, 34px) 0 0; max-width: 64ch; font-size: clamp(16px, 1.3vw, 18px); line-height: 1.5; color: var(--fg-2); }
+.v12 .h4-about-who a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+.v12 .h4-about-who + .h4-about-more { margin-top: 10px; }
+.v12 .h4-about-more { margin: clamp(18px, 2.4vw, 28px) 0 0; }
+.v12 .ab-eco .ab-st, .v12 .ab-build .ab-st { display: inline-block; margin-left: 4px; color: var(--fg-3, #9a9a9a); font-size: .92em; }
+.v12 .ab-eco .ab-st--on, .v12 .ab-build .ab-st--on { color: var(--acc); }
+.v12 .ab-build .ab-st { display: block; margin: 6px 0 0; }   /* a full sentence: its own line, no indent when it wraps */
+
+/* the Phone / Touch switch (owner 11-21: the phone look is the default, "option to toggle to touch"): two halves of one
+   piece; the lit half is what runs. Touch devices only: it stays hidden where the phone look cannot run (a desktop). */
+.dm-look, .h-look { display: inline-flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, .32); background: rgba(0, 0, 0, .6); }
+.dm-look[hidden], .h-look[hidden] { display: none; }
+.dm-look-b, .h-look-b { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 0;
+  background: transparent; color: var(--fg, #f3f5f6); font: 600 14px/1 var(--sans, system-ui); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dm-look-b + .dm-look-b, .h-look-b + .h-look-b { border-left: 1px solid rgba(255, 255, 255, .32); }
+.dm-look-b svg, .h-look-b svg { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.dm-look-b[aria-pressed="true"], .h-look-b[aria-pressed="true"] { background: var(--acc, #e8e0cf); color: var(--on-acc, #1a1712); }
+.dm-look-b:focus-visible, .h-look-b:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+.h-look { margin: 10px auto 0; pointer-events: auto; }   /* the hint lets taps through to the place; its switch takes them */
+.h-hint .h-look { display: flex; width: max-content; }
+.h-hint .h-look[hidden] { display: none; }
+.h-look-b { min-height: 40px; padding: 0 12px; font-size: 13.5px; }
+/* the home's goal line is now the About section's h2: it keeps the approved weight of the old goal line (Opus check 11-21) */
+.v12 .h4-sec h2.h4-goal-t { font-weight: 800; letter-spacing: -.03em; }
+html.nr-still .v12 .h4-sec h2.h4-goal-t { padding-bottom: 0; border-bottom: 0; }
+/* the Phone / Touch switches: an inset focus ring (the group clips an outward one) */
+body.v12 :is(.xp-look, .dm-look, .h-look) > button:focus-visible { position: relative; z-index: 3; outline: 2px solid #000; outline-offset: -4px; box-shadow: inset 0 0 0 4px #f3f5f6; }
+
 /* site build: the pictures are recoloured to the accent already (tools/make_site_v12.py), so no hue turn */
 :root, :root[data-acc] { --still-rot: 0deg !important; --still-sat: 1 !important; }
 /* the v4 header on the other pages, in the V11 finish */
