@@ -162,6 +162,25 @@
           </tbody>
         </table></div>
 
+        <h2 id="edge">Our small depth model (nrs-edge)</h2>
+        <p>Our weights. We used the authors' open code for the network design, no other team's trained weights and no ImageNet weights. The credit line of each data source, with its pair count and the evidence for its licence, is in the <a href="https://github.com/necessityrobotics/nrs-edge/blob/main/ATTRIBUTION.md" rel="noopener">attribution file</a> of the code repository.</p>
+        <div class="table-wrap"><table class="t">
+          <thead><tr><th>Work</th><th>Used for</th><th>Reference</th><th>Licence</th></tr></thead>
+          <tbody>
+            <tr><td class="wrapcell">Lite Any Stereo V2, size S, code commit 8c97bd4</td><td class="wrapcell">the network design and code (unmodified)</td><td class="wrapcell">Jing, Luo, Mao and Mikolajczyk, "Lite Any Stereo: Efficient Zero-Shot Stereo Matching", CVPR 2026; Jing et al., "Lite Any Stereo V2", arXiv 2606.24457.</td><td class="wrapcell">MIT, (c) 2025 Junpeng Jing</td></tr>
+            <tr><td class="wrapcell">FasterNet-T0, as defined in PyTorch Image Models (timm; a dependency, not bundled)</td><td class="wrapcell">the design of the feature network</td><td class="wrapcell">FasterNet: Microsoft Corporation. timm: Ross Wightman and contributors.</td><td class="wrapcell">MIT (FasterNet); Apache-2.0 (timm)</td></tr>
+            <tr><td class="wrapcell">nrs-large 0.1.0 (ours)</td><td class="wrapcell">the teacher: it made the labels of the real photos</td><td class="wrapcell">See the section above.</td><td>Apache-2.0</td></tr>
+            <tr><td class="wrapcell">StereoGenBench, TartanAir V1, TartanAir V2 (indoor)</td><td class="wrapcell">computer-made training pairs with true labels</td><td class="wrapcell">Cui, Qiao and Jacobs, arXiv 2605.23237; Wang et al., "TartanAir", IROS 2020; TartanAir V2, CMU AirLab, tartanair.org.</td><td class="wrapcell">CC BY 4.0</td></tr>
+            <tr><td class="wrapcell">WMGStereo-150k (indoor and nature)</td><td class="wrapcell">computer-made training pairs with true labels</td><td class="wrapcell">Yan, Raistrick and Deng, CVPR 2026, arXiv 2504.16930.</td><td class="wrapcell">BSD-3-Clause (the tag on the dataset card)</td></tr>
+            <tr><td class="wrapcell">TUM-VI, Rosario v2, DROID, FoMo</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Schubert et al., IROS 2018; Soncini et al., IJRR 2025; Khazatsky et al., RSS 2024; Boxan et al., arXiv 2603.08433.</td><td class="wrapcell">CC BY 4.0</td></tr>
+            <tr><td class="wrapcell">DrivingStereo (left and right images only)</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Yang et al., "DrivingStereo", CVPR 2019.</td><td>MIT</td></tr>
+            <tr><td class="wrapcell">TartanRGBT (left and right images only)</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Maheshwari et al., "AnyThermal", ICRA 2026, arXiv 2602.06203. CMU AirLab.</td><td class="wrapcell">BSD-3-Clause-Clear (the tag on the dataset card)</td></tr>
+            <tr><td class="wrapcell">Unitree G1 head stereo (33 public data sets)</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Unitree Robotics, on Hugging Face (unitreerobotics).</td><td class="wrapcell">Apache-2.0 (the tag on each dataset card)</td></tr>
+            <tr><td class="wrapcell">Our own OAK-D Lite recordings</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Necessity Robotics.</td><td>Own data</td></tr>
+            <tr><td class="wrapcell">Middlebury, ETH3D, KITTI 2012 and 2015, Booster</td><td class="wrapcell">test scores only; never trained on</td><td class="wrapcell">The public benchmark sets named on the <a href="depth.html#edge-eng">depth page</a>.</td><td class="wrapcell">Their own terms. We publish numbers only, no images.</td></tr>
+          </tbody>
+        </table></div>
+
         <h2 id="package">Inside the xclean package</h2>
         <div class="panel">
           <h3>TartanAir (place-recognition vocabulary)</h3>
