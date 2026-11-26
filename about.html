@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
   <title>About · Necessity Robotics</title>
-  <meta name="description" content="Necessity Robotics is a robotics company from India. Our goal: pass the physical Turing test. Two software products work today, both free under Apache-2.0. We are raising our first round.">
+  <meta name="description" content="Necessity Robotics is a robotics company from India. Our goal: pass the physical Turing test. Our software works today: live SLAM and two depth models, free under Apache-2.0. We are raising our first round, to build our first robot.">
   <link rel="canonical" href="https://necessityrobotics.github.io/about.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Necessity Robotics">
   <meta property="og:title" content="About · Necessity Robotics">
-  <meta property="og:description" content="A robotics company from India. Two software products work today: live SLAM and a stereo depth model. Our goal: pass the physical Turing test. We aim to build the complete robotics ecosystem ourselves.">
+  <meta property="og:description" content="Necessity Robotics is a robotics company from India. Our goal: pass the physical Turing test. Our software works today: live SLAM and two depth models, free under Apache-2.0. We are raising our first round, to build our first robot.">
   <meta property="og:url" content="https://necessityrobotics.github.io/about.html">
   <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
   <meta property="og:image:type" content="image/jpeg">
@@ -32,6 +32,7 @@
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
 <link rel="stylesheet" href="css/accent.css">
+<link rel="stylesheet" href="css/fund.css">
 </head>
 <body class="ab v12">
 <a class="skip" href="#main">Skip to content</a>
@@ -42,10 +43,11 @@
     <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
       <div class="nr-dd" data-dd="products">
         <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
-        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+        <div class="nr-dd-panel nr-dd-panel--2 fd-dd3" id="nr-dd-products">
           <p class="nr-dd-h">Products</p>
           <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
-          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Depth model &middot; large</span><span class="nr-dd-n">nrs-large</span><span class="nr-dd-t">How far away each point is, from two camera photos. Our larger, more exact model.</span><span class="nr-dd-s">57 million parameters &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="nrs-edge.html"><span class="nr-dd-k">Depth model &middot; small</span><span class="nr-dd-n">nrs-edge</span><span class="nr-dd-t">How far away each point is, in a small model for the computer inside a robot.</span><span class="nr-dd-s">6 million parameters &middot; Free download</span></a>
         </div>
       </div>
       <a class="nr-a" href="maps.html">3-D places</a>
@@ -58,6 +60,8 @@
         </div>
       </div>
       <a class="nr-a" href="about.html" aria-current="page">About</a>
+      <a class="nr-a" href="investors.html">Investors</a>
+      <a class="nr-a" href="about.html#join">Join us</a>
       <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
     <a class="nr-cta" href="about.html#contact">Contact</a>
@@ -81,7 +85,7 @@
     <div class="wrap doc ab-doc">
       <aside class="toc" aria-label="On this page">
         <span class="label">On this page</span>
-        <a href="#who">Who we are</a><a href="#today">What works today</a><a href="#goal">Our goal</a><a href="#building">What we are building</a><a href="#how">How we work</a><a href="#contact">Investors and contact</a>
+        <a href="#who">Who we are</a><a href="#today">What works today</a><a href="#goal">Our goal</a><a href="#plan">Our plan</a><a href="#building">What we are building</a><a href="#how">How we work</a><a href="#join">Join us</a><a href="#contact">Investors and contact</a>
       </aside>
       <div class="prose">
         <!-- order: the people, then the proof, then the goal and the aims -->
@@ -89,22 +93,22 @@
         <p>Two founders run Necessity Robotics:</p>
         <!-- the founders' emails and phones are written as HTML character codes -->
         <ul class="ab-list ab-team">
-          <li><b>Sumedh Bouddh</b>, founder. Author of our technical papers: on <a href="papers/xclean_paper.pdf">xclean</a>, on our depth model, <a href="papers/nrs_large_paper.pdf">nrs-large</a>, and a technical note on our small model, <a href="papers/nrs_edge_note.pdf">nrs-edge</a> (all PDF). A summary of the xclean paper is on our <a href="paper.html">Paper</a> page.
+          <li><b>Sumedh Bouddh</b>, founder. Author of our technical papers: on <a href="papers/xclean_paper.pdf">xclean</a>, on our depth model, <a href="papers/nrs_large_paper.pdf">nrs-large</a>, and a technical note on our small model, <a href="papers/nrs_edge_note.pdf">nrs-edge</a> (all PDF, not peer-reviewed). A summary of the xclean paper is on our <a href="paper.html">Paper</a> page. He builds the software: xclean, the depth models and their tests. He is self-taught: his formal education ended with high school.
             <span class="ab-contact"><span>Email: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#117;&#109;&#101;&#100;&#104;&#98;&#111;&#117;&#100;&#100;&#104;&#51;&#54;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#115;&#117;&#109;&#101;&#100;&#104;&#98;&#111;&#117;&#100;&#100;&#104;&#51;&#54;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></span><span>Phone: <a href="&#116;&#101;&#108;&#58;&#43;&#57;&#49;&#54;&#50;&#54;&#48;&#48;&#51;&#52;&#54;&#55;&#54;">&#43;&#57;&#49;&#32;&#54;&#50;&#54;&#48;&#48;&#32;&#51;&#52;&#54;&#55;&#54;</a></span></span></li>
-          <li><b>Karan Davande</b>, co-founder.
+          <li><b>Karan Davande</b>, co-founder. He does all our hardware and mechatronics work, including the arm prototype. He holds a B.Tech in computer science.
             <span class="ab-contact"><span>Email: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#107;&#97;&#114;&#97;&#110;&#100;&#97;&#118;&#97;&#110;&#100;&#101;&#49;&#50;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#107;&#97;&#114;&#97;&#110;&#100;&#97;&#118;&#97;&#110;&#100;&#101;&#49;&#50;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></span><span>Phone: <a href="&#116;&#101;&#108;&#58;&#43;&#57;&#49;&#55;&#56;&#54;&#57;&#55;&#55;&#54;&#56;&#54;&#53;">&#43;&#57;&#49;&#32;&#55;&#56;&#54;&#57;&#55;&#32;&#55;&#54;&#56;&#54;&#53;</a></span></span></li>
         </ul>
-        <p>Our first product is live SLAM: software that tells a robot where it is. A lost robot cannot work, so we built this first.</p>
-        <p>We are at an early stage. We are raising our first round.</p>
+        <p>Our work started in 2025, with two webcams on a plywood test platform. Our first product is live SLAM: software that tells a robot where it is. A lost robot cannot work, so we built this first.</p>
+        <p>We are at an early stage. We are raising our first round, to build our first robot: see <a href="investors.html">For investors</a>. Necessity Robotics is a private limited company, registered in India (CIN U62011CT2026PTC021346). Both founders work on it full-time.</p>
 
         <h2 id="today">What works today</h2>
-        <p>We have two products. Both are software, and both are free under Apache-2.0, also for commercial use. No robot is built yet.</p>
+        <p>We have xclean, our live SLAM, two depth models (nrs-large and nrs-edge) and a map builder, xclean-maps. All are software, and all are free under Apache-2.0, also for commercial use. No working robot is built yet.</p>
         <div class="ab-products">
           <a class="ab-prod ab-prod--path" href="xclean.html">
             <span class="ab-prod-k">Live SLAM</span>
             <span class="ab-prod-n">xclean</span>
-            <span class="ab-prod-t">Tells a robot where it is, from a stereo camera. It uses no satellite signal (GPS). <!-- gen:val:board.speed_ms -->20.4<!-- /gen:val:board.speed_ms --> ms from the arrival of an image to its position (median, on one desktop PC with an NVIDIA RTX 5090). Tested on <!-- gen:val:board.runs -->216<!-- /gen:val:board.runs --> real-time replays of <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> recorded routes: an indoor drone, cars, a rover, a farm robot and our own OAK-D-Lite camera. We score only the positions it gives live. It is not more accurate than the two systems we compared it with.</span>
-            <span class="ab-prod-s">Released, open source. Live on a camera so far only on a tripod, standing still (OAK-D-Lite). We test moving routes as real-time replays.</span>
+            <span class="ab-prod-t">Tells a robot where it is, from a stereo camera. It uses no satellite signal (GPS). <!-- gen:val:board.speed_ms -->20.4<!-- /gen:val:board.speed_ms --> ms from the arrival of an image to its position (median, on one desktop PC with an NVIDIA RTX 5090). Tested on <!-- gen:val:board.runs -->216<!-- /gen:val:board.runs --> real-time replays of <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> recorded routes: an indoor drone, cars, a rover, a farm robot and our own OAK-D-Lite camera. We score only the positions it gives live. It is not more accurate than the two systems we compared it with (ORB-SLAM3 and OKVIS2-X): on the 38 routes that we kept out of development, against ORB-SLAM3 (run offline, untuned), it was better on 10 (on 3 of them the ORB-SLAM3 runs had a problem), equal on 2 and worse on 26.</span>
+            <span class="ab-prod-s">Released, open source. One pip command to install. Every route and every loss is on our Results page.</span>
           </a>
           <a class="ab-prod ab-prod--ml" href="depth.html">
             <span class="ab-prod-k">Zero-shot ML</span>
@@ -119,22 +123,28 @@
         <h2 id="goal">Our goal</h2>
         <p class="ab-goal">Pass the physical Turing test.</p>
         <p>A robot passes it when you cannot tell its work from a person's. We see a future of physical AI: robots that do real tasks as well as people, then better.</p>
-        <p><b>Good software is not enough for that.</b> A robot that passes the test needs energy, semiconductors, hardware and software that work as one. So we aim to build the complete robotics ecosystem ourselves, in five layers:</p>
+        <h2 id="plan">Our plan, in order</h2>
+        <ul class="ab-list fd-order">
+          <li class="fd-now"><span class="fd-k">Now</span><b>Software.</b> What lets a robot know where it is, and how far away things are. <span class="ab-st ab-st--on">Released: xclean, nrs-large, nrs-edge, and our map builder xclean-maps.</span></li>
+          <li><span class="fd-k">Next</span><b>Our first robot.</b> Four wheels and two arms, running our software. It will work outdoors, in the real world, from its first step: first our software on the moving robot, then one arm, then both arms on a street. Milestone 1, the goal of our first round: it will pick up litter on a street in India. Milestone 2, our mission, after milestone 1: the same work in the mountains of north India. We will publish the result of each step. <span class="ab-st">Not built yet. Our first round will pay for the robot and its steps to milestone 1: see <a href="investors.html">For investors</a>.</span></li>
+          <li><span class="fd-k">Later</span><b>Hands and more bodies.</b> Robot hands with the skill of a person, on wheeled robots, legged robots and humanoids. <span class="ab-st">Not started.</span></li>
+          <li><span class="fd-k">Later</span><b>Our own stack.</b> Our own actuators and control boards, our own chips for the computing inside the robot, and renewable power for our work. <span class="ab-st">Not started, except a first arm prototype. The reason for each layer is below.</span></li>
+        </ul>
+
+        <h3 class="fd-h3" id="stack">Why we aim to build the whole stack</h3>
+        <p><b>Good software is not enough.</b> A robot that passes the test needs energy, semiconductors, hardware and software that work as one. So we aim to build each layer ourselves, in time. Of the three layers below, only hardware has a first step.</p>
         <ul class="ab-list ab-eco">
-          <li><b>Energy:</b> the power a robot runs on. <span class="ab-st">Not built yet.</span></li>
-          <li><b>Semiconductors:</b> the chips a robot thinks with. <span class="ab-st">Not built yet.</span></li>
-          <li><b>Hardware:</b> the body, with its motors, joints and hands. <span class="ab-st">Not built yet.</span></li>
-          <li><b>Software:</b> what lets a robot see, know where it is and act. <span class="ab-st ab-st--on">The first part works today.</span></li>
-          <li><b>Product:</b> the finished robot, made from the other four layers. <span class="ab-st">Not built yet.</span></li>
+          <li><b>Hardware:</b> our own actuators and control boards. Then the cost, the supply and the design of a robot would not depend on other companies. <span class="ab-st">First step: an arm prototype of our own design, with bought actuators. One joint turns under power. See <a href="investors.html#hardware">Hardware so far</a>. Our own actuators and boards are not started.</span></li>
+          <li><b>Semiconductors:</b> our own chips for inference, the computing inside the robot. Training stays on graphics cards that we buy: we do not plan to compete there.</li>
+          <li><b>Energy:</b> renewable power for our work and for our model training. The energy and water use of data centres is a known problem. We want to address it in our own work from the start.</li>
         </ul>
 
         <h2 id="building">What we are building</h2>
-        <p>These are aims. None of them is finished. Only the first part of one aim works today.</p>
+        <p>These are our aims for later. None of them is finished. Only the first part of one aim works today.</p>
         <ul class="ab-list ab-build">
           <li><b>Dexterous manipulation:</b> robot hands that grasp, hold and use real objects with the skill of a person.</li>
-          <li><b>Navigation in any environment:</b> robots that find their way and move with ease indoors, outdoors and in places that are too dangerous for people. <span class="ab-st ab-st--on">The first part works today: xclean, our live SLAM, tells a robot where it is.</span></li>
+          <li><b>Navigation in any environment:</b> robots that find their way and move with ease indoors, outdoors, where there is no satellite signal, and in places that are too dangerous for people. <span class="ab-st ab-st--on">The first part works today: xclean, our live SLAM, tells a robot where it is.</span></li>
           <li><b>Every form factor:</b> the same skills in every type of robot body: robot arms, wheeled robots, legged robots and humanoids.</li>
-          <li><b>Surveillance for defence:</b> systems that watch from the air and from the ground, and find their way where satellite signals are weak or jammed.</li>
         </ul>
 
         <h2 id="how">How we work</h2>
@@ -146,9 +156,20 @@
         </ul>
         <p><a class="more" href="results.html">See the results</a></p>
 
+        <h2 id="join">Join us</h2>
+        <p>We are two founders, and we look for the first people of our team. If you want to build a robot from its first part, write to us.</p>
+        <ul class="ab-list">
+          <li><b>Robot hardware engineers:</b> arms, actuators, motor control and electronics. Your first work: our arm prototype. After our first round: our first robot.</li>
+          <li><b>ML engineers:</b> models that let a robot see, and models that make a robot arm do useful work. Your first work: the models for the first task of our first robot.</li>
+        </ul>
+        <p>If your skill is not in this list, write to us too.</p>
+        <p><b>What we offer.</b> Early team members get equity. We cannot pay salaries now. We say this plainly, so that you can decide.</p>
+        <p><b>How to start.</b> Read our code and our results first: they show how we work. Then write to us, and show us one thing that you built.</p>
+        <p class="ab-mail"><a class="btn btn--ion" href="mailto:necessityrobotics@gmail.com?subject=Join%20Necessity%20Robotics">Write to us <span class="arr" aria-hidden="true">&rarr;</span></a> <a class="btn" href="https://github.com/necessityrobotics" rel="noopener">Our code on GitHub</a> <a class="btn" href="results.html">How we test</a></p>
+
         <h2 id="contact">Investors and contact</h2>
-        <p><b>Investors:</b> we are raising our first round. Write to us at the address below. Or contact a founder directly: their emails and phone numbers are under <a href="#who">Who we are</a>.</p>
-        <p>Partners and engineers: write to us too. We read every message.</p>
+        <p><b>Investors:</b> we are raising our first round, to build our first robot. What we ask for and what it builds are on <a href="investors.html">For investors</a>. Write to us at the address below, or contact a founder directly: their emails and phone numbers are under <a href="#who">Who we are</a>.</p>
+        <p>Grant programmes, innovation hubs, partners and engineers: write to us too. We read every message.</p>
         <p class="ab-mail"><a class="btn btn--ion" href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a> <a class="btn" href="https://github.com/necessityrobotics" rel="noopener">GitHub</a></p>
       </div>
     </div>
@@ -158,7 +179,8 @@
 <!-- gen:footer -->
 <footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="about.html#join">Join us</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p class="fd-legal">Private limited company, registered in India.</p>
   </div>
 </footer>
 <!-- /gen:footer -->

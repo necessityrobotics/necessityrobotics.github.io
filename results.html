@@ -39,6 +39,7 @@
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
 <link rel="stylesheet" href="css/accent.css">
+<link rel="stylesheet" href="css/fund.css">
 </head>
 <body class="v12">
 <a class="skip" href="#main">Skip to content</a>
@@ -49,10 +50,11 @@
     <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
       <div class="nr-dd" data-dd="products">
         <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
-        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+        <div class="nr-dd-panel nr-dd-panel--2 fd-dd3" id="nr-dd-products">
           <p class="nr-dd-h">Products</p>
           <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
-          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Depth model &middot; large</span><span class="nr-dd-n">nrs-large</span><span class="nr-dd-t">How far away each point is, from two camera photos. Our larger, more exact model.</span><span class="nr-dd-s">57 million parameters &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="nrs-edge.html"><span class="nr-dd-k">Depth model &middot; small</span><span class="nr-dd-n">nrs-edge</span><span class="nr-dd-t">How far away each point is, in a small model for the computer inside a robot.</span><span class="nr-dd-s">6 million parameters &middot; Free download</span></a>
         </div>
       </div>
       <a class="nr-a" href="maps.html">3-D places</a>
@@ -65,6 +67,8 @@
         </div>
       </div>
       <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a" href="investors.html">Investors</a>
+      <a class="nr-a" href="about.html#join">Join us</a>
       <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
     <a class="nr-cta" href="about.html#contact">Contact</a>
@@ -118,11 +122,19 @@
     <div class="wrap doc">
       <aside class="toc" aria-label="On this page">
         <span class="label">On this page</span>
-        <a href="#disclosures">Disclosures</a><a href="#latency">Latency</a><a href="#robustness">Robustness</a><a href="#accuracy">Accuracy</a><a href="#imu">IMU use</a><a href="#claims">Pre-registered claims</a><a href="#routes">Every route</a><a href="#definitions">Definitions</a><a href="#source">Source</a>
+        <a href="#summary">In short</a><a href="#disclosures">Disclosures</a><a href="#latency">Latency</a><a href="#robustness">Robustness</a><a href="#accuracy">Accuracy</a><a href="#imu">IMU use</a><a href="#claims">Pre-registered claims</a><a href="#routes">Every route</a><a href="#definitions">Definitions</a><a href="#source">Source</a>
       </aside>
       <div class="prose">
-        <h2 id="disclosures" class="sr">Disclosures</h2>
-        <div class="disclose">
+        <h2 id="summary">In short</h2>
+        <dl class="fd-sum">
+          <div><dt>Latency</dt><dd><b>20.4 ms</b> from the arrival of a frame to its position (median; 26.4 ms at the 95th percentile), on one desktop PC. The pre-registered real-time bars passed on 28 of 38 unseen routes.</dd></div>
+          <div><dt>Robustness</dt><dd><b>0 runs lost</b> on the 38 unseen routes. The pre-registered claim C3a still failed: on 2 routes a lock-step attempt was classed as a crash after a power outage.</dd></div>
+          <div><dt>Accuracy</dt><dd><b>Not more accurate than either system.</b> On the 38 unseen routes: against ORB-SLAM3 (offline, untuned, its end-of-run trajectory) 10 wins, 2 ties, 26 losses; against OKVIS2-X (causal) 11 wins, 10 ties, 17 losses. xclean is scored on what it published live.</dd></div>
+          <div><dt>Claims</dt><dd><b>1 of 12</b> pre-registered claims passed. The list of claims below gives the count of routes for each one.</dd></div>
+        </dl>
+
+        <h2 class="sr">Disclosures</h2>
+        <div class="disclose" id="disclosures">
           <h3>Read this first</h3>
           <ul>
             <li><strong>Most of our pre-registered claims did not pass.</strong> On the 38 unseen routes, <span class="js-claims-pass">1</span> of <span class="js-claims-n">12</span> claims passed. <a href="#claims">The full list</a>.</li>
@@ -240,7 +252,8 @@
 <!-- gen:footer -->
 <footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="about.html#join">Join us</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p class="fd-legal">Private limited company, registered in India.</p>
   </div>
 </footer>
 <!-- /gen:footer -->

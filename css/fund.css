@@ -1,0 +1,156 @@
+/* Styles of the investor page, the nrs-edge page, the company block and the top bar. Loaded after accent.css.
+   Rule of the site: solid line = works today, dashed line = not built yet. No new colour. */
+
+/* ---- top bar, Products: three entries in one row (xclean, nrs-large, nrs-edge). The panel hangs under the whole bar,
+   centred on the page, so it fits at every desktop width. Phone and narrow layouts keep the site's own menu rules. ---- */
+@media (min-width: 901px) {
+  .v12 .nr-dd[data-dd="products"] { position: static; }
+  .v12 .nr-dd-panel.fd-dd3 { top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    width: min(900px, calc(100vw - 32px)); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .v12 .nr-dd-panel.fd-dd3::before { top: -24px; height: 24px; }
+}
+
+/* ---- Depth page: the two models, named under the headline ---- */
+.v12 .fd-models { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 660px; margin: 24px 0 0; }
+.v12 .fd-models-l { grid-column: 1 / -1; margin: 0; font: 500 10.5px/1.2 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ai, var(--fg-3)); }
+.v12 .fd-model { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 15px; border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(0, 0, 0, .45); color: var(--fg); text-decoration: none; }
+.v12 .fd-model b { font: 500 23px/1.1 var(--display); letter-spacing: -.01em; color: var(--fg); }
+.v12 .fd-model > span { font: 400 14px/1.45 var(--sans); color: var(--fg-2); }
+.v12 .fd-model i { margin-top: auto; padding-top: 4px; font: 500 12.5px/1.3 var(--sans); font-style: normal; color: var(--fg-3); }
+.v12 .fd-model.is-here { border-color: var(--acc); }
+.v12 .fd-model.is-here i { color: var(--acc); }
+.v12 a.fd-model:hover, .v12 a.fd-model:focus-visible { border-color: rgba(255, 255, 255, .55); outline: none; }
+.v12 a.fd-model:not(.is-here) i { color: var(--fg); }
+.v12 .fd-models--edge { margin: 0 0 clamp(26px, 4vw, 48px); }
+@media (max-width: 560px) { .v12 .fd-models { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- home: the scroll story is shorter, so that the company block comes sooner.
+   One screen of scrolling for each stop instead of 1.4. The scenes, their order and their words are unchanged:
+   home.js reads the height of this box, so the story plays the same way, over less scrolling.
+   To undo: delete these two rules (the site's own values are 800vh, and 680vh on a phone). ---- */
+.v12 .h-hero { height: 600vh; }
+@media (max-width: 760px) { .v12 .h-hero { height: 520vh; } }
+
+/* ---- depth pages (nrs-large, nrs-edge): the number tiles stay on the first screen. The site aligns them with the bottom
+   of the text column. The model chooser made that column taller, so the tiles went under the first screen and the right
+   half of the screen was empty. Now they start beside the title. ---- */
+@media (min-width: 980px) {
+  .v12 .dm-hero-in { align-items: start; }
+  .v12 .dm-hero-in > .dm-specs { margin-top: 46px; }
+}
+
+/* ---- top bar: "Join us" is a part of the About page. At that part, the bar marks "Join us", not "About". ---- */
+html:has(#join:target) .v12 .nr-nav .nr-a[href$="#join"] { color: var(--fg); box-shadow: inset 0 -1px 0 var(--fg); }
+html:has(#join:target) .v12 .nr-nav .nr-a[aria-current] { color: var(--fg-2); box-shadow: none; }
+@media (max-width: 900px) {
+  html:has(#join:target) .v12 .nr-nav .nr-a[href$="#join"] { box-shadow: inset 3px 0 0 var(--fg); padding-left: 14px; }
+  html:has(#join:target) .v12 .nr-nav .nr-a[aria-current] { color: var(--fg); box-shadow: none; padding-left: 2px; }
+}
+
+/* ---- home, a device with no 3-D: the note stays readable over the bright picture ---- */
+html.f-still .v12 .h-state { text-shadow: 0 0 3px #000, 0 0 10px #000, 0 0 18px #000; }
+
+/* ---- results page, phone: each definition under its term. In two columns the longest term took half the screen and
+   each definition had two or three words in a line. ---- */
+@media (max-width: 640px) {
+  .v12 dl.kv.defs { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .v12 dl.kv.defs dt { margin-top: 14px; }
+}
+
+/* ---- footer: the legal line of the company, on its own line under the links ---- */
+.v12 .v4-foot .fd-legal { margin-top: 2px; font-size: 13px; color: var(--fg-3, #9a9a9a); }
+
+/* ---- results page: the short summary on top ---- */
+.v12 .fd-sum { margin: 10px 0 36px; border-top: 1px solid rgba(255, 255, 255, .14); }
+.v12 .fd-sum > div { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 6px 20px; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.v12 .fd-sum dt { padding-top: 3px; font: 500 11px/1.5 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--fg-3, #9a9a9a); }
+.v12 .fd-sum dd { margin: 0; color: var(--fg-2); line-height: 1.55; }
+.v12 .fd-sum dd b { color: var(--fg); font-weight: 600; }
+@media (max-width: 640px) { .v12 .fd-sum > div { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- home, first screen: the Today / Next line (F's .h-sub) and the third door ---- */
+.v12 .h-sub.fd-today { margin-top: 16px; max-width: 29em; }
+.v12 .h-sub.fd-today b { font-weight: 600; color: var(--ink); }
+.v12 .h-cta .fd-inv { white-space: nowrap; }
+@media (max-width: 760px) {
+  .v12 .h-sub.fd-today { margin-top: 10px; font-size: 15px; line-height: 1.5; }
+  /* phone: "For investors" is a real button on its own row (the site turns other second actions into plain words) */
+  body.v12 .h-cta > .btn.fd-inv:not(.btn--acc):not(.btn--ion) { flex: 1 0 100%; justify-content: center; min-height: 46px; margin-top: 12px;
+    padding: 0 18px; border: 1px solid rgba(255, 255, 255, .6); background: rgba(0, 0, 0, .74); }
+  /* phone, a device that cannot show the 3-D place: its note sat on the top line of the first screen. The words move down. */
+  html.f-still .v12 .h-stage[data-stop="0"] .h-first { padding-top: calc(var(--head-h) + 24px + 3.9em); }
+}
+
+/* ---- home: the company block sits above the place cards ---- */
+.v12 .fd-co + .h4-sec.h4-places { border-top: 1px solid rgba(255, 255, 255, .1); }
+.v12 .h4-status.fd-plan { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) { .v12 .h4-status.fd-plan { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+.v12 .fd-plan .h4-status-l { flex-wrap: wrap; row-gap: 4px; }
+.v12 .fd-plan .h4-status-l span { font-weight: 500; letter-spacing: .04em; text-transform: none; color: var(--fg-3); }
+.v12 .fd-plan .h4-status-t,
+.v12 .fd-plan .h4-ready .h4-status-t { max-width: 22ch; font-size: clamp(21px, 1.85vw, 26px); }
+.v12 .fd-plan .fd-s { margin: 0 0 12px; max-width: 38ch; font: 400 16px/1.55 var(--sans); color: var(--fg-2); }
+.v12 .fd-plan .fd-s:last-child { margin-bottom: 0; }
+.v12 .fd-plan .fd-next { border-color: rgba(255, 255, 255, .62); }
+.v12 .fd-plan .fd-next .h4-status-l { color: var(--fg); }
+.v12 .fd-plan .fd-next .h4-status-l::before { border-color: var(--fg); }
+.v12 .fd-plan .h4-aims li { padding: 11px 0 11px 24px; font-size: clamp(16.5px, 1.35vw, 18.5px); }
+.v12 .fd-plan .h4-aims li:first-child { padding-top: 0; }
+.v12 .fd-plan .h4-aims li::before { top: 19px; }
+.v12 .fd-plan .h4-aims li:first-child::before { top: 8px; }
+.v12 .fd-plan .h4-aims a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, .4); }
+.v12 .fd-co-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin: clamp(18px, 2.4vw, 28px) 0 0; }
+.v12 .h4-contact .fd-contact-inv { margin: 14px 0 0; font-size: 16px; color: var(--fg-2); }
+.v12 .h4-contact .fd-contact-inv a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- About and For investors: the ask box, the ordered plan ---- */
+.v12 .fd-ask { margin: 14px 0 20px; padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--acc); background: rgba(var(--acc-rgb), .05); }
+.v12 .fd-ask p { margin: 0 0 12px; color: var(--fg-2); font-size: 18px; line-height: 1.55; }
+.v12 .fd-ask p:last-child { margin-bottom: 0; }
+.v12 .fd-ask b { color: var(--fg); font-weight: 600; }
+.v12 .fd-order .ab-st { display: block; margin: 6px 0 0; color: var(--fg-3, #9a9a9a); font-size: .92em; }
+.v12 .fd-order .ab-st--on { color: var(--acc); }
+.v12 .fd-order li { border-left: 1px dashed rgba(255, 255, 255, .34); padding-left: 16px; }
+.v12 .fd-order li.fd-now { border-left: 1px solid var(--acc); }
+.v12 .prose h3.fd-h3 { margin: 26px 0 8px; font: 500 22px/1.25 var(--display); letter-spacing: -.01em; color: var(--fg); }
+.v12 .fd-k { font: 500 10.5px/1.2 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-3); margin-right: 10px; }
+.v12 .fd-now .fd-k { color: var(--acc); }
+.v12 .fd-order .fd-k { white-space: nowrap; }
+.v12 .fd-links { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; font-size: 15px; }
+.v12 .fd-links a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, .35); }
+.v12 .fd-links a:hover { text-decoration-color: currentColor; }
+.v12 .ab-list code { font: 500 .88em/1.3 var(--mono); color: var(--fg); background: rgba(255, 255, 255, .07); padding: 2px 6px; white-space: nowrap; }
+
+/* ---- hardware so far: one photo and one silent clip, in the grey of the site's own places ---- */
+.v12 .fd-hw { display: grid; grid-template-columns: minmax(0, 1.097fr) minmax(0, 1fr); gap: 14px; max-width: 780px; margin: 16px 0 18px; align-items: start; }
+.v12 .fd-hw-fig { margin: 0; border: 1px solid rgba(255, 255, 255, .16); background: #050505; }
+.v12 .fd-hw-fig img, .v12 .fd-hw-fig video { display: block; width: 100%; height: auto; filter: grayscale(1) contrast(1.04); }
+.v12 .fd-hw-fig figcaption { margin: 0; padding: 10px 14px 12px; border-top: 1px solid rgba(255, 255, 255, .12); font-size: 14px; line-height: 1.45; color: var(--fg-3, #9a9a9a); }
+/* the 2025 platform: a wide clip beside a nearly square picture, at the same height */
+.v12 .fd-hw--car { grid-template-columns: minmax(0, 1.523fr) minmax(0, 1fr); }
+.v12 .fd-hw-cad { max-width: 780px; margin: 16px 0 14px; }
+.v12 .fd-hw-cad img { filter: none; background: #000; }                 /* the drawing keeps its own two line colours */
+/* the arm as a 3-D line model: it turns only under the visitor's hand */
+.v12 .fd-hw-3d { max-width: 780px; margin: 0 0 14px; }
+.v12 .fd-arm3d { position: relative; height: clamp(300px, 46vw, 430px); background: #000; touch-action: pan-y; cursor: grab; }
+.v12 .fd-arm3d.is-drag { cursor: grabbing; }
+.v12 .fd-arm3d canvas { display: block; width: 100%; height: 100%; outline: none; }
+.v12 .fd-arm3d canvas:focus-visible { outline: 1px solid var(--acc); outline-offset: -1px; }
+.v12 .fd-arm3d-note { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 20px; text-align: center;
+  font: 400 14px/1.5 var(--sans); color: var(--fg-3, #9a9a9a); pointer-events: none; }
+.v12 .fd-arm3d[data-ready="1"] .fd-arm3d-note { display: none; }
+.v12 .fd-arm3d-views { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; }
+.v12 .fd-arm3d-views button { min-height: 32px; padding: 0 10px; border: 1px solid rgba(255, 255, 255, .3); border-radius: 0; background: rgba(0, 0, 0, .6);
+  color: var(--fg-2); font: 500 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.v12 .fd-arm3d-views button[aria-pressed="true"] { border-color: var(--acc); color: var(--fg); }
+.v12 .fd-arm3d-views button:focus-visible { outline: 1px solid var(--acc); outline-offset: 2px; }
+.v12 .fd-arm3d.is-off { cursor: default; }
+.v12 .fd-arm3d.is-off .fd-arm3d-views { display: none; }
+@media (pointer: coarse) { .v12 .fd-arm3d-views button { min-height: 40px; padding: 0 12px; } }
+@media (max-width: 760px) { .v12 .fd-hw { grid-template-columns: minmax(0, 1fr); max-width: 420px; } }
+@media (max-width: 560px) { .v12 .fd-arm3d { height: 250px; } }      /* phone: the wide model left the lower half of a 300 px box empty */
+
+/* ---- a marked gap in the text. A released page has none ---- */
+.v12 mark.fd-todo { display: inline-block; margin: 4px 0 0; padding: 2px 8px; border: 1px dashed #d9b84a; background: rgba(217, 184, 74, .1);
+  color: #e9cf7a; font: 500 13px/1.5 var(--mono); letter-spacing: .01em; }

@@ -7,12 +7,12 @@
 <style>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
 <title>Necessity Robotics</title>
 <meta name="theme-color" content="#000000">
-<meta name="description" content="Necessity Robotics is a robotics company from India, building robots to pass the physical Turing test. The first part works today: software that tells a robot where it is. Walk into a real place, rebuilt in 3-D from its camera photos. Not a video: you move in it yourself.">
+<meta name="description" content="Necessity Robotics is a robotics company from India, building robots to pass the physical Turing test. Today: open-source software that tells a robot where it is, and how far away things are. Next: our first robot. Walk into a real place, rebuilt in 3-D from its camera photos. Not a video: you move in it yourself.">
 <link rel="canonical" href="https://necessityrobotics.github.io/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Necessity Robotics">
 <meta property="og:title" content="Necessity Robotics: a robotics company from India">
-<meta property="og:description" content="A robotics company from India, building robots to pass the physical Turing test. The first part works today: software that tells a robot where it is. Walk into a real place, rebuilt in 3-D from its camera photos.">
+<meta property="og:description" content="A robotics company from India, building robots to pass the physical Turing test. Today: open-source software that tells a robot where it is, and how far away things are. Next: our first robot. Walk into a real place, rebuilt in 3-D from its camera photos.">
 <meta property="og:url" content="https://necessityrobotics.github.io/">
 <meta property="og:image" content="https://necessityrobotics.github.io/img/share.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -46,6 +46,7 @@
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
 <link rel="stylesheet" href="css/accent.css">
+<link rel="stylesheet" href="css/fund.css">
 </head>
 <body class="v12">
 <a class="skip" href="#places">Skip to the places</a>
@@ -56,10 +57,11 @@
     <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
       <div class="nr-dd" data-dd="products">
         <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
-        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+        <div class="nr-dd-panel nr-dd-panel--2 fd-dd3" id="nr-dd-products">
           <p class="nr-dd-h">Products</p>
           <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
-          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Depth model &middot; large</span><span class="nr-dd-n">nrs-large</span><span class="nr-dd-t">How far away each point is, from two camera photos. Our larger, more exact model.</span><span class="nr-dd-s">57 million parameters &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="nrs-edge.html"><span class="nr-dd-k">Depth model &middot; small</span><span class="nr-dd-n">nrs-edge</span><span class="nr-dd-t">How far away each point is, in a small model for the computer inside a robot.</span><span class="nr-dd-s">6 million parameters &middot; Free download</span></a>
         </div>
       </div>
       <a class="nr-a" href="maps.html">3-D places</a>
@@ -72,6 +74,8 @@
         </div>
       </div>
       <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a" href="investors.html">Investors</a>
+      <a class="nr-a" href="about.html#join">Join us</a>
       <a class="nr-a nr-a--contact" href="#contact">Contact</a>
     </nav>
     <a class="nr-cta" href="#contact">Contact</a>
@@ -104,9 +108,11 @@
           <p class="c-eyebrow">A robotics company from India</p>
           <p class="h-name"><span>Necessity</span> <span class="h-name-2">Robotics</span></p>
           <h1 class="h-h1">Building robots to pass the <span class="h-acc">physical Turing test.</span></h1>
+          <p class="h-sub fd-today"><b>Today:</b> open-source software that tells a robot where it is, and how far away things are. <b>Next:</b> our first robot, to pick up litter from the streets of India.</p>
           <div class="h-cta">
             <a class="btn btn--acc h-go" href="explore.html?map=oak_161206&amp;at=117" data-open="">Walk into the place <span aria-hidden="true">&rarr;</span></a>
             <a class="btn h-more" href="#s1">See how <span aria-hidden="true">&darr;</span></a>
+            <a class="btn fd-inv" href="investors.html">For investors <span aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
       </div>
@@ -115,7 +121,7 @@
       <div class="h-cap" data-cap="1" id="s1">
         <p class="c-k">I &middot; The place</p>
         <h2>One camera. One walk.</h2>
-        <p>A person carried a stereo camera down this path. xclean tracked it. <b>Our depth model</b> worked out the depth. <span class="h-live"><span class="when-fine">Move your mouse: near trees slide past far trees.</span><span class="when-touch">Drag sideways to look around.</span></span></p>
+        <p>A person carried a stereo camera down this path. xclean, our software, tracked it in a real-time replay of the recording. <b>Our depth model</b> worked out the depth. <span class="h-live"><span class="when-fine">Move your mouse: near trees slide past far trees.</span><span class="when-touch">Drag sideways to look around.</span></span></p>
       </div>
       <div class="h-cap" data-cap="2">
         <p class="c-k">II &middot; Pull back</p>
@@ -160,6 +166,50 @@
     <div class="wrap">
       <ul class="f-atlas-list"><li><span class="f-al-n">A park path under trees</span><span class="f-al-l">227 m</span><a href="explore.html?map=oak_161206">Walk in (3&#8209;D)</a><a href="depth.html?map=oak_161206#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">A street in India</span><span class="f-al-l">1.02 km</span><a href="explore.html?map=oak_161834">Walk in (3&#8209;D)</a><a href="depth.html?map=oak_161834#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">A lane under trees</span><span class="f-al-l">472 m</span><a href="explore.html?map=oak_164424">Walk in (3&#8209;D)</a><a href="depth.html?map=oak_164424#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">A long straight road</span><span class="f-al-l">654 m</span><a href="explore.html?map=oak_164002">Walk in (3&#8209;D)</a><a href="depth.html?map=oak_164002#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">A shaded park walk</span><span class="f-al-l">232 m</span><a href="explore.html?map=oak_160543">Walk in (3&#8209;D)</a><a href="depth.html?map=oak_160543#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">A soybean field in Argentina</span><span class="f-al-l">462 m</span><a href="explore.html?map=rosario_01">Walk in (3&#8209;D)</a><a href="depth.html?map=rosario_01#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">Soybean rows beside a dry field</span><span class="f-al-l">163 m</span><a href="explore.html?map=rosario_03">Walk in (3&#8209;D)</a><a href="depth.html?map=rosario_03#dm-cmp">Its depth: classic vs ML</a></li><li><span class="f-al-n">Long green soybean rows</span><span class="f-al-l">143 m</span><a href="explore.html?map=rosario_04">Walk in (3&#8209;D)</a><a href="depth.html?map=rosario_04#dm-cmp">Its depth: classic vs ML</a></li></ul>
       <p class="f-atlas-note">Not to scale: the places are arranged to fit one screen. Soybean places: Source images: The Rosario Dataset, CIFASIS-CONICET, CC BY 4.0.</p>
+    </div>
+  </section>
+
+  <!-- ============ The company in one screen, above the place cards.
+       The plan in order: Now (works today) / Next (our first round) / Later (aims). ============ -->
+  <section class="h4-sec h4-about fd-co" id="about" aria-labelledby="h4-about-h">
+    <div class="wrap">
+      <p class="eyebrow">The company</p>
+      <div class="h4-goal">
+        <h2 class="h4-goal-t" id="h4-about-h">Our goal: pass the physical Turing test.</h2>
+        <p class="h4-goal-s">A robot passes it when you cannot tell its work from a person's. We built first what every robot needs: to know where it is, and how far away things are.</p>
+        <p class="h4-goal-n">No working robot is built yet. With our first round we will build the first one.</p>
+      </div>
+
+      <div class="h4-status fd-plan" aria-labelledby="h4-status-h">
+        <h3 class="v4-sr" id="h4-status-h">Our plan, in order: now, next, later</h3>
+        <div class="h4-ready">
+          <p class="h4-status-l">Now <span>works today</span></p>
+          <p class="h4-status-t"><a href="xclean.html">xclean</a>: live SLAM. It tells a robot where it is.</p>
+          <p class="h4-status-t h4-status-t--ai"><a href="depth.html">Depth models</a>: how far away things are.</p>
+          <p class="fd-s">Released, open source, free. xclean: tested on <!-- gen:val:board.routes -->72<!-- /gen:val:board.routes --> recorded routes, every loss published. Depth models: tested on real photos they never saw.</p>
+          <a class="more h4-status-go" href="explore.html">Walk into a place built with them</a>
+        </div>
+        <div class="h4-building fd-next">
+          <p class="h4-status-l">Next <span>with our first round</span></p>
+          <p class="h4-status-t">Our first robot: four wheels, two arms.</p>
+          <p class="fd-s">It will work outdoors from its first step: first our software on the moving robot, then one arm, then both arms.</p>
+          <p class="fd-s">Milestone 1, the goal of our first round: it will pick up litter on a street in India.</p>
+          <p class="fd-s">Milestone 2, our mission, after milestone 1: the same work in the mountains of north India.</p>
+          <p class="fd-s">We will publish the result of each step, the failures too.</p>
+        </div>
+        <div class="h4-building fd-later">
+          <p class="h4-status-l">Later <span>our aims</span></p>
+          <ul class="h4-aims">
+            <li>Robot hands with the skill of a person.</li>
+            <li>Robots that move with ease in any environment.</li>
+            <li>Robots in every form factor, humanoids included.</li>
+            <li>Our own hardware, in time. <a href="about.html#stack">Why: see About</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="h4-about-who">Founded by Sumedh Bouddh and Karan Davande in India. We are raising our first round.</p>
+      <p class="fd-co-cta"><a class="btn btn--acc" href="investors.html">For investors <span aria-hidden="true">&rarr;</span></a> <a class="more" href="about.html">More about us</a> <a class="more" href="about.html#join">Join us</a></p>
     </div>
   </section>
 
@@ -239,7 +289,7 @@
     </div>
   </section>
 
-  <!-- ============ SCREEN 2b: the AI depth model (2026-11-12). The slider moves only under the visitor's hand ============ -->
+  <!-- ============ SCREEN 2b: the depth model (2026-11-12). The slider moves only under the visitor's hand ============ -->
   <section class="h4-sec h4-ai" id="ai" aria-labelledby="h4-ai-h">
     <div class="wrap h4-ai-in">
       <div>
@@ -250,8 +300,8 @@
           <li><b>From scratch.</b> <!-- gen:val:model.pairs -->155,769<!-- /gen:val:model.pairs --> <dfn class="ml" tabindex="0" data-def="Pictures rendered by a computer, so the true distance of every pixel is known exactly.">synthetic</dfn> photo pairs, <!-- gen:val:model.steps -->200,000<!-- /gen:val:model.steps --> training steps, one graphics card.</li>
           <li><b><!-- gen:val:model.params_words -->57 million<!-- /gen:val:model.params_words --> <dfn class="ml" tabindex="0" data-def="The numbers inside the network that training adjusts, one small step at a time.">parameters</dfn>.</b> The weights are ours. The <dfn class="ml" tabindex="0" data-def="The plan of the network: its layers and how they connect. Ours is DLNR, by Zhao and others, open code.">design</dfn>, DLNR, is from another team.</li>
           <li><b><dfn class="ml" tabindex="0" data-def="Tested on kinds of data the model was never trained on.">Zero-shot</dfn>.</b> Tested on real photos it never saw. Pass marks set before training: <!-- gen:val:model.gate -->4 of 4<!-- /gen:val:model.gate --> passed.</li>
-          <li><b>Any calibrated stereo camera</b> (pinhole lenses). Zero-shot: no retraining for your camera. <!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short -->.</li>
-          <li><b>Not for live use.</b> <!-- gen:val:model.s_per_view -->0.28<!-- /gen:val:model.s_per_view --> s per photo pair on one RTX 5090, so it gives depth to our map builder after the recording. xclean, our live SLAM, uses no neural network.</li>
+          <li><b>Calibrated stereo cameras</b> with pinhole lenses: no retraining for a new camera. Zero-shot: tested on real photos from cameras it never saw. <!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short -->.</li>
+          <li><b>Not for live use.</b> <!-- gen:val:model.s_per_view -->0.28<!-- /gen:val:model.s_per_view --> s per photo pair on one RTX 5090, so it gives depth to our map builder after the recording. For a robot's own computer we released a small model, <a href="nrs-edge.html">nrs-edge</a>; its speed there is not measured yet. xclean, our live SLAM, uses no neural network.</li>
         </ul>
         <div class="d-cap-cta h4-ai-cta"><a class="btn btn--ion btn--lg" href="depth.html">See the difference <span class="arr" aria-hidden="true">&rarr;</span></a></div>
       </div>
@@ -339,53 +389,6 @@
     </div>
   </section>
 
-  <!-- ============ SCREEN 3b: about the company (owner 11-21: "company about section ... the company goal is to pass physical
-       Turing test by building the complete robotics eco system"). Short here; the long version is on about.html ============ -->
-  <section class="h4-sec h4-about" id="about" aria-labelledby="h4-about-h">
-    <div class="wrap">
-      <p class="eyebrow">About us</p>
-      <div class="h4-goal">
-        <h2 class="h4-goal-t" id="h4-about-h">Our goal: pass the physical Turing test.</h2>
-        <p class="h4-goal-s">A robot passes it when you cannot tell its work from a person's. To get there, we aim to build the complete robotics ecosystem ourselves: energy, semiconductors, hardware and software, and the robot made from them.</p>
-        <div class="x-stack">
-          <p class="x-stack-l">The five layers of a robot, and where we are today:</p>
-          <ol class="x-stack-row" aria-label="The five layers of a robot">
-            <li title="The power a robot runs on">Energy<span class="v4-sr">: not built yet</span></li>
-            <li title="The chips a robot thinks with">Semiconductors<span class="v4-sr">: not built yet</span></li>
-            <li title="The body: motors, joints, hands">Hardware<span class="v4-sr">: not built yet</span></li>
-            <li class="is-lit" title="Software. The first part works today: it tells a robot where it is.">Software <span>first part works</span></li>
-            <li title="The finished robot">Product<span class="v4-sr">: not built yet</span></li>
-          </ol>
-          <p class="x-stack-k">Lit = a first part works today. Dashed = not built yet.</p>
-        </div>
-        <p class="h4-goal-n">No robot is built yet. The first part works today: the software that tells a robot where it is.</p>
-      </div>
-
-      <div class="h4-status" aria-labelledby="h4-status-h">
-        <h3 class="v4-sr" id="h4-status-h">What is ready, and what we are building</h3>
-        <div class="h4-ready">
-          <p class="h4-status-l">Works today</p>
-          <p class="h4-status-t"><a href="xclean.html">xclean</a>: live SLAM. Open source, free.</p>
-          <p class="h4-status-t h4-status-t--ai"><a href="depth.html">Depth model</a>: zero-shot stereo depth. <!-- gen:val:model.release_short -->Free download<!-- /gen:val:model.release_short -->.</p>
-          <a class="more h4-status-go" href="explore.html">Walk into a place built with them</a>
-          <p class="h4-status-t h4-status-t--ai h4-status-t--new">New: <a href="depth.html#edge">nrs-edge</a>, a small depth model (6 million parameters). Free download.</p>
-        </div>
-        <div class="h4-building">
-          <p class="h4-status-l">Our aims</p>
-          <ul class="h4-aims">
-            <li>Robot hands with the skill of a person.</li>
-            <li>Robots that move with ease in any environment.</li>
-            <li>Robots in every form factor, humanoids included.</li>
-            <li>Surveillance for defence, from the air and from the ground.</li>
-          </ul>
-        </div>
-      </div>
-
-      <p class="h4-about-who">Founded by Sumedh Bouddh and Karan Davande in India. We are raising our first round: <a href="about.html#contact">write to us</a>.</p>
-      <p class="h4-about-more"><a class="more" href="about.html">More about us</a></p>
-    </div>
-  </section>
-
   <!-- ============ SCREEN 4: the door for engineers. The ONLY block of this page with technical words ============ -->
   <section class="h4-sec h4-eng" id="engineers" aria-labelledby="h4-eng-h">
     <div class="wrap">
@@ -417,6 +420,8 @@
       <div>
         <p class="h4-lead">We read every message.</p>
         <a class="btn btn--ion btn--lg h4-mail" href="mailto:necessityrobotics@gmail.com" data-link="email">necessityrobotics@gmail.com</a>
+        <p class="fd-contact-inv">Investors, grant programmes and hubs: <a href="investors.html">what we ask for, and what it builds</a>.</p>
+        <p class="fd-contact-inv">Engineers who want to build robots with us: <a href="about.html#join">join us</a>.</p>
       </div>
     </div>
   </section>
@@ -425,7 +430,8 @@
 <!-- gen:footer -->
 <footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="#places">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="about.html#join">Join us</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="#places">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p class="fd-legal">Private limited company, registered in India.</p>
   </div>
 </footer>
 

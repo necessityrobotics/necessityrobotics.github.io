@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="css/recolour.css">
 <link rel="stylesheet" href="css/v12.css">
 <link rel="stylesheet" href="css/accent.css">
+<link rel="stylesheet" href="css/fund.css">
 </head>
 <body class="v12">
 <a class="skip" href="#main">Skip to content</a>
@@ -45,10 +46,11 @@
     <nav class="v4-nav nr-nav" id="v4-nav" aria-label="Main">
       <div class="nr-dd" data-dd="products">
         <button class="nr-dd-btn" type="button" aria-expanded="false" aria-controls="nr-dd-products">Products<span class="nr-chev" aria-hidden="true"></span></button>
-        <div class="nr-dd-panel nr-dd-panel--2" id="nr-dd-products">
+        <div class="nr-dd-panel nr-dd-panel--2 fd-dd3" id="nr-dd-products">
           <p class="nr-dd-h">Products</p>
           <a class="nr-dd-item nr-dd-item--path" href="xclean.html"><span class="nr-dd-k">Live SLAM</span><span class="nr-dd-n">xclean</span><span class="nr-dd-t">Tells a robot where it is, from a stereo camera.</span><span class="nr-dd-s">Open source &middot; Apache-2.0</span></a>
-          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Zero-shot ML</span><span class="nr-dd-n">Depth model</span><span class="nr-dd-t">How far away each point is, from two camera photos.</span><span class="nr-dd-s">nrs-large &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="depth.html"><span class="nr-dd-k">Depth model &middot; large</span><span class="nr-dd-n">nrs-large</span><span class="nr-dd-t">How far away each point is, from two camera photos. Our larger, more exact model.</span><span class="nr-dd-s">57 million parameters &middot; Free download</span></a>
+          <a class="nr-dd-item nr-dd-item--ml" href="nrs-edge.html"><span class="nr-dd-k">Depth model &middot; small</span><span class="nr-dd-n">nrs-edge</span><span class="nr-dd-t">How far away each point is, in a small model for the computer inside a robot.</span><span class="nr-dd-s">6 million parameters &middot; Free download</span></a>
         </div>
       </div>
       <a class="nr-a" href="maps.html">3-D places</a>
@@ -61,6 +63,8 @@
         </div>
       </div>
       <a class="nr-a" href="about.html">About</a>
+      <a class="nr-a" href="investors.html">Investors</a>
+      <a class="nr-a" href="about.html#join">Join us</a>
       <a class="nr-a nr-a--contact" href="about.html#contact">Contact</a>
     </nav>
     <a class="nr-cta" href="about.html#contact">Contact</a>
@@ -106,7 +110,7 @@
     <div class="wrap doc cred">
       <aside class="toc" aria-label="On this page">
         <span class="label">On this page</span>
-        <a href="#maps">Maps on this site</a><a href="#benchmark">Benchmark datasets</a><a href="#package">Inside xclean</a><a href="#baselines">Baseline systems</a><a href="#software">Site software</a><a href="#privacy">Privacy</a>
+        <a href="#maps">Maps on this site</a><a href="#benchmark">Benchmark datasets</a><a href="#model">Our depth model</a><a href="#edge">Our small depth model</a><a href="#package">Inside xclean</a><a href="#baselines">Baseline systems</a><a href="#software">Site software</a><a href="#privacy">Privacy</a>
       </aside>
       <div class="prose">
         <h2 id="maps">Maps on this site</h2>
@@ -177,7 +181,7 @@
             <tr><td class="wrapcell">TartanRGBT (left and right images only)</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Maheshwari et al., "AnyThermal", ICRA 2026, arXiv 2602.06203. CMU AirLab.</td><td class="wrapcell">BSD-3-Clause-Clear (the tag on the dataset card)</td></tr>
             <tr><td class="wrapcell">Unitree G1 head stereo (33 public data sets)</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Unitree Robotics, on Hugging Face (unitreerobotics).</td><td class="wrapcell">Apache-2.0 (the tag on each dataset card)</td></tr>
             <tr><td class="wrapcell">Our own OAK-D Lite recordings</td><td class="wrapcell">real training photos; labels from nrs-large</td><td class="wrapcell">Necessity Robotics.</td><td>Own data</td></tr>
-            <tr><td class="wrapcell">Middlebury, ETH3D, KITTI 2012 and 2015, Booster</td><td class="wrapcell">test scores only; never trained on</td><td class="wrapcell">The public benchmark sets named on the <a href="depth.html#edge-eng">depth page</a>.</td><td class="wrapcell">Their own terms. We publish numbers only, no images.</td></tr>
+            <tr><td class="wrapcell">Middlebury, ETH3D, KITTI 2012 and 2015, Booster</td><td class="wrapcell">test scores only; never trained on</td><td class="wrapcell">The public benchmark sets named on the <a href="nrs-edge.html#numbers">nrs-edge page</a>.</td><td class="wrapcell">Their own terms. We publish numbers only, no images.</td></tr>
           </tbody>
         </table></div>
 
@@ -219,7 +223,8 @@
 <!-- gen:footer -->
 <footer class="foot v4-foot">
   <div class="wrap">
-    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p><span>&copy; 2026 Necessity Robotics</span><span class="dot" aria-hidden="true">&middot;</span><a href="about.html">About</a><span class="dot" aria-hidden="true">&middot;</span><a href="about.html#join">Join us</a><span class="dot" aria-hidden="true">&middot;</span><a href="mailto:necessityrobotics@gmail.com">necessityrobotics@gmail.com</a><span class="dot" aria-hidden="true">&middot;</span><a href="https://github.com/necessityrobotics">GitHub</a><span class="dot" aria-hidden="true">&middot;</span><a href="maps.html">3-D places</a><span class="dot" aria-hidden="true">&middot;</span><a href="credits.html">Data credits</a></p>
+    <p class="fd-legal">Private limited company, registered in India.</p>
   </div>
 </footer>
 <!-- /gen:footer -->
